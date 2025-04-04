@@ -24,7 +24,6 @@ export default function AddressPicker() {
             setLoading(false);
             return;
         }
-
         let userLocation = await Location.getCurrentPositionAsync({});
         const { latitude, longitude } = userLocation.coords;
         const locationData = { latitude, longitude, latitudeDelta: 0.01, longitudeDelta: 0.01 };

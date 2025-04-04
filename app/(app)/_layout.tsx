@@ -1,16 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Drawer } from 'expo-router/drawer';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Redirect, usePathname } from 'expo-router';
-import { useAuth } from '@/components/authContext/auth';
+import { router, usePathname } from 'expo-router';
 import CustomDrawer from '@/components/drawer/drawer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ProtectedLayout() {
-  const { isAuthenticated } = useAuth() as any;
   const pathname = usePathname();
-  if (isAuthenticated) {
-    return <Redirect href="/welcome" />;
-  }
+
+  useEffect(() => {
+    async function tokenData() {
+      const fetchToken = await AsyncStorage.getItem('userData');
+      if (!fetchToken) {
+        router.push("/welcome")
+      }
+    }
+    tokenData()
+  }, [])
+
   return (
     <Drawer
       drawerContent={(props) => <CustomDrawer />}

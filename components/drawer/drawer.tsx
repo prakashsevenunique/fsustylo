@@ -2,11 +2,9 @@ import { useState } from "react"
 import { View, Text, TouchableOpacity } from "react-native"
 import { DrawerContentScrollView } from "@react-navigation/drawer"
 import Ionicons from "@expo/vector-icons/Ionicons"
-import { useAuth } from "@/components/authContext/auth"
 import { router } from "expo-router"
 
 export default function CustomDrawer(props: any) {
-  const { logout } = useAuth()
   const [isDarkTheme, setIsDarkTheme] = useState(false)
 
   const toggleTheme = () => {

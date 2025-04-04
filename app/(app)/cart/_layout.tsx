@@ -1,7 +1,7 @@
 import PolicyScreen from '@/app/(auth)/policy';
 import { Stack } from 'expo-router';
 
-export default function ProfileLayout() {
+export default function CartLayout() {
   return (
     <Stack>
       <Stack.Screen

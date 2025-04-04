@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Switch, Image, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons, Feather, MaterialIcons, MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SettingsScreen() {
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
@@ -85,7 +86,7 @@ export default function SettingsScreen() {
               'Are you sure you want to logout?',
               [
                 { text: 'Cancel', style: 'cancel' },
-                { text: 'Logout', onPress: () => router.replace('/login') }
+                { text: 'Logout', onPress: async () => {await AsyncStorage.removeItem('userData');router.replace('/login')} }
               ]
             );
           }

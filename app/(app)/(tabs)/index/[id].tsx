@@ -15,10 +15,11 @@ const SalonDetail = () => {
 
   // Track sticky header position
   const [headerSticky, setHeaderSticky] = useState(false);
-  const headerHeight = 180; // Approximate height of content above filters
+  const headerHeight = 180;
 
   // Mock data
   useEffect(() => {
+    
     const fetchSalonDetails = async () => {
       try {
         // Simulate API call
@@ -147,7 +148,7 @@ const SalonDetail = () => {
     fetchSalonDetails();
   }, [id]);
 
-  const toggleService = (service) => {
+  const toggleService = (service: any) => {
     setSelectedServices(prev => {
       if (prev.some(s => s.id === service.id)) {
         return prev.filter(s => s.id !== service.id);
