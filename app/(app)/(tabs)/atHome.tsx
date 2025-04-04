@@ -2,6 +2,7 @@ import { View, Text, Animated, TouchableOpacity, Dimensions } from 'react-native
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useRef } from 'react';
 import { router } from 'expo-router';
+import Header from '@/components/header/header';
 
 export default function AtHome() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -17,21 +18,7 @@ export default function AtHome() {
 
   return (
     <View className="flex-1 bg-gray-900 justify-center items-center px-6 w-full h-full">
-      <View className="absolute top-0 left-0 right-0 bg-white shadow-md px-4 py-3 z-10">
-        <View className="flex-row justify-between items-center">
-          <View className="flex-row items-center">
-            <Ionicons name="location" size={25} color="#E6007E" />
-            <View className="flex-coloum items-center">
-              <Text className="text-md font-bold ml-2">Hi, Prakash</Text>
-              <Text style={{ fontSize: 10 }} className="text-gray-600 ml-1">New York, USA</Text>
-            </View>
-          </View>
-          <View className="flex-row items-center">
-            <Ionicons name="notifications-outline" size={22} color="black" className="mr-4" />
-            <Ionicons onPress={()=>router.push("/(app)/profile")} name="person-outline" size={25} color="black" />
-          </View>
-        </View>
-      </View>
+      <Header/>
       <Animated.View
         style={{ opacity: fadeAnim, width: width * 1, height: height * 1 }}
         className="bg-white p-6 rounded-2xl shadow-2xl items-center justify-center"

@@ -1,10 +1,12 @@
 import { View, Text, Image, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons, Feather } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { UserContext } from '@/hooks/userInfo';
 
 export default function ProfileScreen() {
   const [refreshing, setRefreshing] = useState(false);
+  const {userInfo} = useContext(UserContext) as any;
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -22,7 +24,9 @@ export default function ProfileScreen() {
             <Ionicons onPress={() => router.back()} name="arrow-back" size={25} color="#E6007E" />
             <Text className="text-lg font-bold ml-3">My Profile</Text>
           </View>
-          <Ionicons name="notifications-outline" size={23} color="black" />
+          <TouchableOpacity onPress={() => router.push("/notification")}>
+            <Ionicons name="notifications-outline" size={25} color="black" className="mr-4" />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -34,22 +38,21 @@ export default function ProfileScreen() {
         {/* Profile Section */}
         <View className="items-center mt-6">
           <View className="relative">
-            <Image source={{ uri: 'https://i.pravatar.cc/100' }} className="w-24 h-24 rounded-full" />
+            <Image source={{ uri: 'https://static.vecteezy.com/system/resources/thumbnails/035/857/779/small/people-face-avatar-icon-cartoon-character-png.png' }} className="w-24 h-24 rounded-full" />
             <TouchableOpacity className="absolute bottom-0 right-0 bg-pink-600 p-2 rounded-full border border-white">
               <Feather name="edit-2" size={14} color="white" />
             </TouchableOpacity>
           </View>
-          <Text className="mt-2 text-pink-600 text-lg font-semibold">Prakash Jangid</Text>
-          <Text className="text-gray-600">8302845976</Text>
-          <Text className="text-gray-400">Membership ID: BPC-358355</Text>
+          <Text className="mt-2 text-pink-600 text-lg font-semibold">{userInfo?.name || "Your Name"}</Text>
+          <Text className="text-gray-600">{userInfo?.mobileNumber || "Mobile Number" }</Text>
         </View>
 
         {/* Action Buttons */}
         <View className="flex-row justify-around mt-6">
-          {[{ name: 'Notifications', icon: 'bell' }, { name: 'Orders', icon: 'shopping-cart' }, { name: 'Settings', icon: 'settings' }].map((item, index) => (
+          {[{ name: 'Notifications', icon: 'bell', routes:"/notification" }, { name: 'Orders', icon: 'shopping-cart',routes:"/shop" }, { name: 'Settings', icon: 'settings',routes:"/profile/setting" }].map((item :any, index) => (
             <TouchableOpacity
               key={index}
-              onPress={() => router.push("/profile/setting")}
+              onPress={() => router.push(item.routes)}
               className="items-center p-3 bg-white rounded-lg shadow-md w-28"
             >
               <Feather name={item.icon} size={24} color="black" />

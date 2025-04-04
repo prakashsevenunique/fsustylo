@@ -21,18 +21,15 @@ const BookingConfirmation = () => {
   const parsedServices = typeof services === 'string' ? JSON.parse(services) : services;
 
   const handleAddToCalendar = () => {
-    // Implement calendar integration
     alert('Added to calendar!');
   };
 
   const handleShareBooking = () => {
-    // Implement share functionality
     alert('Booking shared!');
   };
 
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
-    // Implement favorite logic
   };
 
   return (
@@ -146,7 +143,7 @@ const BookingConfirmation = () => {
 
           <TouchableOpacity 
             className="flex-row items-center py-3"
-            onPress={() => router.push(`/salon-details/${salonId}`)}
+            onPress={() => router.replace(`/salon/${salonId}`)}
           >
             <FontAwesome name="home" size={24} color="#E6007E" />
             <Text className="ml-3 flex-1">View Salon</Text>
@@ -173,7 +170,7 @@ const BookingConfirmation = () => {
       </ScrollView>
 
       {/* Footer Buttons */}
-      <View className="p-4 bg-white border-t border-gray-200 mb-14">
+      <View className="p-4 bg-white border-t border-gray-200">
         <TouchableOpacity 
           className="bg-gray-500 py-3 rounded-lg items-center mb-3"
           onPress={() => router.push('/bookings')}
@@ -182,7 +179,7 @@ const BookingConfirmation = () => {
         </TouchableOpacity>
         <TouchableOpacity 
           className="bg-white py-3 rounded-lg items-center border border-primary"
-          onPress={() => router.push('/')}
+          onPress={() => router.replace('/')}
         >
           <Text className="text-primary font-bold">Back to Home</Text>
         </TouchableOpacity>

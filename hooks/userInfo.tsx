@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from "expo-location";
 import axiosInstance from '@/utils/axiosInstance';
 import { router } from 'expo-router';
+import { Alert } from 'react-native';
 
 export const UserContext = createContext({});
 
@@ -10,13 +11,12 @@ export const UserProvider = ({ children }: any) => {
     const [userInfo, setUserInfo] = useState<any>(null);
     const [location, setlocation] = useState<any>({})
     const [token, setToken] = useState<string>('');
-    const [city , setCity] = useState<string>('')
-
+    const [city, setCity] = useState<string>('')
 
     const getAuthToken = async () => {
-        const userData = await AsyncStorage.getItem('userData') || '';
-        const authToken = JSON.parse(userData);
-        setToken(authToken)
+        const userData = await AsyncStorage.getItem('userData');
+        const parsedData = userData ? JSON.parse(userData) : null; // Parse if data exists, otherwise null
+        setToken(parsedData);
     };
 
     const getCurrentLocation = async () => {
@@ -35,7 +35,7 @@ export const UserProvider = ({ children }: any) => {
     };
 
     const fetchAddress = async () => {
-        if(!location.latitude && !location.longitude) return;
+        if (!location.latitude && !location.longitude) return;
         try {
             let result = await Location.reverseGeocodeAsync(location) as any;
             if (result.length > 0) {
@@ -66,23 +66,20 @@ export const UserProvider = ({ children }: any) => {
 
     const fetchUserInfo = async () => {
         try {
-            if (token) {
-                const config = {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                };
-                const response = await axiosInstance.get('/api/user/user-info', config);
-                setUserInfo(response.data?.user);
-            } else {
-                console.error('No token found!');
-            }
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            };
+            const response = await axiosInstance.get('/api/user/user-info', config);
+            setUserInfo(response.data?.user);
         } catch (error: any) {
-            console.error('Error fetching user info:', error.response);
+            Alert.alert(error.response?.data?.message);
             if (error.response) {
                 if (error.response.status === 401) {
                     await AsyncStorage.removeItem('userData');
                     router.push('/welcome');
+                    setToken('')
                 }
             }
         }
@@ -94,11 +91,11 @@ export const UserProvider = ({ children }: any) => {
     }, [])
 
     useEffect(() => {
-        if(location){
+        if (location) {
             fetchAddress()
         }
-    },[location.latitude])
-    
+    }, [location.latitude])
+
 
     useEffect(() => {
         if (!token) {
@@ -116,7 +113,7 @@ export const UserProvider = ({ children }: any) => {
     }, [userInfo, location])
 
     return (
-        <UserContext.Provider value={{ userInfo, token,city, setToken, location, setUserInfo }}>
+        <UserContext.Provider value={{ userInfo, token, city, setToken, location, setUserInfo }}>
             {children}
         </UserContext.Provider>
     );

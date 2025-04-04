@@ -3,7 +3,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Animated, Image } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Animated, Image, Alert } from "react-native";
 import { CodeField, useBlurOnFulfill, useClearByFocusCell } from "react-native-confirmation-code-field";
 
 const CELL_COUNT = 4;
@@ -33,18 +33,14 @@ export default function OTPInputScreen({ mobile }) {
                 otp: otp
             });
             await AsyncStorage.setItem('userData', JSON.stringify(response.data.token));
-            console.log(response.data)
             setToken(response.data?.token);
-            router.push("/")
+            router.replace("/")
         } catch (error) {
-            console.error('Error verifying OTP:', error.response);
+            Alert.alert(error?.response?.data?.message || "Network error");
         } finally {
             setLoading(false)
         }
     }
-    useEffect(() => {
-        console.log(token);
-    }, [token])
 
     return (
         <View className="flex-1 items-center justify-center bg-white px-2">

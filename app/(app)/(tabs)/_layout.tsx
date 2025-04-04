@@ -55,7 +55,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="atSalon"
           options={{
-            title: 'At Salon',
+            title: 'atSalon',
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? 'compass' : 'compass-outline'}

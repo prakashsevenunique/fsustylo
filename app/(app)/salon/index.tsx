@@ -4,14 +4,24 @@ import { Ionicons } from '@expo/vector-icons';
 import axiosInstance from '@/utils/axiosInstance';
 import { UserContext } from '@/hooks/userInfo';
 import { imageBaseUrl } from '@/utils/helpingData';
+import { Card, ActivityIndicator } from 'react-native-paper';
+import { router } from 'expo-router';
 
 
 export default function SalonListScreen() {
     const [salonData, setSalonData] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const { location } = useContext(UserContext) as any;
+    const [loading, setLoading] = useState(false);
+
+    const SkeletonLoader = () => (
+        <View className='flex items-center justify-center py-32'>
+            <ActivityIndicator animating={true} size="large" />
+        </View>
+    );
 
     const getNearbySalons = async () => {
+        setLoading(true)
         try {
             const response = await axiosInstance.get('/api/salon/nearby', {
                 params: { ...location }
@@ -19,6 +29,8 @@ export default function SalonListScreen() {
             setSalonData(response.data?.salons)
         } catch (error) {
             console.error('Error fetching nearby salons:', error);
+        } finally {
+            setLoading(false)
         }
     };
 
@@ -30,8 +42,8 @@ export default function SalonListScreen() {
 
 
     const renderSalonItem = ({ item }: any) => (
-        <TouchableOpacity
-            className="bg-white rounded-lg shadow-md mb-4 mx-4 overflow-hidden"
+        <TouchableOpacity onPress={() => router.push(`/salon/${item._id}`)}
+            className="bg-white rounded-lg shadow-md mb-2 mx-4 overflow-hidden"
         >
             <View className="flex-row">
                 <Image
@@ -82,9 +94,10 @@ export default function SalonListScreen() {
 
     return (
         <SafeAreaView className="flex-1 bg-gray-50">
-
-            {/* Header */}
-            <View className="bg-white px-4 py-3 shadow-sm">
+            <View className="bg-white px-4 py-3 flex-row items-center shadow-sm gap-2">
+                <TouchableOpacity onPress={() => router.back()}>
+                    <Ionicons name="arrow-back" size={24} color="#E6007E" />
+                </TouchableOpacity>
                 <Text className="text-2xl font-bold text-gray-900">Nearby Salons</Text>
             </View>
 
@@ -116,15 +129,15 @@ export default function SalonListScreen() {
                     <Text className="text-gray-600 text-sm">Spa</Text>
                 </TouchableOpacity>
             </View>
-
-            {/* Salon List */}
-            <FlatList
-                data={salonData}
-                renderItem={renderSalonItem}
-                keyExtractor={item => item._id}
-                contentContainerStyle={{ paddingVertical: 8 }}
-                showsVerticalScrollIndicator={false}
-            />
+            {loading ?
+                <SkeletonLoader /> :
+                <FlatList
+                    data={salonData}
+                    renderItem={renderSalonItem}
+                    keyExtractor={item => item._id}
+                    contentContainerStyle={{ paddingVertical: 8 }}
+                    showsVerticalScrollIndicator={false}
+                />}
         </SafeAreaView>
     );
 }

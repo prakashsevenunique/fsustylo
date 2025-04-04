@@ -19,11 +19,11 @@ const CheckoutScreen = () => {
     }
     const today = new Date();
     const dateArray = [];
-    
+
     for (let i = 0; i < 30; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
-      
+
       dateArray.push({
         date,
         day: date.getDate(),
@@ -33,7 +33,7 @@ const CheckoutScreen = () => {
         isWeekend: [0, 6].includes(date.getDay())
       });
     }
-    
+
     setDates(dateArray);
     setSelectedDate(dateArray[0]); // Default to today
   }, []);
@@ -44,14 +44,14 @@ const CheckoutScreen = () => {
       const slots = [];
       const openHour = 9; // Salon opens at 9 AM
       const closeHour = 19; // Salon closes at 7 PM
-      
+
       for (let hour = openHour; hour < closeHour; hour++) {
         // Add slots on the hour
         slots.push({
           time: `${hour}:00 ${hour < 12 ? 'AM' : 'PM'}`,
           available: Math.random() > 0.3 // 70% chance available
         });
-        
+
         // Add slots on the half hour (except last hour)
         if (hour < closeHour - 1) {
           slots.push({
@@ -60,7 +60,7 @@ const CheckoutScreen = () => {
           });
         }
       }
-      
+
       setTimeSlots(slots);
     }
   }, [selectedDate]);
@@ -78,7 +78,7 @@ const CheckoutScreen = () => {
   };
 
   const calculateSubtotal = () => {
-    return selectedServices.reduce((sum, service) => 
+    return selectedServices.reduce((sum, service) =>
       sum + (service.price * (service.quantity || 1)), 0);
   };
 
@@ -93,8 +93,8 @@ const CheckoutScreen = () => {
       return;
     }
 
-    router.push({
-      pathname: '/booking-confirmation',
+    router.replace({
+      pathname: '/salon/booking-confirmation',
       params: {
         salonId,
         salonName,
@@ -108,17 +108,14 @@ const CheckoutScreen = () => {
   };
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1">
+      <View className="flex-row items-center bg-white py-4 px-4">
+        <TouchableOpacity onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={24} color="#E6007E" />
+        </TouchableOpacity>
+        <Text className="ml-4 text-xl font-bold">Checkout</Text>
+      </View>
       <ScrollView className="flex-1 p-4">
-        {/* Header */}
-        <View className="flex-row items-center mb-6">
-          <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color="#E6007E" />
-          </TouchableOpacity>
-          <Text className="ml-4 text-xl font-bold">Checkout</Text>
-        </View>
-
-        {/* Salon Info */}
         <View className="bg-white rounded-lg p-4 mb-4 shadow-sm">
           <Text className="font-bold text-lg mb-1">{salonName}</Text>
           <View className="flex-row items-center">
@@ -212,7 +209,7 @@ const CheckoutScreen = () => {
         </View>
 
         {/* Payment Summary */}
-        <View className="bg-white rounded-lg p-4 shadow-sm">
+        <View className="bg-white rounded-lg p-4 mb-3 shadow-sm">
           <Text className="font-bold text-lg mb-3">Payment Summary</Text>
           <View className="flex-row justify-between py-2">
             <Text className="text-gray-600">Subtotal</Text>
@@ -233,7 +230,7 @@ const CheckoutScreen = () => {
 
       {/* Continue Button */}
       <TouchableOpacity
-        className="mx-4 my-4 bg-gray-500 mb-[55px] py-4 rounded-lg items-center shadow-md"
+        className="mx-4 my-2 bg-gray-700 py-4 rounded-lg items-center shadow-md"
         onPress={handleConfirmBooking}
       >
         <Text className="text-white font-bold text-lg">Confirm Booking</Text>

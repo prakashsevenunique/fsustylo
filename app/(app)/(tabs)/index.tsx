@@ -1,4 +1,4 @@
-import HomeScreen from '../../../../components/homePage/HomePage';
+import HomeScreen from "@/components/homePage/HomePage";
 
 export default function Index() {
   return (
