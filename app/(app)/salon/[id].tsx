@@ -33,17 +33,19 @@ const SalonDetail = () => {
     }
   }
 
+  console.log(selectedServices)
+
   useEffect(() => {
     console.log(id)
     getSalonDetails();
   }, [id]);
 
-  const mapApiDataToCategories = (data:any) => {
+  const mapApiDataToCategories = (data: any) => {
     if (!data?.services) return [];
-    
+
     // Group services by category
     const servicesByCategory = {} as any;
-    data.services.forEach((service:any) => {
+    data.services.forEach((service: any) => {
       const category = service.category || 'Other';
       if (!servicesByCategory[category]) {
         servicesByCategory[category] = [];
@@ -58,7 +60,7 @@ const SalonDetail = () => {
         gender: service.gender || 'unisex'
       });
     });
-    return Object.keys(servicesByCategory).map((categoryName:any,index:Number) => ({
+    return Object.keys(servicesByCategory).map((categoryName: any, index: Number) => ({
       id: index,
       name: categoryName,
       services: servicesByCategory[categoryName]
@@ -66,19 +68,19 @@ const SalonDetail = () => {
   };
 
   const toggleService = (service: any) => {
-    setSelectedServices((prev:any) => {
+    setSelectedServices((prev: any) => {
       if (prev.some(s => s.id === service.id)) {
         return prev.filter(s => s.id !== service.id);
       } else {
         return [...prev, { ...service, quantity: 1 }];
       }
     });
-  };   
+  };
 
-  const updateQuantity = (serviceId :any, newQuantity:any) => {
+  const updateQuantity = (serviceId: any, newQuantity: any) => {
     if (newQuantity < 1) return;
-    setSelectedServices((prev:any) =>
-      prev.map((service:any) =>
+    setSelectedServices((prev: any) =>
+      prev.map((service: any) =>
         service.id === serviceId
           ? { ...service, quantity: newQuantity }
           : service
@@ -88,21 +90,21 @@ const SalonDetail = () => {
 
   const filterServices = () => {
     if (!salon) return [];
-    
+
     return filteredCategories.map(category => ({
       ...category,
       services: category.services.filter(service =>
-        (selectedGender === 'all' || 
-         service.gender === 'unisex' || 
-         service.gender === selectedGender) &&
+        (selectedGender === 'all' ||
+          service.gender === 'unisex' ||
+          service.gender === selectedGender) &&
         service.name?.toLowerCase().includes(searchQuery?.toLowerCase())
       )
-    })).filter((category:any) => category.services.length > 0);
+    })).filter((category: any) => category.services.length > 0);
   };
 
   const filteredServices = filterServices();
 
-  const handleScroll = (event:any) => {
+  const handleScroll = (event: any) => {
     const offsetY = event.nativeEvent.contentOffset.y;
     setHeaderSticky(offsetY > headerHeight);
     scrollY.setValue(offsetY);
@@ -148,7 +150,7 @@ const SalonDetail = () => {
           }}
         >
           <View className='flex flex-row items-center gap-3'>
-            <TouchableOpacity onPress={() => router.back()}>
+            <TouchableOpacity onPress={() => router.back()}>ingf
               <Ionicons name="arrow-back" size={24} className="text-primary" />
             </TouchableOpacity>
             <View>
@@ -185,7 +187,7 @@ const SalonDetail = () => {
             <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
         </View>
-        
+
         {/* Salon Info */}
         <View className="px-4 pt-4 bg-white">
           <View className="flex-row justify-between items-start">
@@ -200,14 +202,6 @@ const SalonDetail = () => {
                 <Text className="ml-2 text-gray-500">{salon.reviews?.length || 0} reviews</Text>
               </View>
             </View>
-            <TouchableOpacity onPress={() => router.push({
-              pathname: '/(app)/salon/details',
-              params: {
-                salon: JSON.stringify(salon)
-              }
-            })}  className="p-1 border border-gray-400 shadow-lg rounded-full">
-              <Ionicons name="information" size={20} color="#E6007E" />
-            </TouchableOpacity>
           </View>
         </View>
 
@@ -247,7 +241,7 @@ const SalonDetail = () => {
 
           {/* Categories */}
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="py-1">
-            {filteredCategories.map((category:any, index:Number) => (
+            {filteredCategories.map((category: any, index: Number) => (
               <TouchableOpacity key={index} className="items-center mr-4">
                 <Image
                   source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo2WnGd1lgXf94qq-LY3Q_lE3IdhCbmVl_IQ&s' }}
@@ -261,11 +255,11 @@ const SalonDetail = () => {
 
         {/* Services List */}
         <View className="px-4 pt-4 pb-32">
-          {filteredServices?.map((category:any) => (
+          {filteredServices?.map((category: any) => (
             <View key={category.id} className="mb-6">
               <Text className="text-lg font-bold mb-3">{category.name} ({category.services.length})</Text>
 
-              {category.services.map((service:any) => {
+              {category.services.map((service: any) => {
                 const isSelected = selectedServices.some(s => s.id === service.id);
                 const selectedService = selectedServices.find(s => s.id === service.id);
 
@@ -295,24 +289,6 @@ const SalonDetail = () => {
                         {isSelected && <View className="w-4 h-4 rounded-full bg-gray-400" />}
                       </View>
                     </TouchableOpacity>
-
-                    {isSelected && (
-                      <View className="flex-row items-center justify-end px-3 pb-3">
-                        <TouchableOpacity
-                          className="w-8 h-8 rounded-full bg-gray-200 items-center justify-center"
-                          onPress={() => updateQuantity(service.id, (selectedService?.quantity || 1) - 1)}
-                        >
-                          <Text className="text-lg">-</Text>
-                        </TouchableOpacity>
-                        <Text className="mx-4 font-medium">{selectedService?.quantity || 1}</Text>
-                        <TouchableOpacity
-                          className="w-8 h-8 rounded-full bg-gray-200 items-center justify-center"
-                          onPress={() => updateQuantity(service.id, (selectedService?.quantity || 1) + 1)}
-                        >
-                          <Text className="text-lg">+</Text>
-                        </TouchableOpacity>
-                      </View>
-                    )}
                   </View>
                 );
               })}
@@ -325,10 +301,10 @@ const SalonDetail = () => {
         <View className="absolute bottom-0 left-0 right-0 z-10 px-4 py-3 bg-white border-t border-gray-200 shadow-lg">
           <View className="flex-row justify-between items-center mb-2">
             <Text className="text-gray-600">
-              {selectedServices.reduce((sum, s:any) => sum + (s.quantity || 1), 0)} Item{selectedServices.length > 1 ? 's' : ''}
+              {selectedServices.reduce((sum, s: any) => sum + (s.quantity || 1), 0)} Item{selectedServices.length > 1 ? 's' : ''}
             </Text>
             <Text className="font-bold">
-              ₹{selectedServices.reduce((sum, s:any) => sum + (s.price * (s.quantity || 1)), 0)}
+              ₹{selectedServices.reduce((sum, s: any) => sum + (s.price * (s.quantity || 1)), 0)}
             </Text>
           </View>
           <Text className="text-xs text-gray-500 mb-3">Discount will be applied at checkout.</Text>
@@ -337,8 +313,7 @@ const SalonDetail = () => {
             onPress={() => router.push({
               pathname: '/salon/checkout',
               params: {
-                salonId: salon._id,
-                salonName: salon.salonName,
+                salon:JSON.stringify(salon),
                 services: JSON.stringify(selectedServices)
               }
             })}

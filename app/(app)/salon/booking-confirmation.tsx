@@ -5,13 +5,14 @@ import { useState } from 'react';
 
 const BookingConfirmation = () => {
   const { 
-    salonId, 
+    salonId,
     salonName, 
     services, 
     date, 
     time, 
     total,
-    discount = 0 
+    discount = 0 ,
+    bookingId
   } = useLocalSearchParams();
 
   const [isFavorite, setIsFavorite] = useState(false);
@@ -83,7 +84,7 @@ const BookingConfirmation = () => {
 
           <View className="mt-4 border-t border-gray-100 pt-3">
             <Text className="font-semibold text-gray-500">Booking ID</Text>
-            <Text className="text-gray-800 font-mono mt-1">BPC-{salonId.slice(0, 5).toUpperCase()}</Text>
+            <Text className="text-gray-800 font-mono mt-1">{bookingId}</Text>
           </View>
         </View>
 
@@ -122,7 +123,7 @@ const BookingConfirmation = () => {
         {/* Booking Actions */}
         <View className="bg-white rounded-xl p-4 shadow-sm mb-6">
           <Text className="text-lg font-bold mb-3">Booking Actions</Text>
-          
+{/*           
           <TouchableOpacity 
             className="flex-row items-center py-3 border-b border-gray-100"
             onPress={handleAddToCalendar}
@@ -130,16 +131,16 @@ const BookingConfirmation = () => {
             <MaterialIcons name="event" size={24} color="#E6007E" />
             <Text className="ml-3 flex-1">Add to Calendar</Text>
             <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
-          <TouchableOpacity 
+          {/* <TouchableOpacity 
             className="flex-row items-center py-3 border-b border-gray-100"
             onPress={handleShareBooking}
           >
             <Ionicons name="share-social" size={24} color="#E6007E" />
             <Text className="ml-3 flex-1">Share Booking</Text>
             <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <TouchableOpacity 
             className="flex-row items-center py-3"
@@ -159,12 +160,12 @@ const BookingConfirmation = () => {
           </Text>
           
           <View className="flex-row">
-            <TouchableOpacity className="flex-1 bg-gray-100 py-2 px-4 rounded-lg mr-2">
+            <TouchableOpacity onPress={()=>router.push("/(app)/profile/raiseTicket")} className="flex-1 bg-gray-100 py-2 px-4 rounded-lg mr-2">
               <Text className="text-primary text-center">Contact Support</Text>
             </TouchableOpacity>
-            <TouchableOpacity className="flex-1 bg-gray-100 py-2 px-4 rounded-lg">
+            {/* <TouchableOpacity className="flex-1 bg-gray-100 py-2 px-4 rounded-lg">
               <Text className="text-primary text-center">View Receipt</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </View>
       </ScrollView>

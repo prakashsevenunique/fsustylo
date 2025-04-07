@@ -6,13 +6,13 @@ import { UserContext } from '@/hooks/userInfo';
 
 export default function ProfileScreen() {
   const [refreshing, setRefreshing] = useState(false);
-  const {userInfo} = useContext(UserContext) as any;
+  const { userInfo } = useContext(UserContext) as any;
 
   const onRefresh = async () => {
     setRefreshing(true);
     setTimeout(() => {
       setRefreshing(false);
-    }, 2000);
+    }, 1000);
   };
 
   return (
@@ -37,19 +37,26 @@ export default function ProfileScreen() {
       >
         {/* Profile Section */}
         <View className="items-center mt-6">
-          <View className="relative">
+          <View className="relative border rounded-full border-gray-400 border-2 shadow-md">
             <Image source={{ uri: 'https://static.vecteezy.com/system/resources/thumbnails/035/857/779/small/people-face-avatar-icon-cartoon-character-png.png' }} className="w-24 h-24 rounded-full" />
-            <TouchableOpacity className="absolute bottom-0 right-0 bg-pink-600 p-2 rounded-full border border-white">
+            <TouchableOpacity onPress={() => router.push("/(app)/profile/edit")} className="absolute bottom-0 right-0 bg-pink-600 p-2 rounded-full border border-white">
               <Feather name="edit-2" size={14} color="white" />
             </TouchableOpacity>
           </View>
           <Text className="mt-2 text-pink-600 text-lg font-semibold">{userInfo?.name || "Your Name"}</Text>
-          <Text className="text-gray-600">{userInfo?.mobileNumber || "Mobile Number" }</Text>
+          <View className='flex-1 flex-row items-center gap-1'>
+            <Ionicons name="checkmark-circle" size={20} color="skyblue" />
+            <Text className="text-gray-600">{userInfo?.mobileNumber || "Mobile Number"}</Text>
+          </View>
+          <View className='flex flex-row gap-2'>
+            <Text className="text-gray-600 font-bold text-md">Sustylo Wallet :</Text>
+            <Text className="text-gray-600 font-bold text-md">₹ {userInfo?.wallet?.balance || 0}</Text>
+          </View>
         </View>
 
         {/* Action Buttons */}
         <View className="flex-row justify-around mt-6">
-          {[{ name: 'Notifications', icon: 'bell', routes:"/notification" }, { name: 'Orders', icon: 'shopping-cart',routes:"/shop" }, { name: 'Settings', icon: 'settings',routes:"/profile/setting" }].map((item :any, index) => (
+          {[{ name: 'Notifications', icon: 'bell', routes: "/notification" }, { name: 'Orders', icon: 'shopping-cart', routes: "/shop" }, { name: 'Settings', icon: 'settings', routes: "/profile/setting" }].map((item: any, index) => (
             <TouchableOpacity
               key={index}
               onPress={() => router.push(item.routes)}
@@ -91,8 +98,8 @@ export default function ProfileScreen() {
         {/* Other Section */}
         <View className="mt-6 mb-8">
           <Text className="text-gray-700 font-semibold">Help & Support</Text>
-          {[{ name: 'About App', icon: 'info' }, { name: 'Privacy Policy', icon: 'lock' }, { name: 'Terms & Conditions', icon: 'file' }, { name: 'Raise a Ticket', icon: 'help-circle' }].map((item, index) => (
-            <TouchableOpacity onPress={() => router.push("/profile/raiseTicket")} key={index} className="flex-row items-center justify-between p-4 bg-white rounded-lg shadow-sm mt-2">
+          {[{ name: 'About App', icon: 'info', route: "/profile/policies/about_app" },{ name: 'About Us', icon: 'info', route: "/profile/policies/about_us" }, { name: 'Privacy Policy', icon: 'lock', route: "/profile/policies" }, { name: 'Terms & Conditions', icon: 'file', route: "/profile/policies/term&condition" }, { name: 'Contact Us', icon: 'help-circle' , route: "/profile/raiseTicket"}].map((item:any, index) => (
+            <TouchableOpacity onPress={() => router.push(item.route)} key={index} className="flex-row items-center justify-between p-4 bg-white rounded-lg shadow-sm mt-2">
               <View className="flex-row items-center">
                 <Feather name={item.icon} size={20} color="black" />
                 <Text className="ml-3 text-gray-700 font-medium">{item.name}</Text>

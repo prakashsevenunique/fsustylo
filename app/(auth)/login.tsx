@@ -18,9 +18,11 @@ export default function LoginScreen() {
       const response = await axiosInstance.post('/api/user/send-otp', {
         mobileNumber: mobileNumber
       });
-      modalizeRef.current?.open();
-      console.log('OTP sent successfully:', response.data);
-    } catch (error:any) {
+      if(response){
+        modalizeRef.current?.open();
+        console.log('OTP sent successfully:', response.data);
+      }
+    } catch (error: any) {
       console.error('Error sending OTP:', error);
       Alert.alert(`Error: ${error.message}`)
     } finally {
@@ -29,9 +31,9 @@ export default function LoginScreen() {
   }
 
   const openBottomSheet = async () => {
-    if(mobile.length === 10){
+    if (mobile.length === 10) {
       await sendOtp(mobile)
-    }else{
+    } else {
       Alert.alert("Mobile number must be 10 digit")
     }
 
@@ -90,7 +92,7 @@ export default function LoginScreen() {
 
       <Modalize ref={modalizeRef} adjustToContentHeight>
         <View className="p-6">
-          <OTPInputScreen mobile={mobile}/>
+          <OTPInputScreen mobile={mobile} />
         </View>
       </Modalize>
     </KeyboardAvoidingView>

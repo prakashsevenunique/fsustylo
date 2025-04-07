@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text, Image, Dimensions } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
-import Animated, { 
-  useSharedValue, 
-  useAnimatedStyle, 
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
   withSpring,
   useAnimatedReaction,
   runOnJS
@@ -45,11 +45,11 @@ const PaginationItem = ({
   );
 };
 
-const SalonImageCarousel = ({ images }: { images: string[] }) => {
+const SalonImageCarousel = ({ images, home }: any) => {
   const progressValue = useSharedValue(0);
   const currentIndex = useSharedValue(0);
   const [visibleIndex, setVisibleIndex] = React.useState(0);
-  const carouselHeight = 180;
+  const carouselHeight = home ? 140 :180;
 
   // This synchronizes the UI state with the Reanimated value
   useAnimatedReaction(
@@ -76,7 +76,7 @@ const SalonImageCarousel = ({ images }: { images: string[] }) => {
         renderItem={({ item }) => (
           <View className="mx-2">
             <Image
-              source={{ uri: `${imageBaseUrl}/${item}` }}
+              source={{ uri: home ? item : `${imageBaseUrl}/${item}` }}
               className="w-full h-full rounded-xl"
               resizeMode="cover"
             />

@@ -51,10 +51,6 @@ const SalonDetailScreen = () => {
 
         {/* Quick Actions */}
         <View className="flex-row justify-around py-3 border-t border-b border-gray-100">
-          <TouchableOpacity onPress={() => Linking.openURL(`tel:${parsedSalon.mobile}`)} className="items-center">
-            <Ionicons name="call" size={24} color="#E6007E" />
-            <Text className="text-xs mt-1">Call</Text>
-          </TouchableOpacity>
           <TouchableOpacity onPress={() => router.push(`/(app)/salon/${parsedSalon._id}`)} className="items-center">
             <Ionicons name="calendar" size={24} color="#E6007E" />
             <Text className="text-xs mt-1">Book Now</Text>
@@ -86,6 +82,8 @@ const SalonDetailScreen = () => {
                 latitudeDelta: 0.01,
                 longitudeDelta: 0.01,
               }}
+              scrollEnabled={false} 
+              pitchEnabled={false} 
             >
               <Marker
                 coordinate={{
@@ -184,14 +182,14 @@ const SalonDetailScreen = () => {
                 <FontAwesome name="twitter" size={16} color="white" />
               </TouchableOpacity>
             )}
-            {parsedSalon.mobile && (
+            {/* {parsedSalon.mobile && (
               <TouchableOpacity
                 className="bg-green-500 w-10 h-10 rounded-full items-center justify-center"
                 onPress={() => Linking.openURL(`tel:${parsedSalon.mobile}`)}
               >
                 <FontAwesome name="whatsapp" size={16} color="white" />
               </TouchableOpacity>
-            )}
+            )} */}
           </View>
         </View>
       </ScrollView>

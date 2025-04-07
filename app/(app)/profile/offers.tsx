@@ -108,7 +108,6 @@ export default function OffersDealsScreen() {
             <Ionicons onPress={() => router.back()} name="arrow-back" size={25} color="#E6007E" />
             <Text className="text-lg font-bold ml-2">Offers & Deals</Text>
           </View>
-          <MaterialIcons name="search" size={24} color="#E6007E" />
         </View>
       </View>
 

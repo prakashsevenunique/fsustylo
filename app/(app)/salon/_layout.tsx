@@ -1,7 +1,7 @@
 import PolicyScreen from '@/app/(auth)/policy';
 import { Stack } from 'expo-router';
 
-export default function ProfileLayout() {
+export default function SalonLayout() {
   return (
     <Stack>
       <Stack.Screen
@@ -34,6 +34,13 @@ export default function ProfileLayout() {
       />
       <Stack.Screen
         name="details"
+        options={{
+          headerShown: false,
+          presentation: 'modal'
+        }}
+      />
+       <Stack.Screen
+        name="searchSalon"
         options={{
           headerShown: false,
           presentation: 'modal'

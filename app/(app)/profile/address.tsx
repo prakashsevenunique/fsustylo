@@ -1,41 +1,22 @@
-import React, { useRef, useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, TextInput, FlatList, ActivityIndicator } from "react-native";
-import { Modalize } from "react-native-modalize";
-import MapView, { Marker } from "react-native-maps";
+import React, { useRef, useState, useEffect, useContext } from "react";
+import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import * as Location from "expo-location";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { UserContext } from "@/hooks/userInfo";
 
 export default function AddressPicker() {
-    const modalizeRef = useRef<Modalize>(null);
-    const [selectedLocation, setSelectedLocation] = useState(null);
     const [selectedAddress, setSelectedAddress] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
-    const [loading, setLoading] = useState(true);
+    const { location } = useContext(UserContext) as any;
 
     useEffect(() => {
-        getCurrentLocation();
+        fetchAddress();
     }, []);
 
-    const getCurrentLocation = async () => {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-            alert("Permission to access location was denied.");
-            setLoading(false);
-            return;
-        }
-        let userLocation = await Location.getCurrentPositionAsync({});
-        const { latitude, longitude } = userLocation.coords;
-        const locationData = { latitude, longitude, latitudeDelta: 0.01, longitudeDelta: 0.01 };
-        // setCurrentLocation(locationData);
-        setSelectedLocation(locationData);
-        fetchAddress(latitude, longitude);
-        setLoading(false);
-    };
-
-    const fetchAddress = async (latitude:string, longitude:string) => {
+    const fetchAddress = async () => {
         try {
-            let result = await Location.reverseGeocodeAsync({ latitude, longitude });
+            let result = await Location.reverseGeocodeAsync(location);
             if (result.length > 0) {
                 const address = `${result[0].name}, ${result[0].street}, ${result[0].city}, ${result[0].region}, ${result[0].country}`;
                 setSelectedAddress(address);
@@ -81,7 +62,7 @@ export default function AddressPicker() {
                         </Text>
                     </View>
                 </TouchableOpacity>
-
+                {/* 
                 {selectedLocation && (
                     <TouchableOpacity
                     className="flex-row items-center p-3 mt-3 border-b border-gray-300"
@@ -94,7 +75,7 @@ export default function AddressPicker() {
                         </Text>
                     </View>
                 </TouchableOpacity>
-                )}
+                )} */}
             </View>
         </View>
     );

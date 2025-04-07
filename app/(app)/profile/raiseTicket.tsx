@@ -1,130 +1,224 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
+import axios from 'axios';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { useState } from 'react';
+import axiosInstance from '@/utils/axiosInstance';
 import { router } from 'expo-router';
-import { Ionicons, Feather, MaterialIcons } from '@expo/vector-icons';
-import { Menu, Divider } from 'react-native-paper';
-import * as DocumentPicker from 'expo-document-picker';
 
-export default function RaiseTicketScreen() {
-  const { control, handleSubmit, setValue, watch, formState: { errors } } = useForm() as any;
-  const [menuVisible, setMenuVisible] = useState(false);
-  const [attachments, setAttachments] = useState([]);
-  const issueTypes = [
-    'Order Related', 'Payment Issue', 'Product Defect', 'Delivery Problem', 'Account Issue', 'Other'
-  ];
-  
-  const onSubmit = (data) => {
-    Alert.alert('Ticket Submitted', 'Your support ticket has been submitted successfully.');
-    router.back();
-  };
-  
-  const pickDocument = async () => {
-    let result = await DocumentPicker.getDocumentAsync({
-      type: ['image/*', 'application/pdf'],
-      copyToCacheDirectory: false
-    });
-    console.log(result)
-    if (!result.canceled) {
-      if (result.assets[0]?.size > 2 * 1024 * 1024) {
-        Alert.alert('File too large', 'Please select a file smaller than 2MB.');
-      } else {
-        setAttachments([...attachments, result]);
+type FormData = {
+  fullName: string;
+  email: string;
+  mobile: string;
+  message: string;
+};
+
+export default function ContactUs() {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset
+  } = useForm<FormData>({
+    defaultValues: {
+      fullName: '',
+      email: '',
+      mobile: '',
+      message: ''
+    }
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const onSubmit = async (data: FormData) => {
+    setIsSubmitting(true);
+    try {
+      const response = await axiosInstance.post('/api/contact', {
+        fullName: data.fullName,
+        email: data.email,
+        mobile: data.mobile,
+        message: data.message
+      });
+      if (response.status == 201) {
+        Alert.alert('Success', 'Your message has been sent successfully!');
+        reset();
       }
+    } catch (error) {
+      console.error('Contact form error:', error);
+      Alert.alert('Error', 'An error occurred while sending your message');
+    } finally {
+      setIsSubmitting(false);
     }
   };
-  
+
   return (
-    <View className="flex-1 bg-gray-50">
+    <>
       <View className="bg-white px-4 py-4 shadow-md">
         <View className="flex-row gap-2 items-center">
           <Ionicons onPress={() => router.back()} name="arrow-back" size={25} color="#E6007E" />
-          <Text className="text-lg font-bold">Raise a Ticket</Text>
+          <Text className="text-lg font-bold">Contact Us</Text>
         </View>
       </View>
-      <ScrollView className="p-4" contentContainerStyle={{ paddingBottom: 30 }}>
-        <Controller
-          control={control}
-          name="subject"
-          rules={{ required: 'Subject is required' }}
-          render={({ field: { onChange, value } }) => (
-            <View className="mb-4">
-              <Text className="text-gray-700 mb-1 font-medium">Subject</Text>
-              <TextInput
-                value={value}
-                onChangeText={onChange}
-                placeholder="Briefly describe your issue"
-                className={`border ${errors.subject ? 'border-red-500' : 'border-gray-300'} p-3 rounded-lg bg-white`}
-              />
-              {errors.subject && <Text className="text-red-500 text-xs mt-1">{errors.subject.message}</Text>}
-            </View>
-          )}
-        />
-        
+      <ScrollView className="flex-1 bg-gray-50 p-6">
+        <View className="mb-8">
+          <Text className="text-gray-600">
+            Have questions or feedback? Fill out the form below and we'll get back to you soon.
+          </Text>
+        </View>
+
+        {/* Full Name Field */}
         <View className="mb-4">
-          <Text className="text-gray-700 mb-1 font-medium">Issue Type</Text>
-          <Menu
-            visible={menuVisible}
-            onDismiss={() => setMenuVisible(false)}
-            anchor={
-              <TouchableOpacity onPress={() => setMenuVisible(true)} className="border border-gray-300 p-3 rounded-lg bg-white">
-                <Text>{watch('issueType') || 'Select Issue Type'}</Text>
-              </TouchableOpacity>
-            }
-          >
-            {issueTypes.map((type, index) => (
-              <Menu.Item key={index} onPress={() => { setValue('issueType', type); setMenuVisible(false); }} title={type} />
-            ))}
-          </Menu>
-          {errors.issueType && <Text className="text-red-500 text-xs mt-1">{errors.issueType.message}</Text>}
-        </View>
-        
-        <Controller
-          control={control}
-          name="description"
-          rules={{ required: 'Description is required', minLength: { value: 20, message: 'At least 20 characters required' } }}
-          render={({ field: { onChange, value } }) => (
-            <View className="mb-4">
-              <Text className="text-gray-700 mb-1 font-medium">Description</Text>
+          <Text className="text-gray-700 mb-1">Full Name</Text>
+          <Controller
+            control={control}
+            rules={{
+              required: 'Full name is required',
+              minLength: {
+                value: 3,
+                message: 'Name must be at least 3 characters'
+              }
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                value={value}
+                className={`border ${errors.fullName ? 'border-red-500' : 'border-gray-300'} rounded-lg p-3 bg-white`}
+                placeholder="Enter your full name"
+                onBlur={onBlur}
                 onChangeText={onChange}
-                placeholder="Describe your issue in detail"
-                multiline
-                numberOfLines={5}
-                style={{ textAlignVertical: 'top' }}
-                className={`border ${errors.description ? 'border-red-500' : 'border-gray-300'} p-3 rounded-lg bg-white h-32`}
+                value={value}
               />
-              {errors.description && <Text className="text-red-500 text-xs mt-1">{errors.description.message}</Text>}
-            </View>
-          )}
-        />
-        
-        <View className="mb-6">
-          <Text className="text-gray-700 mb-1 font-medium">Attachments (Max: 2MB)</Text>
-          <TouchableOpacity onPress={pickDocument} className="border border-gray-300 border-dashed p-4 rounded-lg items-center">
-            <Feather name="paperclip" size={24} color="#E6007E" />
-            <Text className="text-pink-600 mt-2">Add Screenshots or Files</Text>
-          </TouchableOpacity>
-          {attachments.length > 0 && (
-            <View className="mt-2">
-              {attachments.map((file:any, index) => (
-                <View key={index} className="flex-row items-center bg-gray-100 p-2 rounded mb-1">
-                  <MaterialIcons name="insert-drive-file" size={20} color="#666" />
-                  <Text className="ml-2 text-black flex-1">{file.assets[0]?.name || "file"}</Text>
-                  <TouchableOpacity onPress={() => setAttachments(attachments.filter((_, i) => i !== index))}>
-                    <MaterialIcons name="close" size={20} color="#E6007E" />
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </View>
+            )}
+            name="fullName"
+          />
+          {errors.fullName && (
+            <Text className="text-red-500 text-xs mt-1">{errors.fullName.message}</Text>
           )}
         </View>
-        
-        <TouchableOpacity onPress={handleSubmit(onSubmit)} className="bg-pink-600 p-4 rounded-lg items-center">
-          <Text className="text-white font-bold">Submit Ticket</Text>
+
+        {/* Email Field */}
+        <View className="mb-4">
+          <Text className="text-gray-700 mb-1">Email Address</Text>
+          <Controller
+            control={control}
+            rules={{
+              required: 'Email is required',
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: 'Invalid email address'
+              }
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                className={`border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg p-3 bg-white`}
+                placeholder="Enter your email"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+            name="email"
+          />
+          {errors.email && (
+            <Text className="text-red-500 text-xs mt-1">{errors.email.message}</Text>
+          )}
+        </View>
+
+        {/* Mobile Field */}
+        <View className="mb-4">
+          <Text className="text-gray-700 mb-1">Mobile Number</Text>
+          <Controller
+            control={control}
+            rules={{
+              required: 'Mobile number is required',
+              pattern: {
+                value: /^[0-9]{10}$/,
+                message: 'Invalid mobile number (10 digits required)'
+              }
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                className={`border ${errors.mobile ? 'border-red-500' : 'border-gray-300'} rounded-lg p-3 bg-white`}
+                placeholder="Enter your mobile number"
+                keyboardType="phone-pad"
+                maxLength={10}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+            name="mobile"
+          />
+          {errors.mobile && (
+            <Text className="text-red-500 text-xs mt-1">{errors.mobile.message}</Text>
+          )}
+        </View>
+
+        {/* Message Field */}
+        <View className="mb-6">
+          <Text className="text-gray-700 mb-1">Your Message</Text>
+          <Controller
+            control={control}
+            rules={{
+              required: 'Message is required',
+              minLength: {
+                value: 10,
+                message: 'Message must be at least 10 characters'
+              }
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                className={`border ${errors.message ? 'border-red-500' : 'border-gray-300'} rounded-lg p-3 bg-white h-32`}
+                placeholder="Type your message here..."
+                multiline
+                numberOfLines={4}
+                textAlignVertical="top"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+            name="message"
+          />
+          {errors.message && (
+            <Text className="text-red-500 text-xs mt-1">{errors.message.message}</Text>
+          )}
+        </View>
+
+        {/* Submit Button */}
+        <TouchableOpacity
+          className="bg-pink-600 p-4 rounded-lg items-center"
+          onPress={handleSubmit(onSubmit)}
+          disabled={isSubmitting}
+        >
+          <View className="flex-row items-center">
+            {isSubmitting ? (
+              <MaterialIcons name="hourglass-empty" size={20} color="white" className="mr-2" />
+            ) : (
+              <MaterialIcons name="send" size={20} color="white" className="mr-2" />
+            )}
+            <Text className="text-white font-semibold">
+              {isSubmitting ? 'Sending...' : 'Send Message'}
+            </Text>
+          </View>
         </TouchableOpacity>
+
+        {/* Contact Information */}
+        <View className="pb-14 border-t border-gray-200 pt-6">
+          <Text className="text-lg font-semibold text-gray-800 mb-4">Other Ways to Reach Us</Text>
+
+          <View className="flex-row items-center mb-3">
+            <MaterialIcons name="email" size={20} color="#db2777" style={{ marginRight: 12 }} />
+            <Text className="text-gray-700">info@sustylo.com</Text>
+          </View>
+
+          <View className="flex-row items-center">
+            <MaterialIcons name="phone" size={20} color="#db2777" style={{ marginRight: 12 }} />
+            <Text className="text-gray-700">+91-7297026119</Text>
+          </View>
+        </View>
       </ScrollView>
-    </View>
+    </>
+
   );
 }

@@ -11,7 +11,7 @@ const Header = () => {
     const { userInfo, city } = useContext(UserContext) as any;
 
     return (
-        <View className="absolute top-0 left-0 right-0 bg-white shadow-lg px-4 py-4 z-10">
+        <View className="bg-white shadow-lg px-4 py-4 z-10">
             <View className="flex-row justify-between items-center">
                 {/* User Info and Location */}
                 <TouchableOpacity onPress={() => router.push("/(app)/profile")}>
@@ -19,7 +19,7 @@ const Header = () => {
                         <Ionicons name="location" size={25} color="#E6007E" />
                         <View className="flex-col">
                             <Text className="text-md font-bold ml-1">Hi , {userInfo?.name || "User"}</Text>
-                            <Text style={{ fontSize: 10 }} className="text-gray-600 ml-1">{city && city}</Text>
+                            <Text style={{ fontSize: 10 }} className="text-gray-600 ml-1">{city && city || "fetching.."}</Text>
                         </View>
                     </View>
                 </TouchableOpacity>

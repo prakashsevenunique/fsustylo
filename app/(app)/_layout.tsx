@@ -7,8 +7,8 @@ export default function ProtectedLayout() {
   useEffect(() => {
     async function tokenData() {
       const fetchToken = await AsyncStorage.getItem('userData');
-      if (fetchToken) {
-        router.push("/welcome")
+      if (!fetchToken) {
+        router.replace("/welcome")
       }
     }
     tokenData()
@@ -40,7 +40,11 @@ export default function ProtectedLayout() {
         name="salon"
         options={{ title: 'salon', headerShown: false }}
       />
-     
+
     </Stack>
   );
 }
+
+
+
+

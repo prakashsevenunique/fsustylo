@@ -59,6 +59,20 @@ export default function ProfileLayout() {
           presentation: 'modal'
         }}
       />
+      <Stack.Screen
+        name="helpCenter"
+        options={{
+          headerShown: false,
+          presentation: 'modal'
+        }}
+      />
+       <Stack.Screen
+        name="policies"
+        options={{
+          headerShown: false,
+          presentation: 'modal'
+        }}
+      />
     </Stack>
   );
 }

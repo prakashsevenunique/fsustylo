@@ -1,10 +1,13 @@
-import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, TextInput, FlatList } from 'react-native';
+import { useState, useEffect, useContext } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, FlatList, ActivityIndicator, Alert } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import axios from 'axios';
+import axiosInstance from '@/utils/axiosInstance';
+import { UserContext } from '@/hooks/userInfo';
 
 const CheckoutScreen = () => {
-  const { salonId, salonName, services } = useLocalSearchParams();
+  const { salon, services } = useLocalSearchParams();
   const [selectedServices, setSelectedServices] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
@@ -12,10 +15,17 @@ const CheckoutScreen = () => {
   const [discount, setDiscount] = useState(0);
   const [dates, setDates] = useState([]);
   const [timeSlots, setTimeSlots] = useState([]);
+  const [salonDetail, setSalon] = useState(null)
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [selectedSeat, setSelectedSeat] = useState(null)
+  const { userInfo } = useContext(UserContext);
 
   useEffect(() => {
     if (services) {
       setSelectedServices(JSON.parse(services));
+      setSalon(JSON.parse(salon));
+      console.log(salonDetail)
     }
     const today = new Date();
     const dateArray = [];
@@ -33,40 +43,10 @@ const CheckoutScreen = () => {
         isWeekend: [0, 6].includes(date.getDay())
       });
     }
-
     setDates(dateArray);
-    setSelectedDate(dateArray[0]); // Default to today
   }, []);
 
-  // Generate time slots when date changes
-  useEffect(() => {
-    if (selectedDate) {
-      const slots = [];
-      const openHour = 9; // Salon opens at 9 AM
-      const closeHour = 19; // Salon closes at 7 PM
-
-      for (let hour = openHour; hour < closeHour; hour++) {
-        // Add slots on the hour
-        slots.push({
-          time: `${hour}:00 ${hour < 12 ? 'AM' : 'PM'}`,
-          available: Math.random() > 0.3 // 70% chance available
-        });
-
-        // Add slots on the half hour (except last hour)
-        if (hour < closeHour - 1) {
-          slots.push({
-            time: `${hour}:30 ${hour < 12 ? 'AM' : 'PM'}`,
-            available: Math.random() > 0.3
-          });
-        }
-      }
-
-      setTimeSlots(slots);
-    }
-  }, [selectedDate]);
-
   const handleApplyPromo = () => {
-    // Simple promo code validation
     if (promoCode.toUpperCase() === 'SALON20') {
       setDiscount(0.2); // 20% discount
     } else if (promoCode.toUpperCase() === 'SALON10') {
@@ -92,20 +72,80 @@ const CheckoutScreen = () => {
       alert('Please select date and time');
       return;
     }
+    if (!selectedSeat) {
+      alert('Please select set');
+      return;
+    }
+    const data = {
+      salonId: salonDetail._id,
+      userId: userInfo._id,
+      seatNumber: selectedSeat,
+      services: selectedServices,
+      date: selectedDate.date.toISOString(),
+      timeSlot: selectedTime,
+      total: calculateTotal(),
+      discount: discount * 100
+    }
+    console.log(data)
 
-    router.replace({
-      pathname: '/salon/booking-confirmation',
-      params: {
-        salonId,
-        salonName,
-        services: JSON.stringify(selectedServices),
-        date: selectedDate.date.toISOString(),
-        time: selectedTime,
-        total: calculateTotal(),
-        discount: discount * 100
-      }
-    });
+    createBooking(data)
+
   };
+
+  const createBooking = async (bookingData) => {
+    try {
+      const response = await axiosInstance.post('/api/booking/create',
+        bookingData
+      );
+      if (response.status === 201) {
+        console.log('Booking created successfully:', response.data);
+        router.replace({
+          pathname: '/salon/booking-confirmation',
+          params: {
+            salonId: salonDetail._id,
+            salonName: salonDetail.salonName,
+            services: JSON.stringify(selectedServices),
+            date: selectedDate.date.toISOString(),
+            time: selectedTime,
+            total: calculateTotal(),
+            discount: discount * 100,
+            bookingId: response.data?.bookingId
+          }
+        });
+      }
+    } catch (error) {
+      Alert.alert("Error :", error.message)
+    }
+  };
+
+  async function getSchedule(salonId, date) {
+    setLoading(true);
+    setError(null);
+    console.log(salonId, date.date.toISOString())
+    const url = `/api/schedule/schedule-get?salonId=${"67dbe4a6fbe65a40a1ae3769"}&date=${"2025-04-01"}`;
+    try {
+      const response = await axiosInstance.get(url);
+      console.log(response.data);
+      const transformedSlots = Object.entries(response.data.availableSlots).map(([time, seats]) => {
+        const availableSeats = seats.filter(seat => seat);
+        return {
+          time,
+          seats: availableSeats
+        };
+      });
+      console.log(transformedSlots)
+      setTimeSlots(transformedSlots);
+    } catch (err) {
+      setError('Failed to load schedule');
+      if (error.response) {
+        console.log(`Error: Received status code ${err.response.status}`);
+      } else {
+        console.log(`Error: ${err.response}`);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <View className="flex-1">
@@ -115,17 +155,18 @@ const CheckoutScreen = () => {
         </TouchableOpacity>
         <Text className="ml-4 text-xl font-bold">Checkout</Text>
       </View>
-      <ScrollView className="flex-1 p-4">
-        <View className="bg-white rounded-lg p-4 mb-4 shadow-sm">
-          <Text className="font-bold text-lg mb-1">{salonName}</Text>
-          <View className="flex-row items-center">
+      <ScrollView className="flex-1 p-3">
+        <View className="bg-white rounded-lg p-4 mb-2 shadow-sm">
+          <Text className="font-bold text-lg mb-1">{salonDetail?.salonName}</Text>
+          <Text className="text-sm mb-1">{salonDetail?.salonTitle}</Text>
+          <View className="flex-row text-sm items-center">
             <Ionicons name="star" size={16} color="#FFD700" />
             <Text className="ml-1 text-gray-700">4.5 (312 reviews)</Text>
           </View>
         </View>
 
         {/* Selected Services */}
-        <View className="bg-white rounded-lg p-4 mb-4 shadow-sm">
+        <View className="bg-white rounded-lg p-4 mb-2 shadow-sm">
           <Text className="font-bold text-lg mb-3">Your Services</Text>
           {selectedServices.map((service, index) => (
             <View key={index} className="flex-row justify-between items-center py-2 border-b border-gray-100">
@@ -135,28 +176,52 @@ const CheckoutScreen = () => {
                   {service.duration} • Qty: {service.quantity || 1}
                 </Text>
               </View>
-              <Text className="font-bold">₹{service.price * (service.quantity || 1)}</Text>
+              <View className="items-end">
+                <Text className="font-bold">₹{service.price}</Text>
+                {service.discount > 0 && (
+                  <View className="flex-row items-center">
+                    <Text className="text-gray-500 text-xs line-through mr-1">₹{service.originalPrice}</Text>
+                    <Text className="text-primary text-xs">{service.discount}%</Text>
+                  </View>
+                )}
+              </View>
             </View>
           ))}
         </View>
 
         {/* Date Selection */}
-        <View className="bg-white rounded-lg p-4 mb-4 shadow-sm">
+        <View className="bg-white rounded-lg p-4 mb-2 shadow-sm">
           <Text className="font-bold text-lg mb-3">Select Date</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-3">
             {dates.map((date, index) => (
               <TouchableOpacity
                 key={index}
-                className={`w-16 h-20 mr-3 items-center justify-center rounded-lg ${selectedDate?.date.getDate() === date.date.getDate() ? 'bg-gray-500' : date.isWeekend ? 'bg-yellow-50' : 'bg-gray-100'}`}
-                onPress={() => setSelectedDate(date)}
+                className={`w-16 h-20 mr-3 items-center justify-center rounded-lg ${selectedDate?.date.getDate() === date.date.getDate()
+                  ? 'bg-gray-500'
+                  : date.isWeekend
+                    ? 'bg-yellow-50'
+                    : 'bg-gray-100'
+                  }`}
+                onPress={() => { getSchedule(salonDetail._id, date); setSelectedDate(date); setSelectedTime(null) }}
               >
-                <Text className={`text-xs ${selectedDate?.date.getDate() === date.date.getDate() ? 'text-white' : 'text-gray-500'}`}>
+                <Text className={`text-xs ${selectedDate?.date.getDate() === date.date.getDate()
+                  ? 'text-white'
+                  : 'text-gray-500'
+                  }`}>
                   {date.month}
                 </Text>
-                <Text className={`text-xl font-bold ${selectedDate?.date.getDate() === date.date.getDate() ? 'text-white' : 'text-gray-800'}`}>
+                <Text className={`text-xl font-bold ${selectedDate?.date.getDate() === date.date.getDate()
+                  ? 'text-white'
+                  : 'text-gray-800'
+                  }`}>
                   {date.day}
                 </Text>
-                <Text className={`text-xs ${selectedDate?.date.getDate() === date.date.getDate() ? 'text-white' : date.isWeekend ? 'text-yellow-600' : 'text-gray-500'}`}>
+                <Text className={`text-xs ${selectedDate?.date.getDate() === date.date.getDate()
+                  ? 'text-white'
+                  : date.isWeekend
+                    ? 'text-yellow-600'
+                    : 'text-gray-500'
+                  }`}>
                   {date.weekday}
                 </Text>
               </TouchableOpacity>
@@ -164,28 +229,60 @@ const CheckoutScreen = () => {
           </ScrollView>
 
           {/* Time Selection */}
-          <Text className="font-bold text-lg mb-3">Select Time</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-3">
-            {timeSlots.map((slot, index) => (
-              <TouchableOpacity
-                key={index}
-                className={`p-3 mr-1 items-center rounded-lg ${!slot.available ? 'bg-gray-100' : selectedTime === slot.time ? 'bg-gray-500' : 'bg-white border border-gray-200'}`}
-                onPress={() => slot.available && setSelectedTime(slot.time)}
-                disabled={!slot.available}
-              >
-                <Text className={`${!slot.available ? 'text-sm text-gray-400' : selectedTime === slot.time ? 'text-white' : 'text-gray-800'}`}>
-                  {slot.time}
-                </Text>
-                {!slot.available && (
-                  <Text className="text-[10px] text-gray-500 mt-1">Booked</Text>
-                )}
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+
+          {loading ? (
+            <ActivityIndicator size="small" color="#E6007E" className="py-4" />
+          ) : error ? (
+            <Text className="text-red-500 text-sm py-2">{error}</Text>
+          ) : (
+            <>
+              <Text className="font-bold text-lg mb-2">Select Time</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-3">
+                {timeSlots.map((slot, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    className={`p-3 mr-1 items-center rounded-lg ${selectedTime === slot.time
+                      ? 'bg-gray-500'
+                      : 'bg-white border border-gray-200'
+                      }`}
+                    onPress={() => { setSelectedTime(slot.time); setSelectedSeat(null); }}
+                  >
+                    <Text className={`text-sm text-gray-400 ${selectedTime === slot.time ? 'text-white' : 'text-gray-800'}`}>
+                      {slot.time}
+                    </Text>
+
+
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+              {selectedTime && (
+                <View className="mt-4">
+                  <Text className="font-bold text-lg mb-2">Select Seat</Text>
+                  <View className="flex-row flex-wrap">
+                    {timeSlots
+                      .find(slot => slot.time === selectedTime)
+                      ?.seats.map(seat => (
+                        <TouchableOpacity
+                          key={seat.seatNumber}
+                          className={`w-12 h-12 m-1 items-center justify-center ${selectedSeat === seat.seatNumber ? 'bg-gray-500' : ''} rounded-lg ${seat.status === 'available'
+                            ? selectedSeat === seat.seatNumber ? 'bg-gray-500' : 'bg-gray-300'
+                            : 'bg-gray-100' // Disabled if not available
+                            }`}
+                          onPress={() => seat.status === 'available' && setSelectedSeat(seat.seatNumber)}
+                          disabled={seat.status !== 'available'} // Disable the touch if not available
+                        >
+                          <Text className={`${selectedSeat === seat.seatNumber ? 'bg-gray-500 text-gray-100' : 'bg-gray-300'}`}>{seat.seatNumber}</Text>
+                        </TouchableOpacity>
+                      ))}
+                  </View>
+                </View>
+              )}
+            </>
+          )}
         </View>
 
         {/* Promo Code */}
-        <View className="bg-white rounded-lg p-4 mb-4 shadow-sm">
+        <View className="bg-white rounded-lg p-4 mb-2 shadow-sm">
           <Text className="font-bold text-lg mb-3">Promo Code</Text>
           <View className="flex-row">
             <TextInput
@@ -221,19 +318,28 @@ const CheckoutScreen = () => {
               <Text className="text-green-600">-₹{calculateSubtotal() * discount}</Text>
             </View>
           )}
+
           <View className="flex-row justify-between py-2 border-t border-gray-200 mt-2">
             <Text className="font-bold">Total</Text>
             <Text className="font-bold text-lg">₹{calculateTotal()}</Text>
+          </View>
+          <View className="flex-row justify-between py-2 border-t border-gray-200 mt-2">
+            <Text className="font-bold">Wallet Balance</Text>
+            <Text className="font-bold text-lg"> ₹{userInfo?.wallet?.balance}</Text>
           </View>
         </View>
       </ScrollView>
 
       {/* Continue Button */}
       <TouchableOpacity
-        className="mx-4 my-2 bg-gray-700 py-4 rounded-lg items-center shadow-md"
+        className={`mx-4 my-2 py-4 rounded-lg items-center shadow-md ${userInfo?.wallet?.balance < calculateTotal() ? 'bg-gray-500' : 'bg-gray-700'
+          }`}
         onPress={handleConfirmBooking}
+        disabled={userInfo?.wallet?.balance < calculateTotal()} // Disable the button if wallet balance is less than order price
       >
-        <Text className="text-white font-bold text-lg">Confirm Booking</Text>
+        <Text className="text-white font-bold text-lg">
+          {userInfo?.wallet?.balance < calculateTotal() ? 'Insufficient Balance' : 'Confirm Booking'}
+        </Text>
       </TouchableOpacity>
     </View>
   );

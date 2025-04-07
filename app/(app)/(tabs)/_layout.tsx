@@ -132,33 +132,6 @@ export default function TabLayout() {
             )
           }}
         />
-
-        {/* Settings */}
-        <Tabs.Screen
-          name="shop"
-          options={{
-            title: 'Shop',
-            tabBarIcon: ({ color, focused }) => (
-              <Ionicons
-                name={focused ? 'cart' : 'cart-outline'}
-                color={color}
-                size={focused ? 23 : 21}
-              />
-            ),
-            tabBarLabel: ({ focused }) => (
-              <Text
-                style={{
-                  fontSize: focused ? 11 : 11, // Scale label size when focused
-                  fontWeight: focused ? 'bold' : '500',
-                  color: focused ? '#000' : '#888',
-                  transform: [{ scale: focused ? 1.1 : 1 }],
-                }}
-              >
-                Shop
-              </Text>
-            )
-          }}
-        />
       </Tabs>
     </>
   );
@@ -188,21 +161,21 @@ const styles = StyleSheet.create({
 
   /** Tab Styles **/
   tabBar: {
-    height: Platform.OS === 'ios' ? 60 : 55,
+    height: Platform.OS === 'ios' ? 60 : 58,
     paddingBottom: Platform.OS === 'ios' ? 0 : 0,
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 0,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
     position: 'absolute',
     overflow: 'hidden',
     elevation: 1,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 5,
   },
   tabLabel: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: '500',
     marginTop: -1,
     color: '#000',

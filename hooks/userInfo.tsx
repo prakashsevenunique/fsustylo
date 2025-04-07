@@ -40,8 +40,7 @@ export const UserProvider = ({ children }: any) => {
             let result = await Location.reverseGeocodeAsync(location) as any;
             if (result.length > 0) {
                 const address = `${result[0].name}, ${result[0].street}, ${result[0].city}, ${result[0].region}, ${result[0].country}`;
-                console.log(address)
-                setCity(result[0].city)
+                setCity(`${result[0].city},${result[0].region}`)
             }
         } catch (error) {
             console.error("Error fetching address:", error);
@@ -74,6 +73,7 @@ export const UserProvider = ({ children }: any) => {
             const response = await axiosInstance.get('/api/user/user-info', config);
             setUserInfo(response.data?.user);
         } catch (error: any) {
+            console.log(error)
             Alert.alert(error.response?.data?.message);
             if (error.response) {
                 if (error.response.status === 401) {

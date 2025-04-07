@@ -12,7 +12,7 @@ export default function AtSalon() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchScreen, setShowSearchScreen] = useState(false);
   const { userInfo, city } = useContext(UserContext) as any;
-  let [gender, setGender] = useState();
+  let [selectedGender, setSelectedGender] = useState('');
 
   // Sample salon data
   const nearbySalons = [
@@ -24,9 +24,6 @@ export default function AtSalon() {
   const handleSearch = () => {
     setShowSearchScreen(true);
   };
-  const toggleGender = (i) => {
-    setGender(i)
-  }
 
   if (showSearchScreen) {
     return (
@@ -143,21 +140,23 @@ export default function AtSalon() {
       </View>
       <TouchableOpacity
         className="mx-4 mt-3 bg-gray-100 rounded-lg px-4 py-3 flex-row items-center"
-        onPress={handleSearch}
+        onPress={()=>router.push("/salon/searchSalon")}
       >
         <FontAwesome name="search" size={18} color="gray" />
-        <Text className="ml-2 text-gray-500">Search for the Style you want</Text>
+        <Text className="ml-2 py-1 text-gray-500">Search for the Style you want</Text>
       </TouchableOpacity>
 
-      <View className="flex-row justify-center my-2 mt-3">
-        <View className="bg-gray-100 rounded-full p-1 flex-row">
-          {['All', 'Male', 'Female'].map((item) => (
-            <TouchableOpacity onPress={(item) => toggleGender(item)}
-              key={item}
-              className={`px-6 py-2 rounded-full ${gender === item ? 'bg-pink-500 shadow-md' : ''}`}
+      <View className="px-4 py-1 flex-row items-center justify-between mb-2 my-2">
+        <Text className="mr-3 text-gray-700">Filter by:</Text>
+        <View className="flex-row bg-gray-200 rounded-full p-1">
+          {['male', 'female'].map((gender) => (
+            <TouchableOpacity
+              key={gender}
+              className={`px-4 py-1 rounded-full ${selectedGender === gender ? 'bg-gray-800' : 'bg-gray-300'}`}
+              onPress={() => setSelectedGender(gender)}
             >
-              <Text className={`font-semibold ${gender === item ? 'text-white' : 'text-gray-700'}`}>
-                {item}
+              <Text className={selectedGender === gender ? 'text-white font-bold' : 'text-gray-600'}>
+                {gender === 'male' ? 'Men' : 'Women'}
               </Text>
             </TouchableOpacity>
           ))}
