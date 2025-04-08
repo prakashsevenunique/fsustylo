@@ -2,10 +2,12 @@ import { View, Text, ScrollView, TextInput, TouchableOpacity, FlatList, Modal, I
 import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
-import axios from 'axios';
+import axiosInstance from '@/utils/axiosInstance';
+import { imageBaseUrl } from '@/utils/helpingData';
+import { StatusBar } from 'expo-status-bar';
 
 // Mock API endpoint - replace with your actual API endpoint
-const API_ENDPOINT = 'https://api.sustylo.com/salons/search';
+const API_ENDPOINT = '/api/salon/mostreview';
 
 const recentSearches = ["Hair salon", "Beauty parlour", "Nail art", "Spa center"];
 const popularSearches = ["Salon near me", "Hair coloring", "Bridal makeup", "Men's haircut"];
@@ -70,7 +72,7 @@ export default function SearchPage() {
             const queryParams = buildQueryParams();
             const url = `${API_ENDPOINT}?${queryParams}`;
 
-            const response = await axios.get(url);
+            const response = await axiosInstance.get(url);
             setSearchResults(response.data.salons);
         } catch (err) {
             setError(err.message);
@@ -103,6 +105,7 @@ export default function SearchPage() {
 
     return (
         <View className="flex-1 bg-white">
+            
             {/* Search Header */}
             <View className="flex-row items-center p-4 border-b border-gray-100">
                 <TouchableOpacity onPress={() => router.back()}>
@@ -129,9 +132,9 @@ export default function SearchPage() {
                 >
                     {/* Main Filters Button */}
                     <TouchableOpacity
-                        className={`h-8 px-4 rounded-full mr-2 flex-row items-center justify-center ${Object.values(selectedFilters).some(f => f)
-                                ? 'bg-pink-100 border border-pink-200'
-                                : 'bg-gray-100'
+                        className={`py-3 px-4 rounded-full mr-2 flex-row items-center justify-center ${Object.values(selectedFilters).some(f => f)
+                            ? 'bg-pink-100 border border-pink-200'
+                            : 'bg-gray-100'
                             }`}
                         onPress={() => setShowFilters(true)}
                     >
@@ -141,8 +144,8 @@ export default function SearchPage() {
                             color={Object.values(selectedFilters).some(f => f) ? "#E6007E" : "#6B7280"}
                         />
                         <Text className={`ml-1 ${Object.values(selectedFilters).some(f => f)
-                                ? 'text-pink-600 font-medium'
-                                : 'text-gray-600'
+                            ? 'text-pink-600 font-medium'
+                            : 'text-gray-600'
                             }`}>
                             Filters
                             {Object.values(selectedFilters).filter(f => f).length > 0 &&
@@ -231,33 +234,43 @@ export default function SearchPage() {
             ) : (
                 <FlatList
                     data={searchResults}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={(item) => item._id}
                     contentContainerStyle={{ padding: 16 }}
                     renderItem={({ item }) => (
                         <TouchableOpacity
                             className="flex-row items-center py-4 border-b border-gray-100"
                             onPress={() => router.push({
-                                pathname: '/salon',
+                                pathname: '/(app)/salon/details',
                                 params: { salon: JSON.stringify(item) }
                             })}
                         >
                             <Image
-                                source={{ uri: item.image }}
-                                className="w-20 h-20 rounded-lg"
+                                source={{ uri: `${imageBaseUrl}/${item?.salonPhotos[0]}` }}
+                                className="w-28 h-28 rounded-lg"
                                 defaultSource={require('@/assets/img/logo.png')}
                             />
                             <View className="ml-4 flex-1">
-                                <Text className="font-bold text-lg">{item.name}</Text>
+                                <Text className="font-bold text-lg">{item.salonName}</Text>
+                                <Text className="">{item.salonTitle}</Text>
+                                <Text className="">{item.salonAddress}</Text>
+
                                 <View className="flex-row items-center mt-1">
                                     <FontAwesome name="map-marker" size={12} color="gray" />
                                     <Text className="text-gray-500 text-xs ml-1">{item.distance} km</Text>
                                     <FontAwesome name="star" size={12} color="gold" className="ml-2" />
-                                    <Text className="text-gray-500 text-xs ml-1">{item.rating}</Text>
+                                    <Text className="text-gray-500 text-xs ml-1">{item.rating || 'New'}</Text>
                                 </View>
-                                <Text className="text-gray-700 mt-1">₹{item.min_price} - ₹{item.max_price}</Text>
-                                <Text className="text-gray-500 text-xs mt-1">
-                                    {item.gender === 'all' ? 'For All' : `For ${item.gender}`}
-                                </Text>
+                                <View className="flex-1 flex-row mt-1">
+                                    {["All","Mens","Womens"].map((item)=>
+                                    <TouchableOpacity
+                                        className="bg-gray-100 rounded-full px-4 py-1 mr-2 mb-2"
+                                        style={{ alignSelf: 'flex-start' }} // This will limit the button to fit its content
+                                    >
+                                        <Text className="text-gray-800">{item}</Text>
+                                    </TouchableOpacity>
+                                    )}
+                                    
+                                </View>
                             </View>
                             <Ionicons name="chevron-forward" size={20} color="gray" />
                         </TouchableOpacity>

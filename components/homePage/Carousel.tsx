@@ -14,7 +14,7 @@ const { width: screenWidth } = Dimensions.get('window');
 
 const PaginationItem = ({
   active,
-  activeWidth = 16,
+  activeWidth = 14,
   inactiveWidth = 8
 }: {
   active: boolean;
@@ -49,7 +49,7 @@ const SalonImageCarousel = ({ images, home }: any) => {
   const progressValue = useSharedValue(0);
   const currentIndex = useSharedValue(0);
   const [visibleIndex, setVisibleIndex] = React.useState(0);
-  const carouselHeight = home ? 140 :180;
+  const carouselHeight = home ? 150 :180;
 
   // This synchronizes the UI state with the Reanimated value
   useAnimatedReaction(

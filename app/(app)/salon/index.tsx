@@ -1,92 +1,143 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, Image, FlatList, TouchableOpacity, SafeAreaView, TextInput } from 'react-native';
+import { View, Text, Image, FlatList, TouchableOpacity, SafeAreaView, TextInput, ScrollView, RefreshControl, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import axiosInstance from '@/utils/axiosInstance';
 import { UserContext } from '@/hooks/userInfo';
 import { imageBaseUrl } from '@/utils/helpingData';
 import { Card, ActivityIndicator } from 'react-native-paper';
-import { router } from 'expo-router';
-
+import { router, useLocalSearchParams } from 'expo-router';
 
 export default function SalonListScreen() {
     const [salonData, setSalonData] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const { location } = useContext(UserContext) as any;
     const [loading, setLoading] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
+     const { type } = useLocalSearchParams();
+    
 
     const SkeletonLoader = () => (
         <View className='flex items-center justify-center py-32'>
-            <ActivityIndicator animating={true} size="large" />
+            <ActivityIndicator animating={true} size="large" color="#E6007E" />
+        </View>
+    );
+
+    const NoResultsFound = () => (
+        <View className="flex-1 items-center justify-center py-20 px-10">
+            <Ionicons name="cut" size={60} color="#E6007E" style={{ opacity: 0.5 }} />
+            <Text className="text-xl font-bold text-gray-600 mt-4">No Salons Found</Text>
+            <Text className="text-gray-500 text-center mt-2">
+                {location.latitude ? 
+                    "We couldn't find any salons near your location. Try adjusting your search or check back later." : 
+                    "Please enable location services to find nearby salons."
+                }
+            </Text>
+            <TouchableOpacity 
+                className="bg-pink-100 rounded-full px-6 py-3 mt-6"
+                onPress={getNearbySalons}
+            >
+                <Text className="text-pink-600 font-medium">Try Again</Text>
+            </TouchableOpacity>
         </View>
     );
 
     const getNearbySalons = async () => {
-        setLoading(true)
+        setRefreshing(true);
+        setLoading(true);
         try {
-            const response = await axiosInstance.get('/api/salon/nearby', {
+            const response = await axiosInstance.get(`/api/salon/${type}`, {
                 params: { ...location }
             });
-            setSalonData(response.data?.salons)
+            setSalonData(response.data?.salons || []);
         } catch (error) {
-            console.error('Error fetching nearby salons:', error);
+            setSalonData([]);
+            Alert.alert('Error fetching nearby salons:', error.message);
         } finally {
-            setLoading(false)
+            setLoading(false);
+            setRefreshing(false);
         }
     };
 
     useEffect(() => {
         if (location.latitude) {
-            getNearbySalons()
+            getNearbySalons();
         }
-    }, [location.latitude, location.longitude])
-
+    }, [location.latitude, location.longitude]);
 
     const renderSalonItem = ({ item }: any) => (
-        <TouchableOpacity onPress={() => router.push(`/salon/${item._id}`)}
-            className="bg-white rounded-lg shadow-md mb-2 mx-4 overflow-hidden"
+        <TouchableOpacity 
+            onPress={() => router.push(`/salon/${item._id}`)}
+            className="bg-white rounded-lg shadow-sm mb-3 mx-4 overflow-hidden"
+            style={{
+                elevation: 2,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.1,
+                shadowRadius: 3,
+            }}
         >
-            <View className="flex-row">
+            <View className="flex-row h-32">
                 <Image
-                    source={{ uri: `${imageBaseUrl}/${item?.salonPhotos[0]}` }}
+                    source={{ 
+                        uri: `${imageBaseUrl}/${item?.salonPhotos[0]}`,
+                        cache: 'force-cache'
+                    }}
                     className="w-32 h-full rounded-l-lg"
                     resizeMode="cover"
+                    defaultSource={require('@/assets/img/logo.png')}
                 />
                 <View className="flex-1 p-3">
                     <View className="flex-row justify-between items-start">
-                        <View>
-                            <Text className="text-md font-bold text-gray-800">{item?.salonName}</Text>
-                            <Text style={{ fontSize: 12 }} className="text-gray-800">{item?.salonTitle}</Text>
+                        <View className="flex-1">
+                            <Text className="text-md font-bold text-gray-800" numberOfLines={1}>
+                                {item?.salonName?.toUpperCase()}
+                            </Text>
+                            <Text className="text-gray-500 text-xs mt-1" numberOfLines={1}>
+                                {item?.salonTitle}
+                            </Text>
                         </View>
-                        <TouchableOpacity onPress={() => null}>
+                        {/* <TouchableOpacity onPress={() => null}>
                             <Ionicons
                                 name={item?.isFavorite ? "heart" : "heart-outline"}
                                 size={24}
-                                color={item?.isFavorite ? "red" : "gray"}
+                                color={item?.isFavorite ? "#E6007E" : "#9CA3AF"}
                             />
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
 
-                    <View className="flex-row items-center mt-1">
+                    <View className="flex-row items-center mt-2">
                         <Ionicons name="star" size={16} color="#f59e0b" />
-                        <Text className="text-amber-500 ml-1">{item?.rating || 5}</Text>
-                        <Text className="text-gray-500 ml-2">•</Text>
-                        <Text className="text-gray-500 ml-2">{(item.distance || 0 * 100).toFixed(2)} km</Text>
+                        <Text className="text-amber-500 text-sm ml-1">{item?.rating || 'New'}</Text>
+                        <Text className="text-gray-400 mx-2">•</Text>
+                        <Ionicons name="location-outline" size={14} color="#9CA3AF" />
+                        <Text className="text-gray-500 text-sm ml-1">
+                            {(item.distance * 100).toFixed(1)} km
+                        </Text>
                     </View>
 
-                    <Text className="text-gray-600 mt-1 text-sm">{item?.salonAddress}</Text>
+                    <Text className="text-gray-500 text-xs mt-2" numberOfLines={1}>
+                        {item?.salonAddress}
+                    </Text>
 
-                    <View className="flex-row flex-wrap mt-2">
-                        {item.services.slice(0, 3).map((service: any, index: Number) => (
-                            <View key={index} className="bg-pink-100 rounded-full px-2 py-1 mr-2 mb-1">
-                                <Text className="text-pink-600 text-xs">{service?.category || "non"}</Text>
+                    {/* <View className="flex-row flex-wrap mt-2">
+                        {item.services?.slice(0, 3).map((service: any, index: number) => (
+                            <View 
+                                key={`${item._id}-${index}`} 
+                                className="bg-pink-50 rounded-full px-2 py-1 mr-1 mb-1"
+                            >
+                                <Text className="text-pink-600 text-xs">
+                                    {service?.category || "Service"}
+                                </Text>
                             </View>
                         ))}
                         {item.services?.length > 3 && (
                             <View className="bg-gray-100 rounded-full px-2 py-1">
-                                <Text className="text-gray-600 text-xs">+{item.services?.length - 3}</Text>
+                                <Text className="text-gray-600 text-xs">
+                                    +{item.services.length - 3}
+                                </Text>
                             </View>
                         )}
-                    </View>
+                    </View> */}
                 </View>
             </View>
         </TouchableOpacity>
@@ -94,50 +145,56 @@ export default function SalonListScreen() {
 
     return (
         <SafeAreaView className="flex-1 bg-gray-50">
-            <View className="bg-white px-4 py-3 flex-row items-center shadow-sm gap-2">
+            {/* Header */}
+            <View className="bg-white px-4 py-3 flex-row items-center shadow-sm">
                 <TouchableOpacity onPress={() => router.back()}>
                     <Ionicons name="arrow-back" size={24} color="#E6007E" />
                 </TouchableOpacity>
-                <Text className="text-2xl font-bold text-gray-900">Nearby Salons</Text>
+                <Text className="text-xl font-bold text-gray-900 ml-4">{type== "nearby"? "Nearby":"Most Reviewed"} Salons</Text>
             </View>
 
-            {/* Search Bar */}
-            <View className="px-4 py-3 bg-white">
-                <View className="flex-row items-center bg-gray-100 rounded-lg px-3 py-1">
-                    <Ionicons name="search" size={20} color="gray" />
+            {/* Search and Filters */}
+            <View className="bg-white px-4 pt-3 pb-2 shadow-sm">
+                <View className="flex-row items-center bg-gray-50 rounded-lg px-4 py-2 border border-gray-200">
+                    <Ionicons name="search" size={18} color="#9CA3AF" />
                     <TextInput
                         placeholder="Search salons..."
-                        className="flex-1 ml-2 text-gray-700"
+                        placeholderTextColor="#9CA3AF"
+                        className="flex-1 ml-2 text-gray-800"
                         value={searchQuery}
                         onChangeText={setSearchQuery}
+                        onFocus={() => router.push('/salon/searchSalon')}
                     />
+                    {searchQuery && (
+                        <TouchableOpacity onPress={() => setSearchQuery('')}>
+                            <Ionicons name="close-circle" size={18} color="#9CA3AF" />
+                        </TouchableOpacity>
+                    )}
                 </View>
             </View>
 
-            {/* Filter Options */}
-            <View className="flex-row px-4 py-2 bg-white">
-                <TouchableOpacity className="bg-pink-100 rounded-full px-3 py-1 mr-2">
-                    <Text className="text-pink-600 text-sm">All</Text>
-                </TouchableOpacity>
-                <TouchableOpacity className="bg-gray-100 rounded-full px-3 py-1 mr-2">
-                    <Text className="text-gray-600 text-sm">Hair</Text>
-                </TouchableOpacity>
-                <TouchableOpacity className="bg-gray-100 rounded-full px-3 py-1 mr-2">
-                    <Text className="text-gray-600 text-sm">Nails</Text>
-                </TouchableOpacity>
-                <TouchableOpacity className="bg-gray-100 rounded-full px-3 py-1">
-                    <Text className="text-gray-600 text-sm">Spa</Text>
-                </TouchableOpacity>
-            </View>
-            {loading ?
-                <SkeletonLoader /> :
+            {/* Salon List */}
+            {loading ? (
+                <SkeletonLoader />
+            ) : salonData.length > 0 ? (
                 <FlatList
                     data={salonData}
                     renderItem={renderSalonItem}
                     keyExtractor={item => item._id}
-                    contentContainerStyle={{ paddingVertical: 8 }}
+                    contentContainerStyle={{ paddingVertical: 12 }}
                     showsVerticalScrollIndicator={false}
-                />}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={getNearbySalons}
+                            colors={["#E6007E"]}
+                            tintColor="#E6007E"
+                        />
+                    }
+                />
+            ) : (
+                <NoResultsFound />
+            )}
         </SafeAreaView>
     );
 }
