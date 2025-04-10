@@ -6,7 +6,7 @@ export default function AboutUs() {
     {
       title: "Instant Bookings",
       description: "Seamless salon appointments in just a few taps",
-      icon: "clockcircleo",
+      icon: "clock-o",
       iconType: FontAwesome
     },
     {
@@ -18,7 +18,7 @@ export default function AboutUs() {
     {
       title: "Real-time Availability",
       description: "Zero-wait convenience at your fingertips",
-      icon: "circlecheck",
+      icon: "calendar-times-o",
       iconType: FontAwesome
     },
     {

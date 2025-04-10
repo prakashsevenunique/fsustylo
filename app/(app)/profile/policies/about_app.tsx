@@ -106,25 +106,24 @@ export default function AboutApp() {
                     To provide the best experience, we may request certain device permissions.
                     These are used solely for app functionality and your benefit.
                 </Text>
-
                 {permissions.map((perm, index) => (
-                    <View key={index} className="mb-3 bg-white p-3 rounded-lg shadow-sm">
-                        <View className="flex-row items-start mb-2">
+                    <View key={index} style={{ flex: 1, marginBottom: 12, backgroundColor: 'white', padding: 12, borderRadius: 8, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 3, shadowOffset: { width: 0, height: 1 } }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
                             <MaterialIcons name={perm.icon} size={24} color="#db2777" style={{ marginRight: 12 }} />
-                            <View className="flex-1">
-                                <Text className="font-semibold text-gray-800">{perm.title}</Text>
-                                <Text className="text-gray-500 text-xs">{perm.types}</Text>
+                            <View style={{ flex: 1 }}>
+                                <Text style={{ fontWeight: '600', color: '#4b5563', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{perm.title}</Text>
+                                <Text style={{ color: '#6b7280', fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{perm.types}</Text>
                             </View>
                         </View>
 
-                        <View className="ml-9">
-                            <View className="flex-row">
-                                <Text className="font-medium text-gray-700 mr-1">Purpose:</Text>
-                                <Text className="text-gray-600">{perm.purpose}</Text>
+                        <View style={{ marginLeft: 36 }}>
+                            <View>
+                                <Text style={{ fontWeight: '500', color: '#374151', marginRight: 4 }}>Purpose:</Text>
+                                <Text style={{ color: '#4b5563', flexWrap: 'wrap' }}>{perm.purpose}</Text>
                             </View>
-                            <View className="flex-row mt-1">
-                                <Text className="font-medium text-gray-700 mr-1">Usage:</Text>
-                                <Text className="text-gray-600">{perm.usage}</Text>
+                            <View>
+                                <Text style={{ fontWeight: '500', color: '#374151', marginRight: 4 }}>Usage:</Text>
+                                <Text style={{ color: '#4b5563', flexWrap: 'wrap' }}>{perm.usage}</Text>
                             </View>
                         </View>
                     </View>
@@ -138,27 +137,6 @@ export default function AboutApp() {
                     </Text>
                 </View>
             </View>
-
-            {/* Footer Links */}
-            {/* <View className="flex-row justify-between mb-6">
-                <TouchableOpacity
-                    onPress={openPrivacyPolicy}
-                    className="flex-row items-center bg-pink-50 px-4 py-2 rounded-full"
-                >
-                    <Ionicons name="document-text" size={16} color="#db2777" style={{ marginRight: 6 }} />
-                    <Text className="text-pink-600">Privacy Policy</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    onPress={contactSupport}
-                    className="flex-row items-center bg-pink-50 px-4 py-2 rounded-full"
-                >
-                    <MaterialIcons name="support-agent" size={16} color="#db2777" style={{ marginRight: 6 }} />
-                    <Text className="text-pink-600">Contact Support</Text>
-                </TouchableOpacity>
-            </View> */}
-
-            {/* Copyright */}
             <View className="items-center mb-12">
                 <Text className="text-gray-500 text-sm">© 2025 SuStylo. All rights reserved.</Text>
             </View>

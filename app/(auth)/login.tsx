@@ -1,15 +1,17 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Image, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Image, Alert, Modal, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { Modalize } from 'react-native-modalize';
 import OTPInputScreen from './../../components/otpscreen/otpScreen';
 import { Ionicons } from '@expo/vector-icons';
 import axiosInstance from '@/utils/axiosInstance';
 
+
 export default function LoginScreen() {
   const [mobile, setMobile] = useState('');
   const [loading, setLoading] = useState(false);
-
+  const [existing, setExisting] = useState(false);
+  const [isAddMoneyModalVisible, setIsAddMoneyModalVisible] = useState(false);
   const modalizeRef = useRef<any>(null);
 
   async function sendOtp(mobileNumber: string) {
@@ -18,9 +20,12 @@ export default function LoginScreen() {
       const response = await axiosInstance.post('/api/user/send-otp', {
         mobileNumber: mobileNumber
       });
-      if(response){
-        modalizeRef.current?.open();
-        console.log('OTP sent successfully:', response.data);
+      if (response) {
+        setIsAddMoneyModalVisible(true)
+        if (response.data?.existing) {
+          setExisting(true)
+        }
+        console.log(response?.data || "success");
       }
     } catch (error: any) {
       console.error('Error sending OTP:', error);
@@ -89,12 +94,26 @@ export default function LoginScreen() {
           </View>
         </View>
       }
-
-      <Modalize ref={modalizeRef} adjustToContentHeight>
-        <View className="p-6">
-          <OTPInputScreen mobile={mobile} />
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isAddMoneyModalVisible}
+        onRequestClose={() => setIsAddMoneyModalVisible(false)}
+      >
+        <View className="flex-1 bg-black bg-opacity-50 justify-end">
+          <View className="bg-white rounded-t-3xl p-6 min-h-[80%]">
+            <View className="flex-row justify-between items-center mb-6">
+              <Text className="text-2xl font-bold text-gray-800">Verify OTP</Text>
+              <TouchableOpacity onPress={() => setIsAddMoneyModalVisible(false)}>
+                <Ionicons name="close" size={26} color="#6B7280" />
+              </TouchableOpacity>
+            </View>
+            <ScrollView className="p-2">
+              <OTPInputScreen mobile={mobile} userExists={existing} />
+            </ScrollView>
+          </View>
         </View>
-      </Modalize>
+      </Modal>
     </KeyboardAvoidingView>
   );
 }

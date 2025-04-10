@@ -13,6 +13,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <PaperProvider>
         <UserProvider>
+          
           <StatusBar
             style="auto"
             backgroundColor={colorScheme == 'dark' ? "black" : "white"}

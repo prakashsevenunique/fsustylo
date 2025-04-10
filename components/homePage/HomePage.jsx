@@ -48,7 +48,7 @@ const faqs = [
 ];
 
 export default function HomeScreen() {
-  const { location } = useContext(UserContext);
+  const { location,fetchUserInfo } = useContext(UserContext);
   const [nearbySalon, setNearbySalon] = useState([])
   const [mostReviewed, setMostReviewed] = useState([])
   const [loading, setLoading] = useState(true)
@@ -59,6 +59,7 @@ export default function HomeScreen() {
     if (location.latitude) {
       await getNearbySalons()
       await getMostReviewed()
+      fetchUserInfo()
     }
     setRefreshing(false);
   };
@@ -71,7 +72,6 @@ export default function HomeScreen() {
       setNearbySalon(response.data?.salons)
     } catch (error) {
       setNearbySalon([])
-      // Alert.alert('Error fetching nearby salons:', error?.response?.data?.message || "Undefined");
     } finally {
       setLoading(false)
     }
@@ -87,9 +87,9 @@ export default function HomeScreen() {
       setMostReviewed([])
       console.error('Error fetching nearby salons:', error);
     }
-  };
+  };0
   const renderServiceCard = ({ item }) => (
-    <TouchableOpacity className="mr-3 w-32" onPress={() => router.push(`/service-detail/${item.id}`)}>
+    <TouchableOpacity className="mr-3 w-32" onPress={() => router.push(`/salon/searchSalon?maincategory=women&category=${item.name}`)}>
       <View className="bg-gray-100 rounded-lg shadow-md overflow-hidden items-center pb-2 shadow-sm">
         <Image
           source={{ uri: item.image }}
@@ -142,10 +142,6 @@ export default function HomeScreen() {
         />
 
         <View className="px-3">
-          {/* Salon Categories Section */}
-
-
-          {/* Nearby Salons Section */}
           <View className="mt-6">
             <View className="flex-row justify-between items-center mb-3">
               <Text className="text-pink-600 text-lg font-bold">Salon Near You</Text>
@@ -202,7 +198,7 @@ export default function HomeScreen() {
                             </View>
                             <View className="flex-row items-center mt-1">
                               <Ionicons name="navigate-outline" size={12} color="#E6007E" />
-                              <Text className="text-gray-500 text-xs ml-1">{(item.distance * 100).toFixed(2)} km</Text>
+                              <Text className="text-gray-500 text-xs ml-1">{(item.distance).toFixed(2)} km</Text>
                             </View>
                           </View>
                         </View>
@@ -212,10 +208,7 @@ export default function HomeScreen() {
                 />
               )
             }
-
           </View>
-
-          {/* Most Reviewed Salons Section */}
           <View className="mt-6">
             <View className="flex-row justify-between items-center mb-3">
               <Text className="text-pink-600 text-lg font-bold">Most Reviewed Salons</Text>
@@ -270,7 +263,7 @@ export default function HomeScreen() {
                             </View>
                             <View className="flex-row items-center mt-1">
                               <Ionicons name="navigate-outline" size={12} color="#E6007E" />
-                              <Text className="text-gray-500 text-xs ml-1">{(item.distance * 100).toFixed(2)} km</Text>
+                              <Text className="text-gray-500 text-xs ml-1">{(item?.distance || 0).toFixed(2)} km</Text>
                             </View>
                           </View>
                         </View>
@@ -288,11 +281,10 @@ export default function HomeScreen() {
             <View className="mb-8">
               <View className="flex-row justify-between items-center mb-4">
                 <Text className="text-pink-600 text-lg font-bold">Women's Services</Text>
-                <TouchableOpacity onPress={() => router.push("/women-services")}>
+                <TouchableOpacity onPress={() => router.push("/(app)/salon/searchSalon")}>
                   <Text className="text-pink-500 text-sm">View All</Text>
                 </TouchableOpacity>
               </View>
-
               <FlatList
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -403,7 +395,7 @@ export default function HomeScreen() {
 
           {/* FAQ Section */}
           {/* FAQ Section */}
-          <View className="mt-8 mb-6 px-3">
+          <View className="mt-8 mb-6">
             <Text className="text-pink-600 text-xl font-bold mb-4">Frequently Asked Questions</Text>
 
             {faqs.map((faq, index) => (

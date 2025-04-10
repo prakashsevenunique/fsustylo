@@ -10,9 +10,9 @@ const SalonDetailScreen = () => {
   const { salon } = useLocalSearchParams();
   const parsedSalon = JSON.parse(salon);
 
-  const socialLinks = JSON.parse(parsedSalon.socialLinks || '{}');
-  const facilities = JSON.parse(parsedSalon.facilities?.[0] || '[]');
-  const openingHours = JSON.parse(parsedSalon.openingHours || '{}');
+  const socialLinks = parsedSalon.socialLinks || '{}';
+  const facilities = parsedSalon.facilities || '[]';
+  const openingHours = parsedSalon.openingHours || '{}';
 
   const formatOpeningHours = () => {
     return Object.entries(openingHours).map(([day, hours]) => (
@@ -130,7 +130,7 @@ const SalonDetailScreen = () => {
             <View key={service._id} className="bg-white rounded-lg p-4 mb-3 shadow-sm">
               <View className="flex-row justify-between">
                 <View>
-                  <Text className="font-bold text-gray-800 capitalize">{service.category}</Text>
+                  <Text className="font-bold text-gray-800 capitalize">{service.title}</Text>
                   <Text className="text-gray-500 text-sm mt-1">
                     <Ionicons name="time-outline" size={14} /> {service.duration}
                   </Text>

@@ -13,8 +13,8 @@ export default function SalonListScreen() {
     const { location } = useContext(UserContext) as any;
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
-     const { type } = useLocalSearchParams();
-    
+    const { type } = useLocalSearchParams();
+
 
     const SkeletonLoader = () => (
         <View className='flex items-center justify-center py-32'>
@@ -27,12 +27,12 @@ export default function SalonListScreen() {
             <Ionicons name="cut" size={60} color="#E6007E" style={{ opacity: 0.5 }} />
             <Text className="text-xl font-bold text-gray-600 mt-4">No Salons Found</Text>
             <Text className="text-gray-500 text-center mt-2">
-                {location.latitude ? 
-                    "We couldn't find any salons near your location. Try adjusting your search or check back later." : 
+                {location.latitude ?
+                    "We couldn't find any salons near your location. Try adjusting your search or check back later." :
                     "Please enable location services to find nearby salons."
                 }
             </Text>
-            <TouchableOpacity 
+            <TouchableOpacity
                 className="bg-pink-100 rounded-full px-6 py-3 mt-6"
                 onPress={getNearbySalons}
             >
@@ -51,11 +51,10 @@ export default function SalonListScreen() {
             setSalonData(response.data?.salons || []);
         } catch (error) {
             setSalonData([]);
-            Alert.alert('Error fetching nearby salons:', error.message);
         } finally {
             setLoading(false);
             setRefreshing(false);
-        }
+        } f
     };
 
     useEffect(() => {
@@ -65,7 +64,7 @@ export default function SalonListScreen() {
     }, [location.latitude, location.longitude]);
 
     const renderSalonItem = ({ item }: any) => (
-        <TouchableOpacity 
+        <TouchableOpacity
             onPress={() => router.push(`/salon/${item._id}`)}
             className="bg-white rounded-lg shadow-sm mb-3 mx-4 overflow-hidden"
             style={{
@@ -78,7 +77,7 @@ export default function SalonListScreen() {
         >
             <View className="flex-row h-32">
                 <Image
-                    source={{ 
+                    source={{
                         uri: `${imageBaseUrl}/${item?.salonPhotos[0]}`,
                         cache: 'force-cache'
                     }}
@@ -146,16 +145,16 @@ export default function SalonListScreen() {
     return (
         <SafeAreaView className="flex-1 bg-gray-50">
             {/* Header */}
-            <View className="bg-white px-4 py-3 flex-row items-center shadow-sm">
+            <View className="bg-white px-4 py-4 flex-row items-center shadow-sm">
                 <TouchableOpacity onPress={() => router.back()}>
                     <Ionicons name="arrow-back" size={24} color="#E6007E" />
                 </TouchableOpacity>
-                <Text className="text-xl font-bold text-gray-900 ml-4">{type== "nearby"? "Nearby":"Most Reviewed"} Salons</Text>
+                <Text className="text-xl font-bold text-gray-900 ml-4">{type == "nearby" ? "Nearby" : "Most Reviewed"} Salons</Text>
             </View>
 
             {/* Search and Filters */}
             <View className="bg-white px-4 pt-3 pb-2 shadow-sm">
-                <View className="flex-row items-center bg-gray-50 rounded-lg px-4 py-2 border border-gray-200">
+                <View className="flex-row items-center bg-gray-50 rounded-lg px-4 py-1 border border-gray-200">
                     <Ionicons name="search" size={18} color="#9CA3AF" />
                     <TextInput
                         placeholder="Search salons..."

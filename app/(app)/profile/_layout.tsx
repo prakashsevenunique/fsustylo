@@ -73,6 +73,20 @@ export default function ProfileLayout() {
           presentation: 'modal'
         }}
       />
+        <Stack.Screen
+        name="wallet"
+        options={{
+          headerShown: false,
+          presentation: 'modal'
+        }}
+      />
+        <Stack.Screen
+        name="payment_success"
+        options={{
+          headerShown: false,
+          presentation: 'modal'
+        }}
+      />
     </Stack>
   );
 }

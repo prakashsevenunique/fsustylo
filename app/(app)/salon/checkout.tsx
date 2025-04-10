@@ -19,13 +19,13 @@ const CheckoutScreen = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedSeat, setSelectedSeat] = useState(null)
-  const { userInfo } = useContext(UserContext);
+  const { userInfo ,fetchUserInfo} = useContext(UserContext);
+  const [totalAmount, setTotal] = useState(0);
 
   useEffect(() => {
     if (services) {
       setSelectedServices(JSON.parse(services));
       setSalon(JSON.parse(salon));
-      console.log(salonDetail)
     }
     const today = new Date();
     const dateArray = [];
@@ -61,11 +61,12 @@ const CheckoutScreen = () => {
     return selectedServices.reduce((sum, service) =>
       sum + (service.price * (service.quantity || 1)), 0);
   };
-
-  const calculateTotal = () => {
+  useEffect(() => {
     const subtotal = calculateSubtotal();
-    return subtotal - (subtotal * discount);
-  };
+    let total = subtotal - (subtotal * discount);
+    setTotal(total);
+  }, [discount, selectedServices])
+
 
   const handleConfirmBooking = () => {
     if (!selectedDate || !selectedTime) {
@@ -83,11 +84,9 @@ const CheckoutScreen = () => {
       services: selectedServices,
       date: selectedDate.date.toISOString(),
       timeSlot: selectedTime,
-      total: calculateTotal(),
+      total: totalAmount,
       discount: discount * 100
     }
-    console.log(data)
-
     createBooking(data)
 
   };
@@ -97,8 +96,8 @@ const CheckoutScreen = () => {
       const response = await axiosInstance.post('/api/booking/create',
         bookingData
       );
+
       if (response.status === 201) {
-        console.log('Booking created successfully:', response.data);
         router.replace({
           pathname: '/salon/booking-confirmation',
           params: {
@@ -107,25 +106,24 @@ const CheckoutScreen = () => {
             services: JSON.stringify(selectedServices),
             date: selectedDate.date.toISOString(),
             time: selectedTime,
-            total: calculateTotal(),
+            total: totalAmount,
             discount: discount * 100,
             bookingId: response.data?.bookingId
           }
         });
+        fetchUserInfo()
       }
     } catch (error) {
-      Alert.alert("Error :", error.message)
+      Alert.alert("Error :", error)
     }
   };
 
   async function getSchedule(salonId, date) {
     setLoading(true);
     setError(null);
-    console.log(salonId, date.date.toISOString())
     const url = `/api/schedule/schedule-get?salonId=${"67dbe4a6fbe65a40a1ae3769"}&date=${"2025-04-01"}`;
     try {
       const response = await axiosInstance.get(url);
-      console.log(response.data);
       const transformedSlots = Object.entries(response.data.availableSlots).map(([time, seats]) => {
         const availableSeats = seats.filter(seat => seat);
         return {
@@ -133,7 +131,6 @@ const CheckoutScreen = () => {
           seats: availableSeats
         };
       });
-      console.log(transformedSlots)
       setTimeSlots(transformedSlots);
     } catch (err) {
       setError('Failed to load schedule');
@@ -171,7 +168,7 @@ const CheckoutScreen = () => {
           {selectedServices.map((service, index) => (
             <View key={index} className="flex-row justify-between items-center py-2 border-b border-gray-100">
               <View>
-                <Text className="text-gray-800">{service.name}</Text>
+                <Text className="text-gray-800 font-bold">{service.name}</Text>
                 <Text className="text-gray-500 text-sm">
                   {service.duration} • Qty: {service.quantity || 1}
                 </Text>
@@ -321,7 +318,7 @@ const CheckoutScreen = () => {
 
           <View className="flex-row justify-between py-2 border-t border-gray-200 mt-2">
             <Text className="font-bold">Total</Text>
-            <Text className="font-bold text-lg">₹{calculateTotal()}</Text>
+            <Text className="font-bold text-lg">₹{totalAmount}</Text>
           </View>
           <View className="flex-row justify-between py-2 border-t border-gray-200 mt-2">
             <Text className="font-bold">Wallet Balance</Text>
@@ -332,13 +329,13 @@ const CheckoutScreen = () => {
 
       {/* Continue Button */}
       <TouchableOpacity
-        className={`mx-4 my-2 py-4 rounded-lg items-center shadow-md ${userInfo?.wallet?.balance < calculateTotal() ? 'bg-gray-500' : 'bg-gray-700'
+        className={`mx-4 my-2 py-4 rounded-lg items-center shadow-md ${userInfo?.wallet?.balance < totalAmount ? 'bg-gray-500' : 'bg-gray-700'
           }`}
-        onPress={handleConfirmBooking}
-        disabled={userInfo?.wallet?.balance < calculateTotal()} // Disable the button if wallet balance is less than order price
+        onPress={() => { userInfo?.wallet?.balance > totalAmount ? handleConfirmBooking() : console.log('nnnn') }}
+        disabled={userInfo?.wallet?.balance < totalAmount} // Disable the button if wallet balance is less than order price
       >
         <Text className="text-white font-bold text-lg">
-          {userInfo?.wallet?.balance < calculateTotal() ? 'Insufficient Balance' : 'Confirm Booking'}
+          {userInfo?.wallet?.balance < totalAmount ? 'Insufficient Balance' : 'Confirm Booking'}
         </Text>
       </TouchableOpacity>
     </View>
