@@ -17,13 +17,13 @@ export default function SearchSalonScreen() {
   const [gender, setGender] = useState(params.gender || '');
   const [serviceTitle, setServiceTitle] = useState(params.serviceTitle || '');
   const [minRate, setMinRate] = useState(params.minRate ? parseInt(params.minRate) : 0);
-  const [maxRate, setMaxRate] = useState(params.maxRate ? parseInt(params.maxRate) : 5000);
+  const [maxRate, setMaxRate] = useState(params.maxRate ? parseInt(params.maxRate) : 10000);
   const [searchQuery, setSearchQuery] = useState(params.search || '');
 
   // State for additional filters
   const [sortBy, setSortBy] = useState('distance');
   const [sortOrder, setSortOrder] = useState('asc');
-  const [maxDistance, setMaxDistance] = useState(10); // Default 10km
+  const [maxDistance, setMaxDistance] = useState(200); // Default 10km
   const [minReviewCount, setMinReviewCount] = useState(0);
   const [selectedFacilities, setSelectedFacilities] = useState([]);
   const [minRating, setMinRating] = useState(0);
@@ -45,8 +45,7 @@ export default function SearchSalonScreen() {
   const fetchSalons = async () => {
     try {
       setLoading(true);
-
-      const response = await axiosInstance.get('/api/salon/mostreview', {
+      const response = await axiosInstance.get('/api/salon/nearby', {
         params: {
           latitude: location.latitude,
           longitude: location.longitude,
@@ -64,10 +63,9 @@ export default function SearchSalonScreen() {
           ...params
         }
       });
-
-      setSalons(response.data.salons);
+      setSalons(response?.data?.salons);
     } catch (error) {
-      console.error('Error fetching salons:', error);
+      setSalons([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -86,11 +84,11 @@ export default function SearchSalonScreen() {
     setGender('');
     setServiceTitle('');
     setMinRate(0);
-    setMaxRate(5000);
+    setMaxRate(10000);
     setSearchQuery('');
     setSortBy('distance');
     setSortOrder('asc');
-    setMaxDistance(10);
+    setMaxDistance(100);
     setMinReviewCount(0);
     setMinRating(0);
     setSelectedFacilities([]);
@@ -99,8 +97,8 @@ export default function SearchSalonScreen() {
   };
 
   // Toggle facility selection
-  const toggleFacility = (facility) => {
-    setSelectedFacilities(prev =>
+  const toggleFacility = (facility: any) => {
+    setSelectedFacilities((prev: any) =>
       prev.includes(facility)
         ? prev.filter(f => f !== facility)
         : [...prev, facility]
@@ -120,12 +118,15 @@ export default function SearchSalonScreen() {
   const renderSalonItem = ({ item }) => (
     <TouchableOpacity
       className="bg-white p-4 rounded-lg shadow-sm mb-3"
-      onPress={() => router.push(`/(app)/salon/details?id=${item._id}`)}
+      onPress={() => router.push({
+        pathname: '/(app)/salon/details',
+        params: { salon: JSON.stringify(item) },
+      })}
     >
       <View className="flex-row">
         <Image
-          source={{ uri: item.mainPhoto ? `${imageBaseUrl}/${item.salonPhotos[0]}` : 'https://via.placeholder.com/150' }}
-          className="w-24 h-24 rounded-lg mr-3"
+          source={{ uri: item.salonPhotos[0] ? `${imageBaseUrl}/${item.salonPhotos[0]}` : 'https://via.placeholder.com/150' }}
+          className="w-24 rounded-lg mr-3"
         />
         <View className="flex-1">
           <Text className="font-bold text-lg">{item.salonName}</Text>
@@ -145,15 +146,15 @@ export default function SearchSalonScreen() {
           </View>
 
           {item.minServicePrice && (
-            <Text className="text-pink-600 font-bold mt-2">
+            <Text className="text-pink-600 text-xs mt-2">
               Starts from ₹{item.minServicePrice}
             </Text>
           )}
 
           {item.facilities?.length > 0 && (
-            <View className="flex-row flex-wrap mt-2">
+            <View className="flex-row flex-wrap mt-1">
               {item.facilities.slice(0, 3).map((facility, index) => (
-                <View key={index} className="bg-gray-100 px-2 py-1 rounded-full mr-2 mb-2">
+                <View key={index} className="bg-gray-100 px-2 py-1 rounded-full mr-2 mb-1">
                   <Text className="text-gray-700 text-xs">{facility}</Text>
                 </View>
               ))}
@@ -163,22 +164,36 @@ export default function SearchSalonScreen() {
       </View>
     </TouchableOpacity>
   );
+  const handleSlidingComplete = (value) => {
+    setMaxDistance(value);
+  };
 
   return (
     <View className="flex-1 bg-gray-50">
       {/* Search Bar */}
-      <View className="bg-white px-4 py-3 border-b border-gray-200">
-        <View className="flex-row items-center bg-gray-100 rounded-lg px-4 py-2">
+      <View className="bg-white px-4 py-4 border-b border-gray-200 flex-row items-center">
+        <TouchableOpacity
+          onPress={() => router.back()}
+          className="mr-3"
+        >
+          <Ionicons name="arrow-back" size={24} color="#E6007E" />
+        </TouchableOpacity>
+
+        <View className="flex-1 flex-row items-center bg-gray-100 rounded-lg px-3 py-2">
           <Ionicons name="search" size={20} color="#9CA3AF" />
           <TextInput
-            className="flex-1 ml-2 py-1"
+            className="ml-2 py-2 flex-1"
             placeholder="Search for salons or services..."
+            placeholderTextColor="#9CA3AF"
             value={searchQuery}
             onChangeText={setSearchQuery}
             onSubmitEditing={applyFilters}
           />
           {searchQuery && (
-            <TouchableOpacity onPress={() => { setSearchQuery(''); applyFilters(); }}>
+            <TouchableOpacity
+              onPress={() => { setSearchQuery(''); applyFilters(); }}
+              className="ml-2"
+            >
               <Ionicons name="close-circle" size={20} color="#9CA3AF" />
             </TouchableOpacity>
           )}
@@ -297,21 +312,24 @@ export default function SearchSalonScreen() {
                 <Text className="font-medium mb-2">Price Range (₹{minRate} - ₹{maxRate})</Text>
                 <View className="flex-row justify-between mb-1">
                   <Text>₹0</Text>
-                  <Text>₹5000</Text>
+                  <Text>₹10000</Text>
                 </View>
                 <Slider
                   minimumValue={0}
-                  maximumValue={5000}
+                  maximumValue={10000}
                   step={100}
                   minimumTrackTintColor="#E6007E"
                   maximumTrackTintColor="#E5E7EB"
                   thumbTintColor="#E6007E"
                   value={maxRate}
-                  onValueChange={(value) => {
-                    setMinRate(Math.min(minRate, value - 500));
+                  onSlidingComplete={(value) => {
                     setMaxRate(value);
+                    if (minRate > value - 500) {
+                      setMinRate(Math.max(0, value - 500));
+                    }
                   }}
                 />
+
                 <View className="flex-row justify-between mt-2">
                   <TextInput
                     className="border border-gray-300 rounded px-3 py-1 w-20"
@@ -365,17 +383,19 @@ export default function SearchSalonScreen() {
               </View>
 
               {/* Distance Filter */}
-              <View className="mb-6">
-                <Text className="font-medium mb-2">Maximum Distance ({maxDistance} km)</Text>
+              <View style={{ marginBottom: 24 }}>
+                <Text style={{ fontWeight: '500', marginBottom: 8 }}>
+                  Maximum Distance ({maxDistance} km)
+                </Text>
                 <Slider
                   minimumValue={1}
-                  maximumValue={50}
+                  maximumValue={200}
                   step={1}
                   minimumTrackTintColor="#E6007E"
                   maximumTrackTintColor="#E5E7EB"
                   thumbTintColor="#E6007E"
                   value={maxDistance}
-                  onValueChange={setMaxDistance}
+                  onSlidingComplete={handleSlidingComplete}
                 />
               </View>
 

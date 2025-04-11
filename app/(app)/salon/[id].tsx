@@ -326,7 +326,7 @@ const SalonDetail = () => {
       {selectedServices.length > 0 && (
         <View className="absolute bottom-0 left-0 right-0 z-10 px-4 py-3 bg-white border-t border-gray-200 shadow-lg">
           <View className="flex-row justify-between items-center mb-2">
-            <Text className="text-gray-600">
+            <Text className="text-gray-600 font-bold">
               {selectedServices.reduce((sum, s: any) => sum + (s.quantity || 1), 0)} Item{selectedServices.length > 1 ? 's' : ''}
             </Text>
             <Text className="font-bold">

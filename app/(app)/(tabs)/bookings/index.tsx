@@ -1,7 +1,7 @@
-import { View, Text, ScrollView, TouchableOpacity, Image, Animated, ActivityIndicator, Modal, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, Animated, ActivityIndicator, Modal, Alert, RefreshControl } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import axiosInstance from '@/utils/axiosInstance';
 import { UserContext } from '@/hooks/userInfo';
 import { imageBaseUrl } from '@/utils/helpingData';
@@ -9,7 +9,7 @@ import ReviewModal from '@/components/rating';
 
 export default function BookingsScreen() {
   const [activeTab, setActiveTab] = useState('Pending');
-  const { userInfo } = useContext(UserContext) as any;
+  const { userInfo,fetchUserInfo } = useContext(UserContext) as any;
   const [booking, setBooking] = useState() as any;
   const [filterBooking, setFilterbooking] = useState([])
   const [indicatorPosition] = useState(new Animated.Value(0));
@@ -17,6 +17,12 @@ export default function BookingsScreen() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectId, setSelectedId] = useState('');
   const [ratingSelected, setRatingSelected] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    getUserBooking().then(() => setRefreshing(false));
+  }, []);
 
   const handleCancelAction = () => {
     setIsModalVisible(false);
@@ -53,6 +59,7 @@ export default function BookingsScreen() {
       setSelectedId("")
       setIsModalVisible(false);
       getUserBooking()
+      fetchUserInfo()
     } catch (error) {
       Alert.alert("Error", error.message);
     }
@@ -102,7 +109,15 @@ export default function BookingsScreen() {
 
       <View className="relative">
         {/* Horizontal ScrollView for Tabs */}
-        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+        <ScrollView  refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#E6007E']} // Android
+            tintColor="#E6007E" // iOS
+            progressBackgroundColor="#ffffff"
+          />
+        } horizontal={true} showsHorizontalScrollIndicator={false}>
           <View className="flex-row">
             {tabs.map((tab, index) => (
               <TouchableOpacity

@@ -1,6 +1,6 @@
-import { View, Text, ScrollView, TouchableOpacity, Modal, TextInput, FlatList, Linking, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Modal, TextInput, FlatList, Linking, ActivityIndicator, RefreshControl } from 'react-native';
 import { Ionicons, FontAwesome, MaterialIcons } from '@expo/vector-icons';
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useCallback } from 'react';
 import { router } from 'expo-router';
 import axiosInstance from '@/utils/axiosInstance';
 import { UserContext } from '@/hooks/userInfo';
@@ -9,12 +9,13 @@ export default function WalletScreen() {
     const [isAddMoneyModalVisible, setIsAddMoneyModalVisible] = useState(false);
     const [amount, setAmount] = useState('');
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('UPI');
-    const { userInfo } = useContext(UserContext) as any;
+    const { userInfo ,fetchUserInfo} = useContext(UserContext) as any;
     const [loading, setLoading] = useState(false);
     const [creditTransactions, setCreditTransactions] = useState([]);
     const [debitTransactions, setDebitTransactions] = useState([]);
     const [transactionsLoading, setTransactionsLoading] = useState(true);
     const [selectedGender, setSelectedGender] = useState('credit');
+    const [refreshing, setRefreshing] = useState(false);
 
     const paymentMethods = [
         { id: '1', name: 'UPI', icon: 'attach-money', provider: 'Any UPI App' },
@@ -25,6 +26,13 @@ export default function WalletScreen() {
 
     useEffect(() => {
         fetchTransactions();
+        fetchUserInfo();
+    }, []);
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        fetchTransactions();
+        fetchUserInfo()
     }, []);
 
     const fetchTransactions = async () => {
@@ -51,7 +59,7 @@ export default function WalletScreen() {
                 id: txn._id,
                 type: 'debit',
                 amount: txn.amount,
-                description: 'Withdrawal',
+                description: 'Paid for the order',
                 date: new Date(txn.createdAt).toLocaleDateString(),
                 time: new Date(txn.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 icon: 'arrow-up',
@@ -64,6 +72,7 @@ export default function WalletScreen() {
             console.error('Error fetching transactions:', error);
         } finally {
             setTransactionsLoading(false);
+            setRefreshing(false);
         }
     };
 
@@ -120,9 +129,6 @@ export default function WalletScreen() {
                 <View className="ml-3">
                     <Text className="font-medium text-gray-800">{item.description}</Text>
                     <Text className="text-gray-500 text-xs mt-1">{item.date} • {item.time}</Text>
-                    {item.account && (
-                        <Text className="text-gray-500 text-xs mt-1">To: {item.account}</Text>
-                    )}
                     <View className={`mt-1 px-2 py-1 rounded-full self-start ${item.status === 'Completed' ? 'bg-green-100' : 'bg-yellow-100'}`}>
                         <Text className={`text-xs ${item.status === 'Completed' ? 'text-green-800' : 'text-yellow-800'}`}>
                             {item.status}
@@ -213,6 +219,14 @@ export default function WalletScreen() {
                                     renderItem={renderTransactionItem}
                                     keyExtractor={(item: any) => item.id}
                                     showsVerticalScrollIndicator={false}
+                                    refreshControl={
+                                        <RefreshControl
+                                            refreshing={refreshing}
+                                            onRefresh={onRefresh}
+                                            colors={['#E6007E']}
+                                            tintColor="#E6007E"
+                                        />
+                                    }
                                 />
                             ) : (
                                 <View className="flex-1 justify-center items-center py-10">
@@ -227,6 +241,14 @@ export default function WalletScreen() {
                                     renderItem={renderTransactionItem}
                                     keyExtractor={(item: any) => item.id}
                                     showsVerticalScrollIndicator={false}
+                                    refreshControl={
+                                        <RefreshControl
+                                            refreshing={refreshing}
+                                            onRefresh={onRefresh}
+                                            colors={['#E6007E']}
+                                            tintColor="#E6007E"
+                                        />
+                                    }
                                 />
                             ) : (
                                 <View className="flex-1 justify-center items-center py-10">

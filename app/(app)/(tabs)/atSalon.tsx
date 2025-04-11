@@ -17,35 +17,35 @@ export default function AtSalon() {
   // Service data organized by gender
   const servicesData = {
     women: [
-      { id: "w1", name: "Haircut", image: "https://images.unsplash.com/photo-1519699047748-de8e457a634e", description: "All hair types" },
-      { id: "w2", name: "Hair Color", image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e", description: "Coloring & highlights" },
-      { id: "w3", name: "Hair Spa", image: "https://images.unsplash.com/photo-1559599101-f09722fb4948", description: "Deep conditioning" },
-      { id: "w4", name: "Bridal Makeup", image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb", description: "Wedding packages" },
-      { id: "w5", name: "Facial", image: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9", description: "Skin treatments" },
-      { id: "w6", name: "Threading", image: "https://5.imimg.com/data5/SELLER/Default/2022/2/XM/JX/SY/47412176/new-product-500x500.jpeg", description: "Eyebrow shaping" },
-      { id: "w7", name: "Waxing", image: "https://naomisheadmasters.com/wp-content/uploads/2023/06/Full-Body-Waxing-Prices-In-Chandigarh.webp", description: "Full body" },
-      { id: "w8", name: "Manicure", image: "https://images.unsplash.com/photo-1596464716127-f2a82984de30", description: "Nail care" },
-      { id: "w9", name: "Pedicure", image: "https://images.unsplash.com/photo-1600334129128-685c5582fd35", description: "Foot care" },
-      { id: "w10", name: "Hair Extensions", image: "https://images.unsplash.com/photo-1605497788044-5a32c7078486", description: "Clip-ins & bonds" },
+      { id: "w1",gender:"female", name: "Haircut", image: "https://images.unsplash.com/photo-1519699047748-de8e457a634e", description: "All hair types" },
+      { id: "w2",gender:"female", name: "Hair Color", image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e", description: "Coloring & highlights" },
+      { id: "w3",gender:"female", name: "Hair Spa", image: "https://images.unsplash.com/photo-1559599101-f09722fb4948", description: "Deep conditioning" },
+      { id: "w4",gender:"female", name: "Bridal Makeup", image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb", description: "Wedding packages" },
+      { id: "w5",gender:"female", name: "Facial", image: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9", description: "Skin treatments" },
+      { id: "w6",gender:"female", name: "Threading", image: "https://5.imimg.com/data5/SELLER/Default/2022/2/XM/JX/SY/47412176/new-product-500x500.jpeg", description: "Eyebrow shaping" },
+      { id: "w7",gender:"female", name: "Waxing", image: "https://naomisheadmasters.com/wp-content/uploads/2023/06/Full-Body-Waxing-Prices-In-Chandigarh.webp", description: "Full body" },
+      { id: "w8",gender:"female", name: "Manicure", image: "https://images.unsplash.com/photo-1596464716127-f2a82984de30", description: "Nail care" },
+      { id: "w9",gender:"female", name: "Pedicure", image: "https://images.unsplash.com/photo-1600334129128-685c5582fd35", description: "Foot care" },
+      { id: "w10",gender:"female", name: "Hair Extensions", image: "https://images.unsplash.com/photo-1605497788044-5a32c7078486", description: "Clip-ins & bonds" },
     ],
     men: [
-      { id: "m1", name: "Haircut", image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef", description: "Styling & trims" },
-      { id: "m2", name: "Beard Grooming", image: "https://images.unsplash.com/photo-1580489944761-15a19d654956", description: "Trim & shape" },
-      { id: "m3", name: "Shave", image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef", description: "Hot towel shave" },
-      { id: "m4", name: "Facial", image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef", description: "Men's skincare" },
-      { id: "m5", name: "Hair Color", image: "https://images.unsplash.com/photo-1580489944761-15a19d654956", description: "Gray coverage" },
-      { id: "m6", name: "Head Massage", image: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874", description: "Relaxation" },
-      { id: "m7", name: "Waxing", image: "https://images.unsplash.com/photo-1600334129128-685c5582fd35", description: "Chest/back" },
-      { id: "m8", name: "Manicure", image: "https://images.unsplash.com/photo-1518640467707-6811f4a6ab73", description: "Hand care" },
-      { id: "m9", name: "Pedicure", image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef", description: "Foot care" },
-      { id: "m10", name: "Hair Treatment", image: "https://images.unsplash.com/photo-1583864697784-a0efc8379f70", description: "Dandruff/fall" },
+      { id: "m1",gender:"male", name: "Haircut", image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef", description: "Styling & trims" },
+      { id: "m2",gender:"male", name: "Beard Grooming", image: "https://images.unsplash.com/photo-1580489944761-15a19d654956", description: "Trim & shape" },
+      { id: "m3",gender:"male", name: "Shave", image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef", description: "Hot towel shave" },
+      { id: "m4",gender:"male", name: "Facial", image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef", description: "Men's skincare" },
+      { id: "m5",gender:"male", name: "Hair Color", image: "https://images.unsplash.com/photo-1580489944761-15a19d654956", description: "Gray coverage" },
+      { id: "m6",gender:"male", name: "Head Massage", image: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874", description: "Relaxation" },
+      { id: "m7",gender:"male", name: "Waxing", image: "https://images.unsplash.com/photo-1600334129128-685c5582fd35", description: "Chest/back" },
+      { id: "m8",gender:"male", name: "Manicure", image: "https://images.unsplash.com/photo-1518640467707-6811f4a6ab73", description: "Hand care" },
+      { id: "m9",gender:"male", name: "Pedicure", image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef", description: "Foot care" },
+      { id: "m10",gender:"male", name: "Hair Treatment", image: "https://images.unsplash.com/photo-1583864697784-a0efc8379f70", description: "Dandruff/fall" },
     ],
     unisex: [
-      { id: "u1", name: "Spa", image: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874", description: "Full body" },
-      { id: "u2", name: "Hair Rebonding", image: "https://images.unsplash.com/photo-1605497788044-5a32c7078486", description: "Straightening" },
-      { id: "u3", name: "Keratin", image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef", description: "Smoothing" },
-      { id: "u4", name: "Hair Wash", image: "https://images.unsplash.com/photo-1605497788044-5a32c7078486", description: "Basic service" },
-      { id: "u5", name: "Scalp Treatment", image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef", description: "Dandruff care" },
+      { id: "u1",gender:"unisex", name: "Spa", image: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874", description: "Full body" },
+      { id: "u2",gender:"unisex", name: "Hair Rebonding", image: "https://images.unsplash.com/photo-1605497788044-5a32c7078486", description: "Straightening" },
+      { id: "u3",gender:"unisex", name: "Keratin", image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef", description: "Smoothing" },
+      { id: "u4",gender:"unisex", name: "Hair Wash", image: "https://images.unsplash.com/photo-1605497788044-5a32c7078486", description: "Basic service" },
+      { id: "u5",gender:"unisex", name: "Scalp Treatment", image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef", description: "Dandruff care" },
     ]
   };
 
@@ -63,7 +63,7 @@ export default function AtSalon() {
   };
 
   const renderServiceCard = ({ item }) => (
-    <TouchableOpacity className="mr-3 w-32" onPress={() => router.push(`/salon/searchSalon?maincategory=${selectedGender === 'all' ? 'unisex' : selectedGender}&category=${item.name}`)}>
+    <TouchableOpacity className="mr-3 w-32" onPress={() => router.push(`/salon/searchSalon?gender=${item.gender}&serviceTitle=${item.name}`)}>
       <View className="bg-gray-100 rounded-lg shadow-md overflow-hidden items-center pb-2 shadow-sm">
         <Image
           source={{ uri: item.image }}
@@ -79,7 +79,7 @@ export default function AtSalon() {
     <TouchableOpacity
       key={index}
       className="items-center mr-2"
-      onPress={() => router.push(`/salon/searchSalon?maincategory=${selectedGender === 'all' ? 'unisex' : selectedGender}&category=${item}`)}
+      onPress={() => router.push(`/salon/searchSalon?gender=${selectedGender === 'all' ? 'unisex' : selectedGender}&serviceTitle=${item}`)}
     >
       <View className="bg-gray-100 w-14 h-14 rounded-full items-center justify-center">
         <MaterialIcons name="spa" size={24} color="#E6007E" />

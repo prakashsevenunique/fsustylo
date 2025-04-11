@@ -17,9 +17,10 @@ const CheckoutScreen = () => {
   const [timeSlots, setTimeSlots] = useState([]);
   const [salonDetail, setSalon] = useState(null)
   const [loading, setLoading] = useState(false);
+  const [loading1, setLoading1] = useState(false);
   const [error, setError] = useState(null);
   const [selectedSeat, setSelectedSeat] = useState(null)
-  const { userInfo ,fetchUserInfo} = useContext(UserContext);
+  const { userInfo, fetchUserInfo } = useContext(UserContext);
   const [totalAmount, setTotal] = useState(0);
 
   useEffect(() => {
@@ -92,6 +93,7 @@ const CheckoutScreen = () => {
   };
 
   const createBooking = async (bookingData) => {
+    setLoading1(true)
     try {
       const response = await axiosInstance.post('/api/booking/create',
         bookingData
@@ -114,7 +116,9 @@ const CheckoutScreen = () => {
         fetchUserInfo()
       }
     } catch (error) {
-      Alert.alert("Error :", error)
+      Alert.alert("Error :", error.message)
+    } finally {
+      setLoading1(false)
     }
   };
 
@@ -328,17 +332,23 @@ const CheckoutScreen = () => {
       </ScrollView>
 
       {/* Continue Button */}
-      <TouchableOpacity
-        className={`mx-4 my-2 py-4 rounded-lg items-center shadow-md ${userInfo?.wallet?.balance < totalAmount ? 'bg-gray-500' : 'bg-gray-700'
-          }`}
-        onPress={() => { userInfo?.wallet?.balance > totalAmount ? handleConfirmBooking() : console.log('nnnn') }}
-        disabled={userInfo?.wallet?.balance < totalAmount} // Disable the button if wallet balance is less than order price
-      >
-        <Text className="text-white font-bold text-lg">
-          {userInfo?.wallet?.balance < totalAmount ? 'Insufficient Balance' : 'Confirm Booking'}
-        </Text>
-      </TouchableOpacity>
-    </View>
+      <View className="relative mx-4 my-2 py-4">
+        <TouchableOpacity
+          className={`rounded-lg items-center shadow-md py-3 ${userInfo?.wallet?.balance < totalAmount ? 'bg-gray-500' : 'bg-gray-700'}`}
+          onPress={() => { userInfo?.wallet?.balance > totalAmount ? handleConfirmBooking() : console.log('nnnn') }}
+          disabled={userInfo?.wallet?.balance < totalAmount || loading1}
+        >
+          <Text className="text-white font-bold text-lg">
+            {loading1 ? 'Processing...' : (userInfo?.wallet?.balance < totalAmount ? 'Insufficient Balance' : 'Confirm Booking')}
+          </Text>
+        </TouchableOpacity>
+        {loading1 && (
+          <View className="absolute top-0 left-0 right-0 bottom-0 justify-center items-center bg-gray-200 opacity-50">
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
+        )}
+      </View>
+    </View >
   );
 };
 

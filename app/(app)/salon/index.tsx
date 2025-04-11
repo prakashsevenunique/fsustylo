@@ -105,12 +105,12 @@ export default function SalonListScreen() {
                     </View>
 
                     <View className="flex-row items-center mt-2">
-                        <Ionicons name="star" size={16} color="#f59e0b" />
-                        <Text className="text-amber-500 text-sm ml-1">{item?.rating || 'New'}</Text>
-                        <Text className="text-gray-400 mx-2">•</Text>
+                        {/* <Ionicons name="star" size={16} color="#f59e0b" /> */}
+                        {/* <Text className="text-amber-500 text-sm ml-1">{item?.reviews.length || 'New'}</Text> */}
+                        {/* <Text className="text-gray-400 mx-2">•</Text> */}
                         <Ionicons name="location-outline" size={14} color="#9CA3AF" />
                         <Text className="text-gray-500 text-sm ml-1">
-                            {(item.distance * 100).toFixed(1)} km
+                            {((item.distance || 0) * 100).toFixed(1)} km
                         </Text>
                     </View>
 
@@ -154,7 +154,7 @@ export default function SalonListScreen() {
 
             {/* Search and Filters */}
             <View className="bg-white px-4 pt-3 pb-2 shadow-sm">
-                <View className="flex-row items-center bg-gray-50 rounded-lg px-4 py-1 border border-gray-200">
+                <View className="flex-row items-center bg-white rounded-lg px-4 py-1 border border-gray-200">
                     <Ionicons name="search" size={18} color="#9CA3AF" />
                     <TextInput
                         placeholder="Search salons..."

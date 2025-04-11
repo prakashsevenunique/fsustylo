@@ -6,13 +6,12 @@ import { UserContext } from '@/hooks/userInfo';
 
 export default function ProfileScreen() {
   const [refreshing, setRefreshing] = useState(false);
-  const { userInfo } = useContext(UserContext) as any;
+  const { userInfo, fetchUserInfo } = useContext(UserContext) as any;
 
   const onRefresh = async () => {
     setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 1000);
+    await fetchUserInfo()
+    setRefreshing(false);
   };
 
   return (
@@ -69,7 +68,7 @@ export default function ProfileScreen() {
         {/* Profile Sections */}
         <View className="mt-6">
           <Text className="text-gray-700 font-semibold">My Account</Text>
-          {[{ name: 'My Profile', icon: 'user', route: "/profile/edit" },{ name: 'My Wallet', icon: 'dollar-sign', route: "/profile/wallet" }, { name: 'Manage Address', icon: 'map-pin', route: "/profile/address" }, { name: 'My Reviews', icon: 'thumbs-up', route: "/profile/myReview" }].map((item, index) => (
+          {[{ name: 'My Profile', icon: 'user', route: "/profile/edit" }, { name: 'My Wallet', icon: 'dollar-sign', route: "/profile/wallet" }, { name: 'Manage Address', icon: 'map-pin', route: "/profile/address" }, { name: 'My Reviews', icon: 'thumbs-up', route: "/profile/myReview" }].map((item, index) => (
             <TouchableOpacity key={index} onPress={() => router.push(item.route)} className="flex-row items-center justify-between p-4 bg-white rounded-lg shadow-sm mt-2">
               <View className="flex-row items-center">
                 <Feather name={item.icon} size={20} color="black" />

@@ -97,7 +97,7 @@ export default function OTPInputScreen({ mobile, userExists }) {
                     value={otp}
                     onChangeText={setOtp}
                     cellCount={CELL_COUNT}
-                    rootStyle={{ marginTop: 10, width: "80%" }}
+                    rootStyle={{ marginTop: 10, width: "90%" }}
                     keyboardType="number-pad"
                     textContentType="oneTimeCode"
                     renderCell={({ index, symbol, isFocused }) => {
@@ -150,7 +150,7 @@ export default function OTPInputScreen({ mobile, userExists }) {
                     </View>
                 )}
 
-                {(!showReferral && userExists) && (
+                {(!showReferral && !userExists) && (
                     <TouchableOpacity
                         className="mt-4"
                         onPress={() => setShowReferral(true)}
