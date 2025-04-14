@@ -13,14 +13,34 @@
       "bundleIdentifier": "com.prakash.seven",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
+      },
+      "splash": {
+        "image": "./assets/img/logo.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff",
+        "dark": {
+          "image": "./assets/img/logo.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
       }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/img/logo.png",
+        "foregroundImage": "./assets/img/oo.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.prakash.seven"
+      "package": "com.prakash.seven",
+      "splash": {
+        "image": "./assets/img/logo.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff",
+        "dark": {
+          "image": "./assets/img/logo.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      }
     },
     "web": {
       "bundler": "metro",
@@ -35,7 +55,13 @@
           "image": "./assets/img/logo.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#ffffff",
+          "dark": {
+            "image": "./assets/img/logo.png",
+            "imageWidth": 200,
+            "resizeMode": "contain",
+            "backgroundColor": "#ffffff"
+          }
         }
       ]
     ],
