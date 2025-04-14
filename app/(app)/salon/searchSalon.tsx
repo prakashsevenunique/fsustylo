@@ -125,8 +125,9 @@ export default function SearchSalonScreen() {
     >
       <View className="flex-row">
         <Image
-          source={{ uri: item.salonPhotos[0] ? `${imageBaseUrl}/${item.salonPhotos[0]}` : 'https://via.placeholder.com/150' }}
-          className="w-24 rounded-lg mr-3"
+          source={{ uri: item.salonPhotos[0] ? `${imageBaseUrl}/${item.salonPhotos[0]}` : 'https://via.placeholder.com/150', cache: 'force-cache' }}
+          className="w-32 h-full rounded-l-lg"
+          defaultSource={require('@/assets/img/logo.png')}
         />
         <View className="flex-1">
           <Text className="font-bold text-lg">{item.salonName}</Text>
@@ -280,7 +281,7 @@ export default function SearchSalonScreen() {
             data={salons}
             renderItem={renderSalonItem}
             keyExtractor={(item) => item._id}
-            contentContainerStyle={{ padding: 16 }}
+            contentContainerStyle={{ padding: 10 }}
             refreshing={refreshing}
             onRefresh={() => {
               setRefreshing(true);

@@ -22,7 +22,7 @@ const SalonDetail = () => {
     try {
       const response = await axiosInstance.get(`/api/salon/view/${id}`);
       const salonData = response.data?.salon || response.data;
-      
+
       // Transform services to match component's expected format
       const transformedServices = salonData.services.map((service: any) => ({
         _id: service._id,
@@ -115,9 +115,9 @@ const SalonDetail = () => {
     return filteredCategories.map(category => ({
       ...category,
       services: category.services.filter(service =>
-        (selectedGender === 'unisex' || 
-         service.gender === 'unisex' ||
-         service.gender === selectedGender) &&
+        (selectedGender === 'unisex' ||
+          service.gender === 'unisex' ||
+          service.gender === selectedGender) &&
         service.name?.toLowerCase().includes(searchQuery?.toLowerCase())
       )
     })).filter((category: any) => category.services.length > 0);
@@ -248,21 +248,21 @@ const SalonDetail = () => {
               ))}
             </View>
           </View>
-          <View className="flex-row items-center bg-gray-100 rounded-lg px-3 py-1 mt-2 mb-2">
-            <FontAwesome name="search" size={16} color="gray" />
+          <View className="flex-1 flex-row items-center bg-gray-100 rounded-lg px-3 py-2 my-2">
+            <FontAwesome name="search" size={20} color="gray" />
             <TextInput
               placeholder="Search for services..."
-              className="ml-2 flex-1"
+              className="ml-2 py-2 flex-1"
               value={searchQuery}
               onChangeText={setSearchQuery}
             />
             {searchQuery.length > 0 && (
-              <TouchableOpacity onPress={() => setSearchQuery('')}>
+              <TouchableOpacity onPress={() => setSearchQuery('')} className="ml-2">
                 <Ionicons name="close" size={18} color="gray" />
               </TouchableOpacity>
             )}
           </View>
-{/* 
+          {/* 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="py-1">
             {filteredCategories.map((category: any) => (
               <TouchableOpacity key={category.id} className="items-center mr-4">
@@ -278,7 +278,7 @@ const SalonDetail = () => {
 
         <View className="px-4 pt-4 pb-32">
           {filteredServices?.map((category: any) => (
-            <View key={category.id} className="mb-6">
+            <View key={category.id} className="mb-2">
               {/* <Text className="text-lg font-bold mb-3">{category.name} ({category.services.length})</Text> */}
 
               {category.services.map((service: any) => {
@@ -296,11 +296,11 @@ const SalonDetail = () => {
                     >
                       <View className="flex-1">
                         <Text className="font-bold text-md">{service.name}</Text>
-                         {service.description && (
+                        {service.description && (
                           <Text className="text-gray-700 text-xs mt-1">{service.description}</Text>
                         )}
                         <Text className="text-gray-700 font-medium text-sm mt-1">Duration : {service.duration}</Text>
-                       
+
                       </View>
                       <View className="items-end">
                         <Text className="font-bold">₹{service.price}</Text>

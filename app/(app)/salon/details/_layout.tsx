@@ -10,7 +10,6 @@ export default function DetailLayout() {
                     presentation: 'modal'
                 }}
             />
-
         </Stack>
     );
 }

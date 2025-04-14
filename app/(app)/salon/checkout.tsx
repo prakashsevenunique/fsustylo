@@ -20,7 +20,7 @@ const CheckoutScreen = () => {
   const [loading1, setLoading1] = useState(false);
   const [error, setError] = useState(null);
   const [selectedSeat, setSelectedSeat] = useState(null)
-  const { userInfo, fetchUserInfo } = useContext(UserContext);
+  const { userInfo, fetchUserInfo } = useContext(UserContext) as any;
   const [totalAmount, setTotal] = useState(0);
 
   useEffect(() => {
@@ -125,7 +125,7 @@ const CheckoutScreen = () => {
   async function getSchedule(salonId, date) {
     setLoading(true);
     setError(null);
-    const url = `/api/schedule/schedule-get?salonId=${"67dbe4a6fbe65a40a1ae3769"}&date=${"2025-04-01"}`;
+    const url = `/api/schedule/schedule-get?salonId=${salonId}&date=${date.date}`;
     try {
       const response = await axiosInstance.get(url);
       const transformedSlots = Object.entries(response.data.availableSlots).map(([time, seats]) => {
@@ -137,11 +137,11 @@ const CheckoutScreen = () => {
       });
       setTimeSlots(transformedSlots);
     } catch (err) {
-      setError('Failed to load schedule');
+      setError('No schedule found');
       if (error.response) {
         console.log(`Error: Received status code ${err.response.status}`);
       } else {
-        console.log(`Error: ${err.response}`);
+        console.log(`Error: ${err.message}`);
       }
     } finally {
       setLoading(false);

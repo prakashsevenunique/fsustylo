@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, Linking, Dimensions } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, Linking, Dimensions, Share } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
-import MapView, { Marker } from 'react-native-maps';
+// import MapView, { Marker } from 'react-native-maps';
 import SalonImageCarousel from '@/components/homePage/Carousel';
 import { router } from 'expo-router';
 
+
 const SalonDetailScreen = () => {
-  const { salon } = useLocalSearchParams();
+  const { salon } = useLocalSearchParams() as any;
   const parsedSalon = JSON.parse(salon);
 
   const socialLinks = parsedSalon.socialLinks || '{}';
@@ -22,6 +23,15 @@ const SalonDetailScreen = () => {
       </View>
     ));
   };
+
+  const shareSalonLocation = (latitude: number, longitude: number) => {
+    const message = `Check out this salon's location: https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+    Share.share({
+      message,
+      url: message,
+    }).catch((err) => console.error('Failed to share location:', err));
+  };
+
 
   return (
     <>
@@ -59,7 +69,7 @@ const SalonDetailScreen = () => {
             <Ionicons name="navigate" size={24} color="#E6007E" />
             <Text className="text-xs mt-1">Directions</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="items-center">
+          <TouchableOpacity className="items-center" onPress={() => shareSalonLocation(parsedSalon.latitude, parsedSalon.longitude)}>
             <Ionicons name="share-social" size={24} color="#E6007E" />
             <Text className="text-xs mt-1">Share</Text>
           </TouchableOpacity>
@@ -73,7 +83,7 @@ const SalonDetailScreen = () => {
         {/* Location Map */}
         <View className="px-6 py-4">
           <Text className="text-lg font-bold mb-3">Location</Text>
-          <View className="h-48 rounded-xl overflow-hidden">
+          {/* <View className="h-48 rounded-xl overflow-hidden">
             <MapView
               style={{ flex: 1,pointerEvents: 'none' }}
               initialRegion={{
@@ -95,7 +105,7 @@ const SalonDetailScreen = () => {
               />
              
             </MapView>
-          </View>
+          </View> */}
           <Text className="mt-2 text-gray-600">Address : {parsedSalon.salonAddress}</Text>
           <TouchableOpacity
             className="mt-2 flex-row items-center"

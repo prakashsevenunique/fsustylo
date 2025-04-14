@@ -86,7 +86,7 @@ export default function OTPInputScreen({ mobile, userExists }) {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             className="flex-1 bg-white"
         >
-            <View className="flex-1 items-center justify-center px-6">
+            <View className="flex-1 items-center justify-center px-2">
                 <Image source={require("@/assets/img/otp.jpg")} className="w-44 h-44 mb-4" resizeMode="contain" />
                 <Text className="text-gray-900 text-2xl font-bold mb-2">OTP Verification</Text>
                 <Text className="text-gray-600 text-center mb-2">Enter the 4-digit OTP sent to</Text>
@@ -137,7 +137,7 @@ export default function OTPInputScreen({ mobile, userExists }) {
                 </View>
 
                 {/* Referral Code Input (conditionally shown) */}
-                {(showReferral && userExists) && (
+                {(showReferral && !userExists) && (
                     <View className="w-full mt-6 mb-6">
                         <Text className="text-gray-600 mb-2">Referral Code (Optional)</Text>
                         <TextInput

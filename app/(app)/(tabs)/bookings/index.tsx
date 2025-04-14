@@ -9,7 +9,7 @@ import ReviewModal from '@/components/rating';
 
 export default function BookingsScreen() {
   const [activeTab, setActiveTab] = useState('Pending');
-  const { userInfo,fetchUserInfo } = useContext(UserContext) as any;
+  const { userInfo, fetchUserInfo } = useContext(UserContext) as any;
   const [booking, setBooking] = useState() as any;
   const [filterBooking, setFilterbooking] = useState([])
   const [indicatorPosition] = useState(new Animated.Value(0));
@@ -39,6 +39,7 @@ export default function BookingsScreen() {
         setIsVisible(false)
       }
     } catch (error) {
+      console.log(error.response)
       Alert.alert("Error submitting review:", error.message);
     }
   };
@@ -109,7 +110,7 @@ export default function BookingsScreen() {
 
       <View className="relative">
         {/* Horizontal ScrollView for Tabs */}
-        <ScrollView  refreshControl={
+        <ScrollView refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
@@ -240,7 +241,7 @@ export default function BookingsScreen() {
                       })} className="flex-1 items-center py-3 border-r border-gray-100">
                         <Text className="text-primary font-medium">Book Again</Text>
                       </TouchableOpacity>
-                      <TouchableOpacity onPress={() => { setIsVisible(true); setRatingSelected(item?.salonId?._id) }} className="flex-1 items-center py-3">
+                      <TouchableOpacity onPress={() => { setRatingSelected(item?.salonId?._id); setIsVisible(true); }} className="flex-1 items-center py-3">
                         <Text className="text-primary font-medium">Rate Service</Text>
                       </TouchableOpacity>
                     </View>

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, Image, FlatList, TouchableOpacity, SafeAreaView, TextInput, ScrollView, RefreshControl, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import axiosInstance from '@/utils/axiosInstance';
 import { UserContext } from '@/hooks/userInfo';
 import { imageBaseUrl } from '@/utils/helpingData';
@@ -14,7 +14,6 @@ export default function SalonListScreen() {
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const { type } = useLocalSearchParams();
-
 
     const SkeletonLoader = () => (
         <View className='flex items-center justify-center py-32'>
@@ -46,7 +45,7 @@ export default function SalonListScreen() {
         setLoading(true);
         try {
             const response = await axiosInstance.get(`/api/salon/${type}`, {
-                params: { ...location }
+                params: { ...location, maxDistance: 200 }
             });
             setSalonData(response.data?.salons || []);
         } catch (error) {
@@ -54,7 +53,7 @@ export default function SalonListScreen() {
         } finally {
             setLoading(false);
             setRefreshing(false);
-        } f
+        }
     };
 
     useEffect(() => {
@@ -63,80 +62,52 @@ export default function SalonListScreen() {
         }
     }, [location.latitude, location.longitude]);
 
-    const renderSalonItem = ({ item }: any) => (
+    const renderSalonItem = ({ item }) => (
         <TouchableOpacity
-            onPress={() => router.push(`/salon/${item._id}`)}
-            className="bg-white rounded-lg shadow-sm mb-3 mx-4 overflow-hidden"
-            style={{
-                elevation: 2,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.1,
-                shadowRadius: 3,
-            }}
+            className="bg-white p-4 rounded-lg shadow-sm mb-3 mx-3"
+            onPress={() => router.push({
+                pathname: '/(app)/salon/details',
+                params: { salon: JSON.stringify(item) },
+            })}
         >
-            <View className="flex-row h-32">
+            <View className="flex-row">
                 <Image
-                    source={{
-                        uri: `${imageBaseUrl}/${item?.salonPhotos[0]}`,
-                        cache: 'force-cache'
-                    }}
-                    className="w-32 h-full rounded-l-lg"
-                    resizeMode="cover"
+                    source={{ uri: item.salonPhotos[0] ? `${imageBaseUrl}/${item.salonPhotos[0]}` : 'https://via.placeholder.com/150', cache: 'force-cache' }}
+                    className="w-32 min-h-32 max-h-44 rounded-l-lg"
                     defaultSource={require('@/assets/img/logo.png')}
                 />
-                <View className="flex-1 p-3">
-                    <View className="flex-row justify-between items-start">
-                        <View className="flex-1">
-                            <Text className="text-md font-bold text-gray-800" numberOfLines={1}>
-                                {item?.salonName?.toUpperCase()}
-                            </Text>
-                            <Text className="text-gray-500 text-xs mt-1" numberOfLines={1}>
-                                {item?.salonTitle}
-                            </Text>
-                        </View>
-                        {/* <TouchableOpacity onPress={() => null}>
-                            <Ionicons
-                                name={item?.isFavorite ? "heart" : "heart-outline"}
-                                size={24}
-                                color={item?.isFavorite ? "#E6007E" : "#9CA3AF"}
-                            />
-                        </TouchableOpacity> */}
+                <View className="flex-1 pl-2">
+                    <Text className="font-bold text-lg">{item.salonName}</Text>
+                    <View className="flex-row items-center mt-1">
+                        <Ionicons name="location-outline" size={14} color="#6B7280" />
+                        <Text className="text-gray-500 text-xs ml-1">{item.salonAddress}</Text>
                     </View>
 
                     <View className="flex-row items-center mt-2">
-                        {/* <Ionicons name="star" size={16} color="#f59e0b" /> */}
-                        {/* <Text className="text-amber-500 text-sm ml-1">{item?.reviews.length || 'New'}</Text> */}
-                        {/* <Text className="text-gray-400 mx-2">•</Text> */}
-                        <Ionicons name="location-outline" size={14} color="#9CA3AF" />
-                        <Text className="text-gray-500 text-sm ml-1">
-                            {((item.distance || 0) * 100).toFixed(1)} km
+                        <MaterialIcons name="star" size={16} color="#FFD700" />
+                        <Text className="text-gray-700 ml-1 text-sm">
+                            {item.averageRating?.toFixed(1) || 'New'} ({item.reviews.length || 0})
                         </Text>
+                        <Text className="text-gray-500 text-sm mx-2">•</Text>
+                        <Ionicons name="navigate-outline" size={14} color="#6B7280" />
+                        <Text className="text-gray-500 text-xs ml-1">{item.distance?.toFixed(1) || 0} km</Text>
                     </View>
 
-                    <Text className="text-gray-500 text-xs mt-2" numberOfLines={1}>
-                        {item?.salonAddress}
-                    </Text>
+                    {item.minServicePrice && (
+                        <Text className="text-pink-600 text-xs mt-2">
+                            Starts from ₹{item.minServicePrice}
+                        </Text>
+                    )}
 
-                    {/* <View className="flex-row flex-wrap mt-2">
-                        {item.services?.slice(0, 3).map((service: any, index: number) => (
-                            <View 
-                                key={`${item._id}-${index}`} 
-                                className="bg-pink-50 rounded-full px-2 py-1 mr-1 mb-1"
-                            >
-                                <Text className="text-pink-600 text-xs">
-                                    {service?.category || "Service"}
-                                </Text>
-                            </View>
-                        ))}
-                        {item.services?.length > 3 && (
-                            <View className="bg-gray-100 rounded-full px-2 py-1">
-                                <Text className="text-gray-600 text-xs">
-                                    +{item.services.length - 3}
-                                </Text>
-                            </View>
-                        )}
-                    </View> */}
+                    {item.facilities?.length > 0 && (
+                        <View className="flex-row flex-wrap mt-1">
+                            {item.facilities.slice(0, 3).map((facility, index) => (
+                                <View key={index} className="bg-gray-100 px-2 py-1 rounded-full mr-2 mb-1">
+                                    <Text className="text-gray-700 text-xs">{facility}</Text>
+                                </View>
+                            ))}
+                        </View>
+                    )}
                 </View>
             </View>
         </TouchableOpacity>
@@ -154,18 +125,18 @@ export default function SalonListScreen() {
 
             {/* Search and Filters */}
             <View className="bg-white px-4 pt-3 pb-2 shadow-sm">
-                <View className="flex-row items-center bg-white rounded-lg px-4 py-1 border border-gray-200">
-                    <Ionicons name="search" size={18} color="#9CA3AF" />
+                <View className="flex-row items-center bg-gray-100 rounded-lg px-4 py-2 border border-gray-200">
+                    <Ionicons name="search" size={20} color="gray" />
                     <TextInput
                         placeholder="Search salons..."
                         placeholderTextColor="#9CA3AF"
-                        className="flex-1 ml-2 text-gray-800"
+                        className="ml-2 py-2 flex-1 text-gray-800"
                         value={searchQuery}
                         onChangeText={setSearchQuery}
                         onFocus={() => router.push('/salon/searchSalon')}
                     />
                     {searchQuery && (
-                        <TouchableOpacity onPress={() => setSearchQuery('')}>
+                        <TouchableOpacity onPress={() => setSearchQuery('')} className="ml-2">
                             <Ionicons name="close-circle" size={18} color="#9CA3AF" />
                         </TouchableOpacity>
                     )}
@@ -173,27 +144,27 @@ export default function SalonListScreen() {
             </View>
 
             {/* Salon List */}
-            {loading ? (
-                <SkeletonLoader />
-            ) : salonData.length > 0 ? (
-                <FlatList
-                    data={salonData}
-                    renderItem={renderSalonItem}
-                    keyExtractor={item => item._id}
-                    contentContainerStyle={{ paddingVertical: 12 }}
-                    showsVerticalScrollIndicator={false}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={refreshing}
-                            onRefresh={getNearbySalons}
-                            colors={["#E6007E"]}
-                            tintColor="#E6007E"
-                        />
-                    }
-                />
-            ) : (
-                <NoResultsFound />
-            )}
+                {loading ? (
+                    <SkeletonLoader />
+                ) : salonData.length > 0 ? (
+                    <FlatList
+                        data={salonData}
+                        renderItem={renderSalonItem}
+                        keyExtractor={item => item._id}
+                        contentContainerStyle={{ paddingVertical: 12 }}
+                        showsVerticalScrollIndicator={false}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={getNearbySalons}
+                                colors={["#E6007E"]}
+                                tintColor="#E6007E"
+                            />
+                        }
+                    />
+                ) : (
+                    <NoResultsFound />
+                )}
         </SafeAreaView>
     );
 }

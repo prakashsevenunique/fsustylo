@@ -9,14 +9,18 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.prakash.seven",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/img/logo.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.prakashunique.seven"
+      "package": "com.prakash.seven"
     },
     "web": {
       "bundler": "metro",
@@ -43,7 +47,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "056f9285-f1d2-47d3-b240-699aa9fc2bc2"
+        "projectId": "beaccf75-3957-496d-a2e4-220466d407e8"
       }
     }
   }
