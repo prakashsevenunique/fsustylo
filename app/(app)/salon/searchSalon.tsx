@@ -81,19 +81,7 @@ export default function SearchSalonScreen() {
 
   // Reset all filters
   const resetFilters = () => {
-    setGender('');
-    setServiceTitle('');
-    setMinRate(0);
-    setMaxRate(10000);
-    setSearchQuery('');
-    setSortBy('distance');
-    setSortOrder('asc');
-    setMaxDistance(100);
-    setMinReviewCount(0);
-    setMinRating(0);
-    setSelectedFacilities([]);
-    setRefreshing(true);
-    setIsFilterModalVisible(false);
+    router.replace('/(app)/salon/searchSalon');
   };
 
   // Toggle facility selection
@@ -126,7 +114,7 @@ export default function SearchSalonScreen() {
       <View className="flex-row">
         <Image
           source={{ uri: item.salonPhotos[0] ? `${imageBaseUrl}/${item.salonPhotos[0]}` : 'https://via.placeholder.com/150', cache: 'force-cache' }}
-          className="w-32 h-full rounded-l-lg"
+          className="w-32 mr-2 h-full rounded-l-lg"
           defaultSource={require('@/assets/img/logo.png')}
         />
         <View className="flex-1">

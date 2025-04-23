@@ -20,6 +20,7 @@ export default function MyReviewsScreen() {
         if (response.data.success) {
           setReviews(response.data.reviews);
         }
+        console.log('Reviews:', response.data);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -28,7 +29,7 @@ export default function MyReviewsScreen() {
     };
 
     fetchReviews();
-  }, []);
+  }, [userInfo]);
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -56,9 +57,9 @@ export default function MyReviewsScreen() {
         <Image
           source={{
             uri: item.salon.mainPhoto
-              ? `${imageBaseUrl}/${item.salon.mainPhoto}`
-              : 'https://via.placeholder.com/150'
+              && `${imageBaseUrl}/${item.salon.mainPhoto}`
           }}
+          defaultSource={require('@/assets/img/logo.png')}
           className="w-24 h-24 rounded-md mr-3"
         />
         <View className="flex-1">

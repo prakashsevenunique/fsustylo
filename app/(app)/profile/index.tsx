@@ -1,8 +1,9 @@
 import { View, Text, Image, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import { router } from 'expo-router';
-import { Ionicons, Feather } from '@expo/vector-icons';
+import { Ionicons, Feather, FontAwesome } from '@expo/vector-icons';
 import { useContext, useState } from 'react';
 import { UserContext } from '@/hooks/userInfo';
+import { imageBaseUrl } from '@/utils/helpingData';
 
 export default function ProfileScreen() {
   const [refreshing, setRefreshing] = useState(false);
@@ -35,7 +36,7 @@ export default function ProfileScreen() {
       >
         <View className="items-center mt-6">
           <View className="relative border rounded-full border-gray-400 border-2 shadow-md">
-            <Image source={{ uri: 'https://static.vecteezy.com/system/resources/thumbnails/035/857/779/small/people-face-avatar-icon-cartoon-character-png.png' }} className="w-24 h-24 rounded-full" />
+            <Image source={{ uri: userInfo.profilePhoto ? `${imageBaseUrl}/${userInfo.profilePhoto}` : "https://static.vecteezy.com/system/resources/thumbnails/035/857/779/small/people-face-avatar-icon-cartoon-character-png.png"  }} className="w-24 h-24 rounded-full" />
             <TouchableOpacity onPress={() => router.push("/(app)/profile/edit")} className="absolute bottom-0 right-0 bg-pink-600 p-2 rounded-full border border-white">
               <Feather name="edit-2" size={14} color="white" />
             </TouchableOpacity>
@@ -52,12 +53,12 @@ export default function ProfileScreen() {
         </View>
 
         {/* Action Buttons */}
-        <View className="flex-row justify-around mt-6">
-          {[{ name: 'Notifications', icon: 'bell', routes: "/notification" }, { name: 'Orders', icon: 'shopping-cart', routes: "/shop" }, { name: 'Settings', icon: 'settings', routes: "/profile/setting" }].map((item: any, index) => (
+        <View className="flex-row justify-around gap-1 mt-6">
+          {[{ name: 'Notifications', icon: 'bell', routes: "/notification" }, { name: 'Orders', icon: 'shopping-cart', routes: "/(app)/(tabs)/bookings" }, { name: 'Settings', icon: 'settings', routes: "/profile/setting" }].map((item: any, index) => (
             <TouchableOpacity
               key={index}
               onPress={() => router.push(item.routes)}
-              className="items-center p-3 bg-white rounded-lg shadow-md w-28"
+              className="items-center p-3 py-4 bg-white rounded-lg shadow-md w-[30%]"
             >
               <Feather name={item.icon} size={24} color="black" />
               <Text className="mt-1 text-xs font-semibold text-gray-700">{item.name}</Text>
@@ -68,10 +69,10 @@ export default function ProfileScreen() {
         {/* Profile Sections */}
         <View className="mt-6">
           <Text className="text-gray-700 font-semibold">My Account</Text>
-          {[{ name: 'My Profile', icon: 'user', route: "/profile/edit" }, { name: 'My Wallet', icon: 'dollar-sign', route: "/profile/wallet" }, { name: 'Manage Address', icon: 'map-pin', route: "/profile/address" }, { name: 'My Reviews', icon: 'thumbs-up', route: "/profile/myReview" }].map((item, index) => (
-            <TouchableOpacity key={index} onPress={() => router.push(item.route)} className="flex-row items-center justify-between p-4 bg-white rounded-lg shadow-sm mt-2">
+          {[{ name: 'My Profile', icon: 'user', route: "/profile/edit" }, { name: 'My Wallet', icon: 'rupes', route: "/profile/wallet" }, { name: 'Manage Address', icon: 'map-pin', route: "/profile/address" }, { name: 'My Reviews', icon: 'thumbs-up', route: "/profile/myReview" }].map((item, index) => (
+            <TouchableOpacity key={index} onPress={() => router.push(item.route)} className="flex-row items-center justify-between p-5 bg-white rounded-lg shadow-sm mt-2">
               <View className="flex-row items-center">
-                <Feather name={item.icon} size={20} color="black" />
+                {item.icon != "rupes" ? <Feather name={item.icon} size={20} color="black" /> : <FontAwesome className='px-1.5' name="rupee" size={20} color="black" />}
                 <Text className="ml-3 text-gray-700 font-medium">{item.name}</Text>
               </View>
               <Feather name="chevron-right" size={20} color="gray" />
@@ -81,8 +82,8 @@ export default function ProfileScreen() {
 
         <View className="mt-6">
           <Text className="text-gray-700 font-semibold">My Offer</Text>
-          {[{ name: 'Offers & Deals', icon: 'tag', route: "/profile/offers" }, { name: 'Refer & Earn', icon: 'user-plus', route: "/profile/referal" }].map((item, index) => (
-            <TouchableOpacity key={index} onPress={() => router.push(item.route)} className="flex-row items-center justify-between p-4 bg-white rounded-lg shadow-sm mt-2">
+          {[{ name: 'Refer & Earn', icon: 'user-plus', route: "/profile/referal" }].map((item, index) => (
+            <TouchableOpacity key={index} onPress={() => router.push(item.route)} className="flex-row items-center justify-between p-5 bg-white rounded-lg shadow-sm mt-2">
               <View className="flex-row items-center">
                 <Feather name={item.icon} size={20} color="black" />
                 <Text className="ml-3 text-gray-700 font-medium">{item.name}</Text>
@@ -96,7 +97,7 @@ export default function ProfileScreen() {
         <View className="mt-6 mb-8">
           <Text className="text-gray-700 font-semibold">Help & Support</Text>
           {[{ name: 'About App', icon: 'tablet', route: "/profile/policies/about_app" }, { name: 'About Us', icon: 'info', route: "/profile/policies/about_us" }, { name: 'Privacy Policy', icon: 'lock', route: "/profile/policies" }, { name: 'Terms & Conditions', icon: 'clipboard', route: "/profile/policies/term&condition" }, { name: 'Contact Us', icon: 'help-circle', route: "/profile/raiseTicket" }].map((item: any, index) => (
-            <TouchableOpacity onPress={() => router.push(item.route)} key={index} className="flex-row items-center justify-between p-4 bg-white rounded-lg shadow-sm mt-2">
+            <TouchableOpacity onPress={() => router.push(item.route)} key={index} className="flex-row items-center justify-between p-5 bg-white rounded-lg shadow-sm mt-2">
               <View className="flex-row items-center">
                 <Feather name={item.icon} size={20} color="black" />
                 <Text className="ml-3 text-gray-700 font-medium">{item.name}</Text>

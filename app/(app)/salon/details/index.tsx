@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, Linking, Dimensions, Share } from 'react-native';
+import React from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Image, Linking, Share } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 // import MapView, { Marker } from 'react-native-maps';
 import SalonImageCarousel from '@/components/homePage/Carousel';
 import { router } from 'expo-router';
-
+import SalonReviewsScreen from './reviews';
 
 const SalonDetailScreen = () => {
   const { salon } = useLocalSearchParams() as any;
@@ -32,6 +32,39 @@ const SalonDetailScreen = () => {
     }).catch((err) => console.error('Failed to share location:', err));
   };
 
+  // Function to render star ratings
+  const renderStars = (rating: number) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 >= 0.5;
+
+    for (let i = 0; i < 5; i++) {
+      if (i < fullStars) {
+        stars.push(<Ionicons key={i} name="star" size={16} color="#f59e0b" />);
+      } else if (i === fullStars && halfStar) {
+        stars.push(<Ionicons key={i} name="star-half" size={16} color="#f59e0b" />);
+      } else {
+        stars.push(<Ionicons key={i} name="star-outline" size={16} color="#f59e0b" />);
+      }
+    }
+
+    return (
+      <View className="flex-row">{stars}</View>
+    );
+  };
+
+  // Navigate to reviews page
+  const navigateToReviews = () => {
+    router.push({
+      pathname: '/(app)/salon/details/reviews',
+      params: {
+        salonId: parsedSalon._id,
+        salonName: parsedSalon.salonName,
+        reviews: JSON.stringify(parsedSalon.reviews),
+        averageRating: parsedSalon.averageRating || 0
+      }
+    });
+  };
 
   return (
     <>
@@ -48,15 +81,18 @@ const SalonDetailScreen = () => {
           <Text className="text-2xl font-bold text-gray-900">{parsedSalon.salonName}</Text>
           <Text className="text-gray-500 mt-1">{parsedSalon.salonTitle}</Text>
 
-          <View className="flex-row items-center mt-3">
+          <TouchableOpacity
+            className="flex-row items-center mt-3"
+            onPress={navigateToReviews}
+          >
             <Ionicons name="star" size={16} color="#f59e0b" />
-            <Text className="text-amber-500 ml-1">5.0</Text>
-            <Text className="text-gray-500 ml-3">{parsedSalon?.reviews?.length} reviews</Text>
-            <View className="flex-row ml-3">
-              <Ionicons name="location-sharp" size={16} color="#E6007E" />
-              <Text className="text-pink-600 ml-1">2.5 km</Text>
-            </View>
-          </View>
+            <Text className="text-gray-700 ml-1 text-sm">
+              {parsedSalon.averageRating?.toFixed(1) || 'New'} ({parsedSalon.reviews?.length || 0})
+            </Text>
+            {parsedSalon.reviews?.length > 0 && (
+              <Text className="text-pink-600 ml-2 text-sm">See all reviews</Text>
+            )}
+          </TouchableOpacity>
         </View>
 
         {/* Quick Actions */}
@@ -157,9 +193,6 @@ const SalonDetailScreen = () => {
                   )}
                 </View>
               </View>
-              {/* <TouchableOpacity className="mt-3 bg-pink-600 py-2 rounded-full items-center">
-              <Text className="text-white font-medium">Book Now</Text>
-            </TouchableOpacity> */}
             </View>
           ))}
         </View>
@@ -192,16 +225,9 @@ const SalonDetailScreen = () => {
                 <FontAwesome name="twitter" size={16} color="white" />
               </TouchableOpacity>
             )}
-            {/* {parsedSalon.mobile && (
-              <TouchableOpacity
-                className="bg-green-500 w-10 h-10 rounded-full items-center justify-center"
-                onPress={() => Linking.openURL(`tel:${parsedSalon.mobile}`)}
-              >
-                <FontAwesome name="whatsapp" size={16} color="white" />
-              </TouchableOpacity>
-            )} */}
           </View>
         </View>
+        {/* <SalonReviewsScreen/> */}
       </ScrollView>
     </>
   );

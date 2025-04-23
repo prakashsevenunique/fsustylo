@@ -34,7 +34,6 @@ const CheckoutScreen = () => {
     for (let i = 0; i < 30; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
-
       dateArray.push({
         date,
         day: date.getDate(),
@@ -125,7 +124,8 @@ const CheckoutScreen = () => {
   async function getSchedule(salonId, date) {
     setLoading(true);
     setError(null);
-    const url = `/api/schedule/schedule-get?salonId=${salonId}&date=${date.date}`;
+    const formattedDate = date.date.toISOString().slice(0, 10);
+    const url = `/api/schedule/schedule-get?salonId=${salonId}&date=${formattedDate}`;
     try {
       const response = await axiosInstance.get(url);
       const transformedSlots = Object.entries(response.data.availableSlots).map(([time, seats]) => {
@@ -237,7 +237,7 @@ const CheckoutScreen = () => {
             <Text className="text-red-500 text-sm py-2">{error}</Text>
           ) : (
             <>
-              <Text className="font-bold text-lg mb-2">Select Time</Text>
+              {timeSlots.length > 0 && <Text className="font-bold text-lg mb-2">Select Time</Text>}
               <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-3">
                 {timeSlots.map((slot, index) => (
                   <TouchableOpacity
@@ -251,8 +251,6 @@ const CheckoutScreen = () => {
                     <Text className={`text-sm text-gray-400 ${selectedTime === slot.time ? 'text-white' : 'text-gray-800'}`}>
                       {slot.time}
                     </Text>
-
-
                   </TouchableOpacity>
                 ))}
               </ScrollView>
@@ -265,14 +263,14 @@ const CheckoutScreen = () => {
                       ?.seats.map(seat => (
                         <TouchableOpacity
                           key={seat.seatNumber}
-                          className={`w-12 h-12 m-1 items-center justify-center ${selectedSeat === seat.seatNumber ? 'bg-gray-500' : ''} rounded-lg ${seat.status === 'available'
+                          className={`w-14 h-14 m-1 items-center justify-center ${selectedSeat === seat.seatNumber ? 'bg-gray-500' : ''} rounded-lg ${seat.status == 'available'
                             ? selectedSeat === seat.seatNumber ? 'bg-gray-500' : 'bg-gray-300'
                             : 'bg-gray-100' // Disabled if not available
                             }`}
-                          onPress={() => seat.status === 'available' && setSelectedSeat(seat.seatNumber)}
-                          disabled={seat.status !== 'available'} // Disable the touch if not available
+                          onPress={() => seat.status == 'available' ? setSelectedSeat(seat.seatNumber) : null}
+                          disabled={seat.status != 'available'}
                         >
-                          <Text className={`${selectedSeat === seat.seatNumber ? 'bg-gray-500 text-gray-100' : 'bg-gray-300'}`}>{seat.seatNumber}</Text>
+                          <Text className={` text-lg ${selectedSeat === seat.seatNumber ? 'bg-gray-500 text-gray-100' : seat.status != "available" ? "bg-gray-100" : "bg-gray-300"}`}>{seat.seatNumber}</Text>
                         </TouchableOpacity>
                       ))}
                   </View>
@@ -281,9 +279,8 @@ const CheckoutScreen = () => {
             </>
           )}
         </View>
-
         {/* Promo Code */}
-        <View className="bg-white rounded-lg p-4 mb-2 shadow-sm">
+        {/* <View className="bg-white rounded-lg p-4 mb-2 shadow-sm">
           <Text className="font-bold text-lg mb-3">Promo Code</Text>
           <View className="flex-row">
             <TextInput
@@ -304,7 +301,7 @@ const CheckoutScreen = () => {
               {discount * 100}% discount applied!
             </Text>
           )}
-        </View>
+        </View> */}
 
         {/* Payment Summary */}
         <View className="bg-white rounded-lg p-4 mb-3 shadow-sm">
@@ -330,8 +327,6 @@ const CheckoutScreen = () => {
           </View>
         </View>
       </ScrollView>
-
-      {/* Continue Button */}
       <View className="relative mx-4 my-2 py-4">
         <TouchableOpacity
           className={`rounded-lg items-center shadow-md py-3 ${userInfo?.wallet?.balance < totalAmount ? 'bg-gray-500' : 'bg-gray-700'}`}

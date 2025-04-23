@@ -10,6 +10,13 @@ export default function DetailLayout() {
                     presentation: 'modal'
                 }}
             />
+            <Stack.Screen
+                name="reviews"
+                options={{
+                    headerShown: false,
+                    presentation: 'modal'
+                }}
+            />
         </Stack>
     );
 }

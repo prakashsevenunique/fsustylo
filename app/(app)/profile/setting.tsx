@@ -41,23 +41,23 @@ export default function SettingsScreen() {
             />
           )
         },
-        {
-          icon: <MaterialCommunityIcons name="theme-light-dark" size={20} color="#E6007E" />,
-          title: 'Dark Mode',
-          rightComponent: (
-            <Switch
-              value={darkModeEnabled}
-              onValueChange={setDarkModeEnabled}
-              trackColor={{ false: '#767577', true: '#E6007E' }}
-            />
-          )
-        },
-        {
-          icon: <Ionicons name="language" size={20} color="#E6007E" />,
-          title: 'Language',
-          rightText: 'English',
-          action: () => router.back()
-        }
+        // {
+        //   icon: <MaterialCommunityIcons name="theme-light-dark" size={20} color="#E6007E" />,
+        //   title: 'Dark Mode',
+        //   rightComponent: (
+        //     <Switch
+        //       value={darkModeEnabled}
+        //       onValueChange={setDarkModeEnabled}
+        //       trackColor={{ false: '#767577', true: '#E6007E' }}
+        //     />
+        //   )
+        // },
+        // {
+        //   icon: <Ionicons name="language" size={20} color="#E6007E" />,
+        //   title: 'Language',
+        //   rightText: 'English',
+        //   action: () => router.back()
+        // }
       ]
     },
     {

@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, TouchableOpacity, Image, Animated, ActivityIndicator, Modal, Alert, RefreshControl } from 'react-native';
 import { router } from 'expo-router';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import axiosInstance from '@/utils/axiosInstance';
 import { UserContext } from '@/hooks/userInfo';
@@ -8,7 +8,7 @@ import { imageBaseUrl } from '@/utils/helpingData';
 import ReviewModal from '@/components/rating';
 
 export default function BookingsScreen() {
-  const [activeTab, setActiveTab] = useState('Pending');
+  const [activeTab, setActiveTab] = useState('Upcoming');
   const { userInfo, fetchUserInfo } = useContext(UserContext) as any;
   const [booking, setBooking] = useState() as any;
   const [filterBooking, setFilterbooking] = useState([])
@@ -31,32 +31,31 @@ export default function BookingsScreen() {
 
   const handleReviewSubmit = async (reviewData, setReview, setRating) => {
     try {
-      const response = await axiosInstance.post(`/api/salon/review/${ratingSelected}`, { ...reviewData, mobileNumber: userInfo.mobileNumber });
-      if (response.status) {
+      const response = await axiosInstance.post(`/api/salon/review/${ratingSelected}`, { ...reviewData, phone: userInfo.mobileNumber });
+      if (response) {
         setRatingSelected("")
         setReview('')
         setRating(0)
         setIsVisible(false)
       }
     } catch (error) {
-      console.log(error.response)
       Alert.alert("Error submitting review:", error.message);
     }
   };
 
-  const tabs = ['Pending', 'Confirmed', 'Completed', 'Cancelled'];
+  const tabs = ['Upcoming', 'Completed', 'Cancelled'];
 
   const handleTabPress = (tab: any, index: number) => {
     setActiveTab(tab);
     Animated.spring(indicatorPosition, {
       toValue: index * 100,
-      useNativeDriver: false,
+      useNativeDriver: true,
     }).start();
   };
 
   const cancelBooking = async () => {
     try {
-      const response = await axiosInstance.post(`/api/booking/cancel/${selectId}`);
+      await axiosInstance.post(`/api/booking/cancel/${selectId}`, { cancelReason });
       setSelectedId("")
       setIsModalVisible(false);
       getUserBooking()
@@ -65,7 +64,12 @@ export default function BookingsScreen() {
       Alert.alert("Error", error.message);
     }
   };
+
   const handleCancelConfirmation = () => {
+    if (!cancelReason) {
+      Alert.alert("Required", "Please select a reason for cancellation");
+      return;
+    }
     cancelBooking()
   };
 
@@ -88,11 +92,24 @@ export default function BookingsScreen() {
 
   useEffect(() => {
     if (booking) {
-      const filteredBookings = booking.filter((item: any) => item.status === activeTab);
+      const filteredBookings = booking.filter((item: any) => item.status === (activeTab == "Upcoming" ? "Confirmed" : activeTab));
       setFilterbooking(filteredBookings)
     }
   }, [activeTab, booking])
 
+  const [cancelReason, setCancelReason] = useState('');
+  const [showReasonDropdown, setShowReasonDropdown] = useState(false);
+
+  const cancellationReasons = [
+    "Schedule conflict",
+    "Found another salon",
+    "Service no longer needed",
+    "Price concerns",
+    "Health issues",
+    "Transportation issues",
+    "Weather conditions",
+    "Other"
+  ];
 
   return (
     <View className="flex-1 bg-gray-50">
@@ -109,7 +126,6 @@ export default function BookingsScreen() {
       </View>
 
       <View className="relative">
-        {/* Horizontal ScrollView for Tabs */}
         <ScrollView refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -123,10 +139,10 @@ export default function BookingsScreen() {
             {tabs.map((tab, index) => (
               <TouchableOpacity
                 key={tab}
-                className={`flex-1 items-center py-3 px-4 ${activeTab === tab ? 'border-b-2 border-primary' : ''}`}
+                className={`flex-1 items-center py-3 px-6 ${activeTab === tab ? 'border-b-2 border-primary' : ''}`}
                 onPress={() => handleTabPress(tab, index)}
               >
-                <Text className={`font-medium ${activeTab === tab ? 'text-primary' : 'text-gray-500'}`}>
+                <Text className={`font-bold ${activeTab === tab ? 'text-primary' : 'text-gray-500'}`}>
                   {tab}
                 </Text>
               </TouchableOpacity>
@@ -251,30 +267,99 @@ export default function BookingsScreen() {
             )}
           </View>
         </ScrollView>}
-
       <Modal
         animationType="slide"
         transparent={true}
         visible={isModalVisible}
         onRequestClose={handleCancelAction}
       >
-        <View style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }} className="flex-1 justify-center items-center">
-          <View className="bg-white p-10 rounded-2xl shadow-lg w-[95%]">
-            <Text className="text-xl font-semibold text-gray-800 mb-6">
-              Are you sure you want to cancel the booking?
-            </Text>
-            <View className="flex-row justify-evenly mt-4">
+        <View style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }} className="flex-1 justify-center items-center">
+          <View className="bg-white p-6 rounded-2xl shadow-xl w-[90%] mx-auto">
+            <View className="items-center mb-4">
+              <View className="w-16 h-16 rounded-full bg-red-100 items-center justify-center mb-4">
+                <MaterialIcons name="cancel" size={32} color="#EF4444" />
+              </View>
+              <Text className="text-xl font-bold text-gray-800 text-center">
+                Cancel Booking?
+              </Text>
+              <Text className="text-gray-500 mt-2 text-center">
+                Please select a reason for cancellation.
+              </Text>
+            </View>
+
+            {/* Dropdown Select for Cancellation Reason */}
+            <View className="mt-4 mb-5">
+              <Text className="text-gray-700 font-medium mb-2">Reason for cancellation:</Text>
+
+              {/* Dropdown Container with Relative Positioning */}
+              <View className="relative">
+                {/* Dropdown Trigger */}
+                <TouchableOpacity
+                  onPress={() => setShowReasonDropdown(!showReasonDropdown)}
+                  className="border border-gray-300 rounded-xl bg-gray-50 px-4 py-3.5 flex-row justify-between items-center"
+                >
+                  <Text className={cancelReason ? "text-gray-800" : "text-gray-400"}>
+                    {cancelReason || "Select a reason..."}
+                  </Text>
+                  <AntDesign
+                    name={showReasonDropdown ? "up" : "down"}
+                    size={16}
+                    color="#6B7280"
+                  />
+                </TouchableOpacity>
+
+                {/* Dropdown Options - Absolutely Positioned Relative to Parent */}
+                {showReasonDropdown && (
+                  <View className="absolute top-full left-0 right-0 mt-1 border border-gray-300 rounded-xl bg-white shadow-md z-10 max-h-48">
+                    <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
+                      {cancellationReasons.map((reason, index) => (
+                        <TouchableOpacity
+                          key={index}
+                          className={`px-4 py-3 ${index < cancellationReasons.length - 1 ? "border-b border-gray-100" : ""
+                            } ${reason === cancelReason ? "bg-pink-50" : ""}`}
+                          onPress={() => {
+                            setCancelReason(reason);
+                            setShowReasonDropdown(false);
+                          }}
+                        >
+                          <Text className={`${reason === cancelReason ? "text-pink-600 font-medium" : "text-gray-700"
+                            }`}>
+                            {reason}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </ScrollView>
+                  </View>
+                )}
+              </View>
+            </View>
+
+            <View className="flex-row justify-between mt-2">
               <TouchableOpacity
-                onPress={() => handleCancelConfirmation()}
-                className="bg-red-500 py-2 px-6 rounded-lg"
+                onPress={() => {
+                  handleCancelAction();
+                  setCancelReason('');
+                  setShowReasonDropdown(false);
+                }}
+                className="flex-1 mr-2 bg-gray-200 py-3.5 rounded-xl"
               >
-                <Text className="text-white font-semibold">Yes, Cancel</Text>
+                <Text className="text-gray-700 font-semibold text-center">Keep Booking</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={handleCancelAction}
-                className="bg-gray-200 py-2 px-6 rounded-lg"
+                onPress={() => {
+                  if (cancelReason) {
+                    handleCancelConfirmation();
+                    setCancelReason('');
+                    setShowReasonDropdown(false);
+                  } else {
+                    Alert.alert("Required", "Please select a reason for cancellation");
+                  }
+                }}
+                className={`flex-1 ml-2 py-3.5 rounded-xl ${cancelReason ? "bg-red-500" : "bg-red-300"
+                  }`}
+                disabled={!cancelReason}
               >
-                <Text className="text-gray-700 font-semibold">No, Keep it</Text>
+                <Text className="text-white font-semibold text-center">Yes, Cancel</Text>
               </TouchableOpacity>
             </View>
           </View>

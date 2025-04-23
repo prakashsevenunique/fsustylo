@@ -9,7 +9,7 @@ export default function WalletScreen() {
     const [isAddMoneyModalVisible, setIsAddMoneyModalVisible] = useState(false);
     const [amount, setAmount] = useState('');
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('UPI');
-    const { userInfo ,fetchUserInfo} = useContext(UserContext) as any;
+    const { userInfo, fetchUserInfo } = useContext(UserContext) as any;
     const [loading, setLoading] = useState(false);
     const [creditTransactions, setCreditTransactions] = useState([]);
     const [debitTransactions, setDebitTransactions] = useState([]);
@@ -18,7 +18,7 @@ export default function WalletScreen() {
     const [refreshing, setRefreshing] = useState(false);
 
     const paymentMethods = [
-        { id: '1', name: 'UPI', icon: 'attach-money', provider: 'Any UPI App' },
+        { id: '1', name: 'UPI', icon: 'currency-rupee', provider: 'Any UPI App' },
         { id: '2', name: 'Credit Card', icon: 'credit-card', provider: 'VISA/Mastercard' },
         { id: '3', name: 'Debit Card', icon: 'credit-card', provider: 'VISA/Mastercard' },
         { id: '4', name: 'Net Banking', icon: 'money', provider: 'All Banks' },
@@ -44,7 +44,7 @@ export default function WalletScreen() {
                 id: txn._id,
                 type: 'credit',
                 amount: txn.amount,
-                description: 'Wallet Top-up',
+                description: txn.description || 'Wallet Top-up',
                 date: new Date(txn.createdAt).toLocaleDateString(),
                 time: new Date(txn.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 icon: 'arrow-down',
@@ -53,13 +53,12 @@ export default function WalletScreen() {
             }));
             setCreditTransactions(formattedCredit);
 
-            // Fetch debit transactions (payOut)
             const debitResponse = await axiosInstance.get(`/api/payment/payOut/report?userId=${userInfo._id}`);
             const formattedDebit = debitResponse?.data?.data.map((txn: any) => ({
                 id: txn._id,
                 type: 'debit',
                 amount: txn.amount,
-                description: 'Paid for the order',
+                description: txn.description || 'Paid for the order',
                 date: new Date(txn.createdAt).toLocaleDateString(),
                 time: new Date(txn.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 icon: 'arrow-up',

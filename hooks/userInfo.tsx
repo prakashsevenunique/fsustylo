@@ -19,6 +19,7 @@ export const UserProvider = ({ children }: any) => {
         setToken(parsedData);
     };
 
+
     const getCurrentLocation = async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== "granted") {
@@ -49,7 +50,6 @@ export const UserProvider = ({ children }: any) => {
 
     const updateLocation = async (mobileNumber: string, latitude: string, longitude: string) => {
         try {
-            console.log(mobileNumber)
             const response = await axiosInstance.post(
                 '/api/user/update-location', {
                 mobileNumber,
@@ -57,7 +57,6 @@ export const UserProvider = ({ children }: any) => {
                 longitude
             },
             );
-            console.log("location updated");
         } catch (error: any) {
             console.log("location", error.message)
         }
@@ -113,7 +112,7 @@ export const UserProvider = ({ children }: any) => {
     }, [userInfo, location])
 
     return (
-        <UserContext.Provider value={{ userInfo,fetchUserInfo, token, city, setToken, location, setUserInfo }}>
+        <UserContext.Provider value={{ userInfo, fetchUserInfo, token, city, setToken, setlocation, location, setUserInfo }}>
             {children}
         </UserContext.Provider>
     );

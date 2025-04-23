@@ -197,7 +197,7 @@ export default function HomeScreen() {
                           <View className="flex-row justify-between">
                             <View className="flex-row items-center mt-1">
                               <Ionicons name="star" size={14} color="#FFD700" />
-                              <Text className="text-gray-600 ml-1 text-xs">4.5 ({item?.reviews?.length || 0})</Text>
+                              <Text className="text-gray-600 ml-1 text-xs">{item?.averageRating?.toFixed(1) || 4.5 } ({item?.reviews?.length || 0})</Text>
                             </View>
                             <View className="flex-row items-center mt-1">
                               <Ionicons name="navigate-outline" size={12} color="#E6007E" />
@@ -262,12 +262,12 @@ export default function HomeScreen() {
                           <View className="flex-row justify-between">
                             <View className="flex-row items-center mt-1">
                               <Ionicons name="star" size={14} color="#FFD700" />
-                              <Text className="text-gray-600 ml-1 text-xs">4.5 ({item?.reviews?.length || 0})</Text>
+                              <Text className="text-gray-600 ml-1 text-xs">{item?.averageRating?.toFixed(1) || 4.5 } ({item?.reviews?.length || 0})</Text>
                             </View>
-                            <View className="flex-row items-center mt-1">
+                            {/* <View className="flex-row items-center mt-1">
                               <Ionicons name="navigate-outline" size={12} color="#E6007E" />
                               <Text className="text-gray-500 text-xs ml-1">{(item?.distance || 0).toFixed(2)} km</Text>
-                            </View>
+                            </View> */}
                           </View>
                         </View>
                       </View>

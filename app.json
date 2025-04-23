@@ -6,11 +6,11 @@
     "orientation": "portrait",
     "icon": "./assets/img/logo.png",
     "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.prakash.seven",
+      "bundleIdentifier": "com.sustylo.app",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
@@ -30,7 +30,8 @@
         "foregroundImage": "./assets/img/oo.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.prakash.seven",
+      "userInterfaceStyle": "light",
+      "package": "com.sustylo.app",
       "splash": {
         "image": "./assets/img/logo.png",
         "resizeMode": "contain",
