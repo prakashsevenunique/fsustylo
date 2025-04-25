@@ -1,51 +1,89 @@
-import { View, Text, ScrollView, TouchableOpacity, TextInput, FlatList, ActivityIndicator, Modal, Switch, Image } from 'react-native';
-import { Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
-import axiosInstance from '@/utils/axiosInstance';
-import { UserContext } from '@/hooks/userInfo';
-import { useContext } from 'react';
-import Slider from '@react-native-community/slider';
-import { imageBaseUrl } from '@/utils/helpingData';
+"use client"
+
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  FlatList,
+  ActivityIndicator,
+  Modal,
+  Image,
+} from "react-native"
+import { Ionicons, MaterialIcons } from "@expo/vector-icons"
+import { useLocalSearchParams, useRouter } from "expo-router"
+import { useEffect, useState } from "react"
+import axiosInstance from "@/utils/axiosInstance"
+import { UserContext } from "@/hooks/userInfo"
+import { useContext } from "react"
+import Slider from "@react-native-community/slider"
+import { imageBaseUrl } from "@/utils/helpingData"
+
+// Su stylo Salon color palette
+const colors = {
+  primary: "#E65305", // Bright red-orange as primary
+  primaryLight: "#FF7A3D", // Lighter version of primary
+  primaryLighter: "#FFA273", // Even lighter version
+  secondary: "#FBA059", // Light orange as secondary
+  secondaryLight: "#FFC59F", // Lighter version of secondary
+  accent: "#FB8807", // Bright orange as accent
+  accentLight: "#FFAA4D", // Lighter version of accent
+  tertiary: "#F4A36C", // Peach/salmon as tertiary
+  tertiaryLight: "#FFD0B0", // Lighter version of tertiary
+  background: "#FFF9F5", // Very light orange/peach background
+  cardBg: "#FFFFFF", // White for cards
+  text: "#3D2C24", // Dark brown for text
+  textLight: "#7D6E66", // Lighter text color
+  textLighter: "#A99E98", // Even lighter text
+  divider: "#FFE8D6", // Very light divider color
+}
 
 export default function SearchSalonScreen() {
-  const router = useRouter();
-  const { userInfo, location } = useContext(UserContext) as any;
-  const params = useLocalSearchParams();
+  const router = useRouter()
+  const { userInfo, location } = useContext(UserContext) as any
+  const params = useLocalSearchParams()
 
   // State for filters from URL params
-  const [gender, setGender] = useState(params.gender || '');
-  const [serviceTitle, setServiceTitle] = useState(params.serviceTitle || '');
-  const [minRate, setMinRate] = useState(params.minRate ? parseInt(params.minRate) : 0);
-  const [maxRate, setMaxRate] = useState(params.maxRate ? parseInt(params.maxRate) : 10000);
-  const [searchQuery, setSearchQuery] = useState(params.search || '');
+  const [gender, setGender] = useState(params.gender || "")
+  const [serviceTitle, setServiceTitle] = useState(params.serviceTitle || "")
+  const [minRate, setMinRate] = useState(params.minRate ? Number.parseInt(params.minRate as string) : 0)
+  const [maxRate, setMaxRate] = useState(params.maxRate ? Number.parseInt(params.maxRate as string) : 10000)
+  const [searchQuery, setSearchQuery] = useState(params.search || "")
 
   // State for additional filters
-  const [sortBy, setSortBy] = useState('distance');
-  const [sortOrder, setSortOrder] = useState('asc');
-  const [maxDistance, setMaxDistance] = useState(200); // Default 10km
-  const [minReviewCount, setMinReviewCount] = useState(0);
-  const [selectedFacilities, setSelectedFacilities] = useState([]);
-  const [minRating, setMinRating] = useState(0);
+  const [sortBy, setSortBy] = useState("distance")
+  const [sortOrder, setSortOrder] = useState("asc")
+  const [maxDistance, setMaxDistance] = useState(200) // Default 200km
+  const [minReviewCount, setMinReviewCount] = useState(0)
+  const [selectedFacilities, setSelectedFacilities] = useState([])
+  const [minRating, setMinRating] = useState(0)
+  const [category, setCategroy] = useState("All")
 
   // Modal state
-  const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
+  const [isFilterModalVisible, setIsFilterModalVisible] = useState(false)
 
   // Data state
-  const [salons, setSalons] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const [salons, setSalons] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
 
   // Facilities options
   const facilitiesOptions = [
-    'AC', 'Wifi', 'Parking', 'Home Service', 'Card Payment',
-    'Locker', 'Changing Room', 'Wheelchair Access'
-  ];
+    "AC",
+    "Wifi",
+    "Parking",
+    "Home Service",
+    "Card Payment",
+    "Locker",
+    "Changing Room",
+    "Wheelchair Access",
+  ]
 
   const fetchSalons = async () => {
     try {
-      setLoading(true);
-      const response = await axiosInstance.get('/api/salon/nearby', {
+      setLoading(true)
+      const response = await axiosInstance.get("/api/salon/nearby", {
         params: {
           latitude: location.latitude,
           longitude: location.longitude,
@@ -56,86 +94,106 @@ export default function SearchSalonScreen() {
           maxRate,
           maxDistance,
           sortBy,
+          category: category === "All" ? "" : category.toLowerCase(),
           sortOrder,
           minReviewCount,
           minRating,
-          facilities: selectedFacilities.join(','),
-          ...params
-        }
-      });
-      setSalons(response?.data?.salons);
+          facilities: selectedFacilities.join(","),
+          ...params,
+        },
+      })
+      setSalons(response?.data?.salons)
     } catch (error) {
-      setSalons([]);
+      setSalons([])
     } finally {
-      setLoading(false);
-      setRefreshing(false);
+      setLoading(false)
+      setRefreshing(false)
     }
-  };
+  }
 
   // Apply filters and refresh
   const applyFilters = () => {
-    setRefreshing(true);
-    setIsFilterModalVisible(false);
-    fetchSalons();
-  };
+    setRefreshing(true)
+    setIsFilterModalVisible(false)
+    fetchSalons()
+  }
 
   // Reset all filters
   const resetFilters = () => {
-    router.replace('/(app)/salon/searchSalon');
-  };
+    router.replace("/(app)/salon/searchSalon")
+  }
 
   // Toggle facility selection
   const toggleFacility = (facility: any) => {
     setSelectedFacilities((prev: any) =>
-      prev.includes(facility)
-        ? prev.filter(f => f !== facility)
-        : [...prev, facility]
-    );
-  };
+      prev.includes(facility) ? prev.filter((f) => f !== facility) : [...prev, facility],
+    )
+  }
 
   useEffect(() => {
-    fetchSalons();
-  }, [location]);
+    fetchSalons()
+  }, [location])
 
   useEffect(() => {
     if (refreshing) {
-      fetchSalons();
+      fetchSalons()
     }
-  }, [refreshing]);
+  }, [refreshing])
 
   const renderSalonItem = ({ item }) => (
     <TouchableOpacity
-      className="bg-white p-4 rounded-lg shadow-sm mb-3"
-      onPress={() => router.push({
-        pathname: '/(app)/salon/details',
-        params: { salon: JSON.stringify(item) },
-      })}
+      className="p-4 rounded-lg mb-3"
+      style={{
+        backgroundColor: colors.cardBg,
+        shadowColor: colors.primary,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+        elevation: 1,
+      }}
+      onPress={() =>
+        router.push({
+          pathname: "/(app)/salon/details",
+          params: { salon: JSON.stringify(item) },
+        })
+      }
     >
       <View className="flex-row">
         <Image
-          source={{ uri: item.salonPhotos[0] ? `${imageBaseUrl}/${item.salonPhotos[0]}` : 'https://via.placeholder.com/150', cache: 'force-cache' }}
+          source={{
+            uri: item.salonPhotos[0] ? `${imageBaseUrl}/${item.salonPhotos[0]}` : "https://via.placeholder.com/150",
+            cache: "force-cache",
+          }}
           className="w-32 mr-2 h-full rounded-l-lg"
-          defaultSource={require('@/assets/img/logo.png')}
+          defaultSource={require("@/assets/img/logo.png")}
         />
         <View className="flex-1">
-          <Text className="font-bold text-lg">{item.salonName}</Text>
+          <Text className="font-bold text-lg" style={{ color: colors.text }}>
+            {item.salonName}
+          </Text>
           <View className="flex-row items-center mt-1">
-            <Ionicons name="location-outline" size={14} color="#6B7280" />
-            <Text className="text-gray-500 text-xs ml-1">{item.salonAddress}</Text>
+            <Ionicons name="location-outline" size={14} color={colors.textLight} />
+            <Text className="text-xs ml-1" style={{ color: colors.textLight }}>
+              {item.salonAddress}
+            </Text>
           </View>
 
           <View className="flex-row items-center mt-2">
             <MaterialIcons name="star" size={16} color="#FFD700" />
-            <Text className="text-gray-700 ml-1 text-sm">
-              {item.averageRating?.toFixed(1) || 'New'} ({item.reviews.length || 0})
+            <Text className="ml-1 text-sm" style={{ color: colors.text }}>
+              {item.averageRating?.toFixed(1) || "New"} ({item.reviews.length || 0})
             </Text>
-            <Text className="text-gray-500 text-sm mx-2">•</Text>
-            <Ionicons name="navigate-outline" size={14} color="#6B7280" />
-            <Text className="text-gray-500 text-xs ml-1">{item.distance?.toFixed(1)} km</Text>
+            <Text className="text-sm mx-2" style={{ color: colors.textLight }}>
+              •
+            </Text>
+            <Ionicons name="navigate-outline" size={14} color={colors.textLight} />
+            <Text className="text-xs ml-1" style={{ color: colors.textLight }}>
+              {item.distance?.toFixed(1)} km
+            </Text>
           </View>
 
           {item.minServicePrice && (
-            <Text className="text-pink-600 text-xs mt-2">
+            <Text className="text-xs mt-2" style={{ color: colors.primary }}>
               Starts from ₹{item.minServicePrice}
             </Text>
           )}
@@ -143,8 +201,14 @@ export default function SearchSalonScreen() {
           {item.facilities?.length > 0 && (
             <View className="flex-row flex-wrap mt-1">
               {item.facilities.slice(0, 3).map((facility, index) => (
-                <View key={index} className="bg-gray-100 px-2 py-1 rounded-full mr-2 mb-1">
-                  <Text className="text-gray-700 text-xs">{facility}</Text>
+                <View
+                  key={index}
+                  className="px-2 py-1 rounded-full mr-2 mb-1"
+                  style={{ backgroundColor: colors.tertiaryLight }}
+                >
+                  <Text className="text-xs" style={{ color: colors.text }}>
+                    {facility}
+                  </Text>
                 </View>
               ))}
             </View>
@@ -152,38 +216,50 @@ export default function SearchSalonScreen() {
         </View>
       </View>
     </TouchableOpacity>
-  );
+  )
+
   const handleSlidingComplete = (value) => {
-    setMaxDistance(value);
-  };
+    setMaxDistance(value)
+  }
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1" style={{ backgroundColor: colors.background }}>
       {/* Search Bar */}
-      <View className="bg-white px-4 py-4 border-b border-gray-200 flex-row items-center">
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="mr-3"
-        >
-          <Ionicons name="arrow-back" size={24} color="#E6007E" />
+      <View
+        className="px-4 py-4 flex-row items-center"
+        style={{
+          backgroundColor: colors.cardBg,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.divider,
+        }}
+      >
+        <TouchableOpacity onPress={() => router.back()} className="mr-3">
+          <Ionicons name="arrow-back" size={24} color={colors.primary} />
         </TouchableOpacity>
 
-        <View className="flex-1 flex-row items-center bg-gray-100 rounded-lg px-3 py-2">
-          <Ionicons name="search" size={20} color="#9CA3AF" />
+        <View
+          className="flex-1 flex-row items-center rounded-lg px-3 py-2"
+          style={{ backgroundColor: colors.background }}
+        >
+          <Ionicons name="search" size={20} color={colors.textLight} />
           <TextInput
             className="ml-2 py-2 flex-1"
             placeholder="Search for salons or services..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.textLight}
             value={searchQuery}
             onChangeText={setSearchQuery}
             onSubmitEditing={applyFilters}
+            style={{ color: colors.text }}
           />
           {searchQuery && (
             <TouchableOpacity
-              onPress={() => { setSearchQuery(''); applyFilters(); }}
+              onPress={() => {
+                setSearchQuery("")
+                applyFilters()
+              }}
               className="ml-2"
             >
-              <Ionicons name="close-circle" size={20} color="#9CA3AF" />
+              <Ionicons name="close-circle" size={20} color={colors.textLight} />
             </TouchableOpacity>
           )}
         </View>
@@ -191,93 +267,147 @@ export default function SearchSalonScreen() {
 
       {/* Filter Bar */}
       <View className="px-4 py-3">
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-        // contentContainerStyle={{ height: 36, alignItems: 'center' }}
-        >
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <TouchableOpacity
-            className={`px-3 py-1 rounded-full mr-2 ${gender === 'male' ? 'bg-pink-100' : 'bg-gray-100'}`}
-            onPress={() => { setGender(gender === 'male' ? '' : 'male'); applyFilters(); }}
-          >
-            <Text className={gender === 'male' ? 'text-pink-600' : 'text-gray-600'}>Men</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            className={`px-3 py-1 rounded-full mr-2 ${gender === 'female' ? 'bg-pink-100' : 'bg-gray-100'}`}
-            onPress={() => { setGender(gender === 'female' ? '' : 'female'); applyFilters(); }}
-          >
-            <Text className={gender === 'female' ? 'text-pink-600' : 'text-gray-600'}>Women</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            className={`px-3 py-1 rounded-full mr-2 ${minRate > 0 || maxRate < 5000 ? 'bg-pink-100' : 'bg-gray-100'}`}
-            onPress={() => setIsFilterModalVisible(true)}
-          >
-            <Text className={minRate > 0 || maxRate < 5000 ? 'text-pink-600' : 'text-gray-600'}>Price</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            className={`px-3 py-1 rounded-full mr-2 ${selectedFacilities.length > 0 ? 'bg-pink-100' : 'bg-gray-100'}`}
-            onPress={() => setIsFilterModalVisible(true)}
-          >
-            <Text className={selectedFacilities.length > 0 ? 'text-pink-600' : 'text-gray-600'}>Facilities</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            className={`px-3 py-1 rounded-full mr-2 ${minRating > 0 ? 'bg-pink-100' : 'bg-gray-100'}`}
-            onPress={() => setIsFilterModalVisible(true)}
-          >
-            <Text className={minRating > 0 ? 'text-pink-600' : 'text-gray-600'}>Rating: {minRating}+</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            className={`px-3 py-1 rounded-full mr-2 ${sortBy !== 'distance' ? 'bg-pink-100' : 'bg-gray-100'}`}
+            className={`px-3 py-1 rounded-full mr-2`}
+            style={{
+              backgroundColor: gender === "male" ? colors.primaryLighter : colors.tertiaryLight,
+            }}
             onPress={() => {
-              setSortBy(sortBy === 'distance' ? 'rating' : 'distance');
-              setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-              applyFilters();
+              setGender(gender === "male" ? "" : "male")
+              applyFilters()
             }}
           >
-            <Text className={sortBy !== 'distance' ? 'text-pink-600' : 'text-gray-600'}>
-              Sort: {sortBy === 'distance' ? 'Distance' : 'Rating'} {sortOrder === 'asc' ? '↑' : '↓'}
+            <Text
+              style={{
+                color: gender === "male" ? colors.primary : colors.text,
+              }}
+            >
+              Men
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className={`px-3 py-1 rounded-full mr-2`}
+            style={{
+              backgroundColor: gender === "female" ? colors.primaryLighter : colors.tertiaryLight,
+            }}
+            onPress={() => {
+              setGender(gender === "female" ? "" : "female")
+              applyFilters()
+            }}
+          >
+            <Text
+              style={{
+                color: gender === "female" ? colors.primary : colors.text,
+              }}
+            >
+              Women
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className={`px-3 py-1 rounded-full mr-2`}
+            style={{
+              backgroundColor: minRate > 0 || maxRate < 5000 ? colors.primaryLighter : colors.tertiaryLight,
+            }}
+            onPress={() => setIsFilterModalVisible(true)}
+          >
+            <Text
+              style={{
+                color: minRate > 0 || maxRate < 5000 ? colors.primary : colors.text,
+              }}
+            >
+              Price
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className={`px-3 py-1 rounded-full mr-2`}
+            style={{
+              backgroundColor: selectedFacilities.length > 0 ? colors.primaryLighter : colors.tertiaryLight,
+            }}
+            onPress={() => setIsFilterModalVisible(true)}
+          >
+            <Text
+              style={{
+                color: selectedFacilities.length > 0 ? colors.primary : colors.text,
+              }}
+            >
+              Facilities
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className={`px-3 py-1 rounded-full mr-2`}
+            style={{
+              backgroundColor: minRating > 0 ? colors.primaryLighter : colors.tertiaryLight,
+            }}
+            onPress={() => setIsFilterModalVisible(true)}
+          >
+            <Text
+              style={{
+                color: minRating > 0 ? colors.primary : colors.text,
+              }}
+            >
+              Rating: {minRating}+
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className={`px-3 py-1 rounded-full mr-2`}
+            style={{
+              backgroundColor: sortBy !== "distance" ? colors.primaryLighter : colors.tertiaryLight,
+            }}
+            onPress={() => {
+              setSortBy(sortBy === "distance" ? "rating" : "distance")
+              setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+              applyFilters()
+            }}
+          >
+            <Text
+              style={{
+                color: sortBy !== "distance" ? colors.primary : colors.text,
+              }}
+            >
+              Sort: {sortBy === "distance" ? "Distance" : "Rating"} {sortOrder === "asc" ? "↑" : "↓"}
             </Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
 
-
       {/* Main Content */}
-      {
-        loading ? (
-          <View className="flex-1 justify-center items-center">
-            <ActivityIndicator size="large" color="#E6007E" />
-          </View>
-        ) : salons.length === 0 ? (
-          <View className="flex-1 justify-center items-center p-4">
-            <Ionicons name="alert-circle-outline" size={50} color="#9CA3AF" />
-            <Text className="text-gray-500 mt-3 text-center">No salons found matching your criteria</Text>
-            <TouchableOpacity
-              className="mt-4 bg-pink-600 px-6 py-2 rounded-full"
-              onPress={resetFilters}
-            >
-              <Text className="text-white font-medium">Reset Filters</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <FlatList
-            data={salons}
-            renderItem={renderSalonItem}
-            keyExtractor={(item) => item._id}
-            contentContainerStyle={{ padding: 10 }}
-            refreshing={refreshing}
-            onRefresh={() => {
-              setRefreshing(true);
-              fetchSalons();
-            }}
-          />
-        )
-      }
+      {loading ? (
+        <View className="flex-1 justify-center items-center">
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      ) : salons.length === 0 ? (
+        <View className="flex-1 justify-center items-center p-4">
+          <Ionicons name="alert-circle-outline" size={50} color={colors.textLight} />
+          <Text className="mt-3 text-center" style={{ color: colors.textLight }}>
+            No salons found matching your criteria
+          </Text>
+          <TouchableOpacity
+            className="mt-4 px-6 py-2 rounded-full"
+            style={{ backgroundColor: colors.primary }}
+            onPress={resetFilters}
+          >
+            <Text className="font-medium text-white">Reset Filters</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <FlatList
+          data={salons}
+          renderItem={renderSalonItem}
+          keyExtractor={(item) => item._id}
+          contentContainerStyle={{ padding: 10 }}
+          refreshing={refreshing}
+          onRefresh={() => {
+            setRefreshing(true)
+            fetchSalons()
+          }}
+        />
+      )}
 
       {/* Filter Modal */}
       <Modal
@@ -286,50 +416,64 @@ export default function SearchSalonScreen() {
         visible={isFilterModalVisible}
         onRequestClose={() => setIsFilterModalVisible(false)}
       >
-        <View className="flex-1 bg-black bg-opacity-50 justify-end">
-          <View className="bg-white rounded-t-3xl p-6 max-h-[90%]">
+        <View className="flex-1 justify-end" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+          <View className="rounded-t-3xl p-6 max-h-full" style={{ backgroundColor: colors.cardBg }}>
             <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-xl font-bold">Filters</Text>
+              <Text className="text-xl font-bold" style={{ color: colors.text }}>
+                Filters
+              </Text>
               <TouchableOpacity onPress={() => setIsFilterModalVisible(false)}>
-                <Ionicons name="close" size={24} color="#6B7280" />
+                <Ionicons name="close" size={24} color={colors.textLight} />
               </TouchableOpacity>
             </View>
 
             <ScrollView className="mb-4">
               {/* Price Range Filter */}
               <View className="mb-6">
-                <Text className="font-medium mb-2">Price Range (₹{minRate} - ₹{maxRate})</Text>
+                <Text className="font-medium mb-2" style={{ color: colors.text }}>
+                  Price Range (₹{minRate} - ₹{maxRate})
+                </Text>
                 <View className="flex-row justify-between mb-1">
-                  <Text>₹0</Text>
-                  <Text>₹10000</Text>
+                  <Text style={{ color: colors.textLight }}>₹0</Text>
+                  <Text style={{ color: colors.textLight }}>₹10000</Text>
                 </View>
                 <Slider
                   minimumValue={0}
                   maximumValue={10000}
                   step={100}
-                  minimumTrackTintColor="#E6007E"
-                  maximumTrackTintColor="#E5E7EB"
-                  thumbTintColor="#E6007E"
+                  minimumTrackTintColor={colors.primary}
+                  maximumTrackTintColor={colors.divider}
+                  thumbTintColor={colors.primary}
                   value={maxRate}
                   onSlidingComplete={(value) => {
-                    setMaxRate(value);
+                    setMaxRate(value)
                     if (minRate > value - 500) {
-                      setMinRate(Math.max(0, value - 500));
+                      setMinRate(Math.max(0, value - 500))
                     }
                   }}
                 />
 
                 <View className="flex-row justify-between mt-2">
                   <TextInput
-                    className="border border-gray-300 rounded px-3 py-1 w-20"
+                    className="px-3 py-1 w-20 rounded"
+                    style={{
+                      borderWidth: 1,
+                      borderColor: colors.divider,
+                      color: colors.text,
+                    }}
                     value={minRate.toString()}
-                    onChangeText={(text) => setMinRate(parseInt(text) || 0)}
+                    onChangeText={(text) => setMinRate(Number.parseInt(text) || 0)}
                     keyboardType="numeric"
                   />
                   <TextInput
-                    className="border border-gray-300 rounded px-3 py-1 w-20"
+                    className="px-3 py-1 w-20 rounded"
+                    style={{
+                      borderWidth: 1,
+                      borderColor: colors.divider,
+                      color: colors.text,
+                    }}
                     value={maxRate.toString()}
-                    onChangeText={(text) => setMaxRate(parseInt(text) || 5000)}
+                    onChangeText={(text) => setMaxRate(Number.parseInt(text) || 5000)}
                     keyboardType="numeric"
                   />
                 </View>
@@ -337,16 +481,50 @@ export default function SearchSalonScreen() {
 
               {/* Minimum Rating Filter */}
               <View className="mb-6">
-                <Text className="font-medium mb-2">Minimum Rating</Text>
+                <Text className="font-medium mb-2" style={{ color: colors.text }}>
+                  Minimum Rating
+                </Text>
                 <View className="flex-row justify-between">
                   {[0, 1, 2, 3, 4, 5].map((rating) => (
                     <TouchableOpacity
                       key={rating}
-                      className={`px-3 py-1 rounded-full ${minRating === rating ? 'bg-pink-100' : 'bg-gray-100'}`}
+                      className={`px-3 py-1 rounded-full`}
+                      style={{
+                        backgroundColor: minRating === rating ? colors.primaryLighter : colors.tertiaryLight,
+                      }}
                       onPress={() => setMinRating(rating)}
                     >
-                      <Text className={minRating === rating ? 'text-pink-600' : 'text-gray-600'}>
-                        {rating > 0 ? `${rating}+` : 'Any'}
+                      <Text
+                        style={{
+                          color: minRating === rating ? colors.primary : colors.text,
+                        }}
+                      >
+                        {rating > 0 ? `${rating}+` : "Any"}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+              <View className="mb-6">
+                <Text className="font-medium mb-2" style={{ color: colors.text }}>
+                  Salon Category
+                </Text>
+                <View className="flex-row gap-1">
+                  {["All", "Premium", "General"].map((item) => (
+                    <TouchableOpacity
+                      key={item}
+                      className={`px-3 py-1 rounded-full`}
+                      style={{
+                        backgroundColor: category === item ? colors.primaryLighter : colors.tertiaryLight,
+                      }}
+                      onPress={() => setCategroy(item)}
+                    >
+                      <Text
+                        style={{
+                          color: category === item ? colors.primary : colors.text,
+                        }}
+                      >
+                        {item}
                       </Text>
                     </TouchableOpacity>
                   ))}
@@ -355,15 +533,26 @@ export default function SearchSalonScreen() {
 
               {/* Facilities Filter */}
               <View className="mb-6">
-                <Text className="font-medium mb-2">Facilities</Text>
+                <Text className="font-medium mb-2" style={{ color: colors.text }}>
+                  Facilities
+                </Text>
                 <View className="flex-row flex-wrap">
                   {facilitiesOptions.map((facility) => (
                     <TouchableOpacity
                       key={facility}
-                      className={`px-3 py-2 rounded-full mr-2 mb-2 ${selectedFacilities.includes(facility) ? 'bg-pink-100' : 'bg-gray-100'}`}
+                      className={`px-3 py-2 rounded-full mr-2 mb-2`}
+                      style={{
+                        backgroundColor: selectedFacilities.includes(facility)
+                          ? colors.primaryLighter
+                          : colors.tertiaryLight,
+                      }}
                       onPress={() => toggleFacility(facility)}
                     >
-                      <Text className={selectedFacilities.includes(facility) ? 'text-pink-600' : 'text-gray-600'}>
+                      <Text
+                        style={{
+                          color: selectedFacilities.includes(facility) ? colors.primary : colors.text,
+                        }}
+                      >
                         {facility}
                       </Text>
                     </TouchableOpacity>
@@ -373,16 +562,16 @@ export default function SearchSalonScreen() {
 
               {/* Distance Filter */}
               <View style={{ marginBottom: 24 }}>
-                <Text style={{ fontWeight: '500', marginBottom: 8 }}>
+                <Text style={{ fontWeight: "500", marginBottom: 8, color: colors.text }}>
                   Maximum Distance ({maxDistance} km)
                 </Text>
                 <Slider
                   minimumValue={1}
                   maximumValue={200}
                   step={1}
-                  minimumTrackTintColor="#E6007E"
-                  maximumTrackTintColor="#E5E7EB"
-                  thumbTintColor="#E6007E"
+                  minimumTrackTintColor={colors.primary}
+                  maximumTrackTintColor={colors.divider}
+                  thumbTintColor={colors.primary}
                   value={maxDistance}
                   onSlidingComplete={handleSlidingComplete}
                 />
@@ -390,12 +579,20 @@ export default function SearchSalonScreen() {
 
               {/* Minimum Reviews Filter */}
               <View className="mb-6">
-                <Text className="font-medium mb-2">Minimum Reviews</Text>
+                <Text className="font-medium mb-2" style={{ color: colors.text }}>
+                  Minimum Reviews
+                </Text>
                 <TextInput
-                  className="border border-gray-300 rounded px-3 py-2"
+                  className="px-3 py-2 rounded"
+                  style={{
+                    borderWidth: 1,
+                    borderColor: colors.divider,
+                    color: colors.text,
+                  }}
                   placeholder="0"
+                  placeholderTextColor={colors.textLighter}
                   value={minReviewCount.toString()}
-                  onChangeText={(text) => setMinReviewCount(parseInt(text) || 0)}
+                  onChangeText={(text) => setMinReviewCount(Number.parseInt(text) || 0)}
                   keyboardType="numeric"
                 />
               </View>
@@ -404,21 +601,28 @@ export default function SearchSalonScreen() {
             {/* Action Buttons */}
             <View className="flex-row justify-between">
               <TouchableOpacity
-                className="border border-pink-600 rounded-full px-6 py-3 flex-1 mr-2 items-center"
+                className="rounded-full px-6 py-3 flex-1 mr-2 items-center"
+                style={{
+                  borderWidth: 1,
+                  borderColor: colors.primary,
+                }}
                 onPress={resetFilters}
               >
-                <Text className="text-pink-600 font-bold">Reset All</Text>
+                <Text className="font-bold" style={{ color: colors.primary }}>
+                  Reset All
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                className="bg-pink-600 rounded-full px-6 py-3 flex-1 items-center"
+                className="rounded-full px-6 py-3 flex-1 items-center"
+                style={{ backgroundColor: colors.primary }}
                 onPress={applyFilters}
               >
-                <Text className="text-white font-bold">Apply Filters</Text>
+                <Text className="font-bold text-white">Apply Filters</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
-    </View >
-  );
+    </View>
+  )
 }

@@ -1,87 +1,130 @@
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import { useForm, Controller } from 'react-hook-form';
-import axios from 'axios';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { useState } from 'react';
-import axiosInstance from '@/utils/axiosInstance';
-import { router } from 'expo-router';
+"use client"
+
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert } from "react-native"
+import { useForm, Controller } from "react-hook-form"
+import { Ionicons, MaterialIcons } from "@expo/vector-icons"
+import { useState } from "react"
+import axiosInstance from "@/utils/axiosInstance"
+import { router } from "expo-router"
+
+// Su stylo Salon color palette
+const colors = {
+  primary: "#E65305", // Bright red-orange as primary
+  primaryLight: "#FF7A3D", // Lighter version of primary
+  primaryLighter: "#FFA273", // Even lighter version
+  secondary: "#FBA059", // Light orange as secondary
+  secondaryLight: "#FFC59F", // Lighter version of secondary
+  accent: "#FB8807", // Bright orange as accent
+  accentLight: "#FFAA4D", // Lighter version of accent
+  tertiary: "#F4A36C", // Peach/salmon as tertiary
+  tertiaryLight: "#FFD0B0", // Lighter version of tertiary
+  background: "#FFF9F5", // Very light orange/peach background
+  cardBg: "#FFFFFF", // White for cards
+  text: "#3D2C24", // Dark brown for text
+  textLight: "#7D6E66", // Lighter text color
+  textLighter: "#A99E98", // Even lighter text
+  divider: "#FFE8D6", // Very light divider color
+  error: "#EF4444", // Red for errors
+}
 
 type FormData = {
-  fullName: string;
-  email: string;
-  mobile: string;
-  message: string;
-};
+  fullName: string
+  email: string
+  mobile: string
+  message: string
+}
 
 export default function ContactUs() {
   const {
     control,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
   } = useForm<FormData>({
     defaultValues: {
-      fullName: '',
-      email: '',
-      mobile: '',
-      message: ''
-    }
-  });
+      fullName: "",
+      email: "",
+      mobile: "",
+      message: "",
+    },
+  })
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const onSubmit = async (data: FormData) => {
-    setIsSubmitting(true);
+    setIsSubmitting(true)
     try {
-      const response = await axiosInstance.post('/api/contact', {
+      const response = await axiosInstance.post("/api/contact", {
         fullName: data.fullName,
         email: data.email,
         mobile: data.mobile,
-        message: data.message
-      });
+        message: data.message,
+      })
       if (response.status == 201) {
-        Alert.alert('Success', 'Your message has been sent successfully!');
-        reset();
+        Alert.alert("Success", "Your message has been sent successfully!")
+        reset()
       }
     } catch (error) {
-      console.error('Contact form error:', error);
-      Alert.alert('Error', 'An error occurred while sending your message');
+      console.error("Contact form error:", error)
+      Alert.alert("Error", "An error occurred while sending your message")
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <>
-      <View className="bg-white px-4 py-4 shadow-md">
+      <View
+        style={{
+          backgroundColor: colors.cardBg,
+          paddingHorizontal: 16,
+          paddingVertical: 16,
+          shadowColor: colors.primary,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          elevation: 2,
+        }}
+      >
         <View className="flex-row gap-2 items-center">
-          <Ionicons onPress={() => router.back()} name="arrow-back" size={25} color="#E6007E" />
-          <Text className="text-lg font-bold">Contact Us</Text>
+          <Ionicons onPress={() => router.back()} name="arrow-back" size={25} color={colors.primary} />
+          <Text className="text-lg font-bold" style={{ color: colors.text }}>
+            Contact Us
+          </Text>
         </View>
       </View>
-      <ScrollView className="flex-1 bg-gray-50 p-6">
+      <ScrollView className="flex-1 p-6" style={{ backgroundColor: colors.background }}>
         <View className="mb-8">
-          <Text className="text-gray-600">
+          <Text style={{ color: colors.textLight }}>
             Have questions or feedback? Fill out the form below and we'll get back to you soon.
           </Text>
         </View>
 
         {/* Full Name Field */}
         <View className="mb-4">
-          <Text className="text-gray-700 mb-1">Full Name</Text>
+          <Text className="mb-1" style={{ color: colors.text }}>
+            Full Name
+          </Text>
           <Controller
             control={control}
             rules={{
-              required: 'Full name is required',
+              required: "Full name is required",
               minLength: {
                 value: 3,
-                message: 'Name must be at least 3 characters'
-              }
+                message: "Name must be at least 3 characters",
+              },
             }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                className={`border ${errors.fullName ? 'border-red-500' : 'border-gray-300'} rounded-lg p-3 bg-white`}
+                className="rounded-lg p-3"
+                style={{
+                  backgroundColor: colors.cardBg,
+                  borderWidth: 1,
+                  borderColor: errors.fullName ? colors.error : colors.divider,
+                  color: colors.text,
+                }}
                 placeholder="Enter your full name"
+                placeholderTextColor={colors.textLighter}
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
@@ -90,26 +133,35 @@ export default function ContactUs() {
             name="fullName"
           />
           {errors.fullName && (
-            <Text className="text-red-500 text-xs mt-1">{errors.fullName.message}</Text>
+            <Text style={{ color: colors.error, fontSize: 12, marginTop: 4 }}>{errors.fullName.message}</Text>
           )}
         </View>
 
         {/* Email Field */}
         <View className="mb-4">
-          <Text className="text-gray-700 mb-1">Email Address</Text>
+          <Text className="mb-1" style={{ color: colors.text }}>
+            Email Address
+          </Text>
           <Controller
             control={control}
             rules={{
-              required: 'Email is required',
+              required: "Email is required",
               pattern: {
                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: 'Invalid email address'
-              }
+                message: "Invalid email address",
+              },
             }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                className={`border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg p-3 bg-white`}
+                className="rounded-lg p-3"
+                style={{
+                  backgroundColor: colors.cardBg,
+                  borderWidth: 1,
+                  borderColor: errors.email ? colors.error : colors.divider,
+                  color: colors.text,
+                }}
                 placeholder="Enter your email"
+                placeholderTextColor={colors.textLighter}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 onBlur={onBlur}
@@ -120,26 +172,35 @@ export default function ContactUs() {
             name="email"
           />
           {errors.email && (
-            <Text className="text-red-500 text-xs mt-1">{errors.email.message}</Text>
+            <Text style={{ color: colors.error, fontSize: 12, marginTop: 4 }}>{errors.email.message}</Text>
           )}
         </View>
 
         {/* Mobile Field */}
         <View className="mb-4">
-          <Text className="text-gray-700 mb-1">Mobile Number</Text>
+          <Text className="mb-1" style={{ color: colors.text }}>
+            Mobile Number
+          </Text>
           <Controller
             control={control}
             rules={{
-              required: 'Mobile number is required',
+              required: "Mobile number is required",
               pattern: {
                 value: /^[0-9]{10}$/,
-                message: 'Invalid mobile number (10 digits required)'
-              }
+                message: "Invalid mobile number (10 digits required)",
+              },
             }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                className={`border ${errors.mobile ? 'border-red-500' : 'border-gray-300'} rounded-lg p-3 bg-white`}
+                className="rounded-lg p-3"
+                style={{
+                  backgroundColor: colors.cardBg,
+                  borderWidth: 1,
+                  borderColor: errors.mobile ? colors.error : colors.divider,
+                  color: colors.text,
+                }}
                 placeholder="Enter your mobile number"
+                placeholderTextColor={colors.textLighter}
                 keyboardType="phone-pad"
                 maxLength={10}
                 onBlur={onBlur}
@@ -150,26 +211,35 @@ export default function ContactUs() {
             name="mobile"
           />
           {errors.mobile && (
-            <Text className="text-red-500 text-xs mt-1">{errors.mobile.message}</Text>
+            <Text style={{ color: colors.error, fontSize: 12, marginTop: 4 }}>{errors.mobile.message}</Text>
           )}
         </View>
 
         {/* Message Field */}
         <View className="mb-6">
-          <Text className="text-gray-700 mb-1">Your Message</Text>
+          <Text className="mb-1" style={{ color: colors.text }}>
+            Your Message
+          </Text>
           <Controller
             control={control}
             rules={{
-              required: 'Message is required',
+              required: "Message is required",
               minLength: {
                 value: 10,
-                message: 'Message must be at least 10 characters'
-              }
+                message: "Message must be at least 10 characters",
+              },
             }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                className={`border ${errors.message ? 'border-red-500' : 'border-gray-300'} rounded-lg p-3 bg-white h-32`}
+                className="rounded-lg p-3 h-32"
+                style={{
+                  backgroundColor: colors.cardBg,
+                  borderWidth: 1,
+                  borderColor: errors.message ? colors.error : colors.divider,
+                  color: colors.text,
+                }}
                 placeholder="Type your message here..."
+                placeholderTextColor={colors.textLighter}
                 multiline
                 numberOfLines={4}
                 textAlignVertical="top"
@@ -181,44 +251,44 @@ export default function ContactUs() {
             name="message"
           />
           {errors.message && (
-            <Text className="text-red-500 text-xs mt-1">{errors.message.message}</Text>
+            <Text style={{ color: colors.error, fontSize: 12, marginTop: 4 }}>{errors.message.message}</Text>
           )}
         </View>
 
         {/* Submit Button */}
         <TouchableOpacity
-          className="bg-pink-600 p-4 rounded-lg items-center"
+          className="p-4 rounded-lg items-center"
+          style={{ backgroundColor: colors.primary }}
           onPress={handleSubmit(onSubmit)}
           disabled={isSubmitting}
         >
           <View className="flex-row items-center">
             {isSubmitting ? (
-              <MaterialIcons name="hourglass-empty" size={20} color="white" className="mr-2" />
+              <MaterialIcons name="hourglass-empty" size={20} color="white" style={{ marginRight: 8 }} />
             ) : (
-              <MaterialIcons name="send" size={20} color="white" className="mr-2" />
+              <MaterialIcons name="send" size={20} color="white" style={{ marginRight: 8 }} />
             )}
-            <Text className="text-white font-semibold">
-              {isSubmitting ? 'Sending...' : 'Send Message'}
-            </Text>
+            <Text className="text-white font-semibold">{isSubmitting ? "Sending..." : "Send Message"}</Text>
           </View>
         </TouchableOpacity>
 
         {/* Contact Information */}
-        <View className="pb-14 border-t border-gray-200 pt-6">
-          <Text className="text-lg font-semibold text-gray-800 mb-4">Other Ways to Reach Us</Text>
+        <View className="pb-14 pt-6" style={{ borderTopWidth: 1, borderTopColor: colors.divider }}>
+          <Text className="text-lg font-semibold mb-4" style={{ color: colors.text }}>
+            Other Ways to Reach Us
+          </Text>
 
           <View className="flex-row items-center mb-3">
-            <MaterialIcons name="email" size={20} color="#db2777" style={{ marginRight: 12 }} />
-            <Text className="text-gray-700">info@sustylo.com</Text>
+            <MaterialIcons name="email" size={20} color={colors.primary} style={{ marginRight: 12 }} />
+            <Text style={{ color: colors.textLight }}>info@sustylo.com</Text>
           </View>
 
           <View className="flex-row items-center">
-            <MaterialIcons name="phone" size={20} color="#db2777" style={{ marginRight: 12 }} />
-            <Text className="text-gray-700">+91-7297026119</Text>
+            <MaterialIcons name="phone" size={20} color={colors.primary} style={{ marginRight: 12 }} />
+            <Text style={{ color: colors.textLight }}>+91-7297026119</Text>
           </View>
         </View>
       </ScrollView>
     </>
-
-  );
+  )
 }

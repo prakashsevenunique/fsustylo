@@ -5,6 +5,25 @@ import { Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import axiosInstance from '@/utils/axiosInstance';
 import { imageBaseUrl } from '@/utils/helpingData';
 
+// Su stylo Salon color palette
+const colors = {
+  primary: "#E65305", // Bright red-orange as primary
+  primaryLight: "#FF7A3D", // Lighter version of primary
+  primaryLighter: "#FFA273", // Even lighter version
+  secondary: "#FBA059", // Light orange as secondary
+  secondaryLight: "#FFC59F", // Lighter version of secondary
+  accent: "#FB8807", // Bright orange as accent
+  accentLight: "#FFAA4D", // Lighter version of accent
+  tertiary: "#F4A36C", // Peach/salmon as tertiary
+  tertiaryLight: "#FFD0B0", // Lighter version of tertiary
+  background: "#FFF9F5", // Very light orange/peach background
+  cardBg: "#FFFFFF", // White for cards
+  text: "#3D2C24", // Dark brown for text
+  textLight: "#7D6E66", // Lighter text color
+  textLighter: "#A99E98", // Even lighter text
+  divider: "#FFE8D6", // Very light divider color
+}
+
 const SalonDetail = () => {
   const { id } = useLocalSearchParams();
   const [selectedGender, setSelectedGender] = useState('unisex');
@@ -140,19 +159,20 @@ const SalonDetail = () => {
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center">
-        <Ionicons name="cut" size={40} color="#E6007E" />
-        <Text className="mt-4 text-gray-600">Loading...</Text>
+        <Ionicons name="cut" size={40} color={colors.primary} />
+        <Text className="mt-4" style={{ color: colors.textLight }}>Loading...</Text>
       </View>
     );
   }
 
   if (!salon) {
     return (
-      <View className="flex-1 justify-center items-center bg-white">
-        <MaterialIcons name="error-outline" size={40} color="#E6007E" />
-        <Text className="mt-4 text-gray-600">Salon not found</Text>
+      <View className="flex-1 justify-center items-center" style={{ backgroundColor: colors.cardBg }}>
+        <MaterialIcons name="error-outline" size={40} color={colors.primary} />
+        <Text className="mt-4" style={{ color: colors.textLight }}>Salon not found</Text>
         <TouchableOpacity
-          className="mt-6 bg-pink-600 py-2 px-4 rounded-full"
+          className="mt-6 py-2 px-4 rounded-full"
+          style={{ backgroundColor: colors.primary }}
           onPress={() => router.back()}
         >
           <Text className="text-white">Go Back</Text>
@@ -162,11 +182,12 @@ const SalonDetail = () => {
   }
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1" style={{ backgroundColor: colors.background }}>
       {headerSticky && (
         <Animated.View
-          className="absolute top-0 left-0 right-0 z-10 bg-white pt-2 px-4 pb-2 shadow-sm"
+          className="absolute top-0 left-0 right-0 z-10 pt-2 px-4 pb-2 shadow-sm"
           style={{
+            backgroundColor: colors.cardBg,
             transform: [{
               translateY: scrollY.interpolate({
                 inputRange: [headerHeight, headerHeight + 1],
@@ -178,14 +199,14 @@ const SalonDetail = () => {
         >
           <View className='flex flex-row items-center gap-3'>
             <TouchableOpacity onPress={() => router.back()}>
-              <Ionicons name="arrow-back" size={24} color="#E6007E" />
+              <Ionicons name="arrow-back" size={24} color={colors.primary} />
             </TouchableOpacity>
             <View>
-              <Text className="font-bold text-lg">{salon.salonName}</Text>
+              <Text className="font-bold text-lg" style={{ color: colors.text }}>{salon.salonName}</Text>
               <View className="flex-row items-center">
                 <Ionicons name="star" size={14} color="#FFD700" />
-                <Text className="ml-1 text-gray-700 text-sm">{calculateAverageRating()}</Text>
-                <Text className="ml-2 text-gray-500 text-sm">{salon.reviews?.length || 0} reviews</Text>
+                <Text className="ml-1 text-sm" style={{ color: colors.text }}>{calculateAverageRating()}</Text>
+                <Text className="ml-2 text-sm" style={{ color: colors.textLight }}>{salon.reviews?.length || 0} reviews</Text>
               </View>
             </View>
           </View>
@@ -208,57 +229,72 @@ const SalonDetail = () => {
             />
           )}
           <TouchableOpacity
-            className="absolute top-6 left-4 bg-black/30 p-2 rounded-full"
+            className="absolute top-6 left-4 p-2 rounded-full"
+            style={{ backgroundColor: "rgba(0,0,0,0.3)" }}
             onPress={() => router.back()}
           >
             <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
         </View>
 
-        <View className="px-4 pt-4 bg-white">
+        <View className="px-4 pt-4" style={{ backgroundColor: colors.cardBg }}>
           <View className="flex-row justify-between items-start">
             <View>
-              <Text className="text-xl font-bold">{salon.salonName}</Text>
-              <Text className="text-gray-500 mt-1">
+              <Text className="text-xl font-bold" style={{ color: colors.text }}>{salon.salonName}</Text>
+              <Text className="mt-1" style={{ color: colors.textLight }}>
                 {salon.salonAddress}
               </Text>
               <View className="flex-row items-center mt-1">
                 <Ionicons name="star" size={16} color="#FFD700" />
-                <Text className="ml-1 text-gray-700">{calculateAverageRating()}</Text>
-                <Text className="ml-2 text-gray-500">{salon.reviews?.length || 0} reviews</Text>
+                <Text className="ml-1" style={{ color: colors.text }}>{calculateAverageRating()}</Text>
+                <Text className="ml-2" style={{ color: colors.textLight }}>{salon.reviews?.length || 0} reviews</Text>
               </View>
             </View>
           </View>
         </View>
 
-        <View className="bg-white pt-2 px-4 pb-2 border-b border-gray-200">
+        <View className="pt-2 px-4 pb-2 border-b" 
+          style={{ 
+            backgroundColor: colors.cardBg,
+            borderBottomColor: colors.divider 
+          }}>
           <View className="flex-row items-center justify-between mb-2 my-2">
-            <Text className="mr-3 text-gray-800 font-bold text-lg">Filter by :</Text>
-            <View className="flex-row bg-gray-200 rounded-full p-1">
-              {['male', 'female'].map((gender) => (
+            <Text className="mr-3 font-bold text-lg" style={{ color: colors.text }}>Filter by :</Text>
+            <View className="flex-row p-1 rounded-full" style={{ backgroundColor: colors.tertiaryLight }}>
+              {["unisex", 'male', 'female'].map((gender) => (
                 <TouchableOpacity
                   key={gender}
-                  className={`px-4 py-2 rounded-full ${selectedGender === gender ? 'bg-gray-800' : 'bg-gray-300'}`}
+                  className="px-3 py-2 rounded-full"
+                  style={{
+                    backgroundColor: selectedGender === gender ? colors.primary : colors.secondaryLight
+                  }}
                   onPress={() => setSelectedGender(gender)}
                 >
-                  <Text className={selectedGender === gender ? 'text-white font-bold' : 'text-gray-600'}>
-                    {gender === 'male' ? 'Men' : 'Women'}
+                  <Text 
+                    style={{ 
+                      color: selectedGender === gender ? 'white' : colors.text,
+                      fontWeight: selectedGender === gender ? 'bold' : 'normal'
+                    }}>
+                    {gender === 'male' ? 'Men' : gender === 'unisex' ? 'Unisex' : 'Women'}
                   </Text>
                 </TouchableOpacity>
               ))}
             </View>
           </View>
-          <View className="flex-1 flex-row items-center bg-gray-100 rounded-lg px-3 py-2 my-2">
-            <FontAwesome name="search" size={20} color="gray" />
+          <View className="flex-1 flex-row items-center rounded-lg px-3 py-2 my-2" 
+            style={{ backgroundColor: colors.tertiaryLight }}>
+            <FontAwesome name="search" size={20} color={colors.textLight} />
             <TextInput
               placeholder="Search for services..."
               className="ml-2 py-2 flex-1"
               value={searchQuery}
               onChangeText={setSearchQuery}
+              style={{ color: colors.text }}
+              placeholderTextColor={colors.textLight}
             />
             {searchQuery.length > 0 && (
               <TouchableOpacity onPress={() => setSearchQuery('')} className="ml-2">
-                <Ionicons name="close" size={18} color="gray" />
+                <Ionicons name="close" size={18} color={colors.textLight} />
               </TouchableOpacity>
             )}
           </View>
@@ -288,31 +324,36 @@ const SalonDetail = () => {
                 return (
                   <View
                     key={service.id}
-                    className={`mb-1 shadow-lg rounded-lg ${isSelected ? 'bg-pink-50 border  border-pink-600' : 'bg-white'}`}
+                    className="mb-1 shadow-lg rounded-lg"
+                    style={{
+                      backgroundColor: isSelected ? colors.tertiaryLight : colors.cardBg,
+                      borderWidth: isSelected ? 1 : 0,
+                      borderColor: isSelected ? colors.primary : 'transparent'
+                    }}
                   >
                     <TouchableOpacity
                       className="flex-row justify-between items-center p-3"
                       onPress={() => toggleService(service)}
                     >
                       <View className="flex-1">
-                        <Text className="font-bold text-md">{service.name}</Text>
+                        <Text className="font-bold text-md" style={{ color: colors.text }}>{service.name}</Text>
                         {service.description && (
-                          <Text className="text-gray-700 text-xs mt-1">{service.description}</Text>
+                          <Text className="text-xs mt-1" style={{ color: colors.textLight }}>{service.description}</Text>
                         )}
-                        <Text className="text-gray-700 font-medium text-sm mt-1">Duration : {service.duration}</Text>
-
+                        <Text className="font-medium text-sm mt-1" style={{ color: colors.textLight }}>Duration : {service.duration}</Text>
                       </View>
                       <View className="items-end">
-                        <Text className="font-bold">₹{service.price}</Text>
+                        <Text className="font-bold" style={{ color: colors.text }}>₹{service.price}</Text>
                         {service.discount > 0 && (
                           <View className="flex-row items-center">
-                            <Text className="text-gray-500 text-xs line-through mr-1">₹{service.originalPrice}</Text>
-                            <Text className="text-pink-600 text-xs">{service.discount}% off</Text>
+                            <Text className="text-xs line-through mr-1" style={{ color: colors.textLight }}>₹{service.originalPrice}</Text>
+                            <Text className="text-xs" style={{ color: colors.primary }}>{service.discount}% off</Text>
                           </View>
                         )}
                       </View>
-                      <View className="ml-4 w-6 h-6 rounded-full border border-gray-300 justify-center items-center">
-                        {isSelected && <View className="w-4 h-4 rounded-full bg-pink-600" />}
+                      <View className="ml-4 w-6 h-6 rounded-full border justify-center items-center" 
+                        style={{ borderColor: colors.textLighter }}>
+                        {isSelected && <View className="w-4 h-4 rounded-full" style={{ backgroundColor: colors.primary }} />}
                       </View>
                     </TouchableOpacity>
                   </View>
@@ -324,18 +365,23 @@ const SalonDetail = () => {
       </ScrollView>
 
       {selectedServices.length > 0 && (
-        <View className="absolute bottom-0 left-0 right-0 z-10 px-4 py-3 bg-white border-t border-gray-200 shadow-lg">
+        <View className="absolute bottom-0 left-0 right-0 z-10 px-4 py-3 border-t shadow-lg" 
+          style={{ 
+            backgroundColor: colors.cardBg,
+            borderTopColor: colors.divider
+          }}>
           <View className="flex-row justify-between items-center mb-2">
-            <Text className="text-gray-600 font-bold">
+            <Text className="font-bold" style={{ color: colors.textLight }}>
               {selectedServices.reduce((sum, s: any) => sum + (s.quantity || 1), 0)} Item{selectedServices.length > 1 ? 's' : ''}
             </Text>
-            <Text className="font-bold">
+            <Text className="font-bold" style={{ color: colors.text }}>
               ₹{selectedServices.reduce((sum, s: any) => sum + (s.price * (s.quantity || 1)), 0)}
             </Text>
           </View>
-          <Text className="text-xs text-gray-500 mb-3">Discount will be applied at checkout.</Text>
+          <Text className="text-xs mb-3" style={{ color: colors.textLight }}>Discount will be applied at checkout.</Text>
           <TouchableOpacity
-            className="bg-pink-600 py-3 rounded-lg items-center"
+            className="py-3 rounded-lg items-center"
+            style={{ backgroundColor: colors.primary }}
             onPress={() => router.push({
               pathname: '/salon/checkout',
               params: {

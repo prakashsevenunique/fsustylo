@@ -1,121 +1,286 @@
-import { View, Text, Image, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
-import { router } from 'expo-router';
-import { Ionicons, Feather, FontAwesome } from '@expo/vector-icons';
-import { useContext, useState } from 'react';
-import { UserContext } from '@/hooks/userInfo';
-import { imageBaseUrl } from '@/utils/helpingData';
+import { View, Text, Image, TouchableOpacity, ScrollView, RefreshControl } from "react-native"
+import { router } from "expo-router"
+import { Ionicons, Feather, FontAwesome } from "@expo/vector-icons"
+import { useContext, useState } from "react"
+import { UserContext } from "@/hooks/userInfo"
+import { imageBaseUrl } from "@/utils/helpingData"
+
+// Su stylo Salon color palette - lighter shades
+const colors = {
+  primary: "#E65305", // Bright red-orange as primary
+  primaryLight: "#FF7A3D", // Lighter version of primary
+  primaryLighter: "#FFA273", // Even lighter version
+  secondary: "#FBA059", // Light orange as secondary
+  secondaryLight: "#FFC59F", // Lighter version of secondary
+  accent: "#FB8807", // Bright orange as accent
+  accentLight: "#FFAA4D", // Lighter version of accent
+  tertiary: "#F4A36C", // Peach/salmon as tertiary
+  tertiaryLight: "#FFD0B0", // Lighter version of tertiary
+  background: "#FFF9F5", // Very light orange/peach background
+  cardBg: "#FFFFFF", // White for cards
+  text: "#3D2C24", // Dark brown for text
+  textLight: "#7D6E66", // Lighter text color
+  textLighter: "#A99E98", // Even lighter text
+  divider: "#FFE8D6", // Very light divider color
+  verified: "#4FC3F7", // Sky blue for verification icon
+}
 
 export default function ProfileScreen() {
-  const [refreshing, setRefreshing] = useState(false);
-  const { userInfo, fetchUserInfo } = useContext(UserContext) as any;
+  const [refreshing, setRefreshing] = useState(false)
+  const { userInfo, fetchUserInfo } = useContext(UserContext) as any
 
   const onRefresh = async () => {
-    setRefreshing(true);
+    setRefreshing(true)
     await fetchUserInfo()
-    setRefreshing(false);
-  };
+    setRefreshing(false)
+  }
 
   return (
-    <View className="flex-1 bg-gray-50">
-      <View className="bg-white px-4 py-4 shadow-md border-b border-gray-200">
-        <View className="flex-row justify-between items-center">
-          <View className="flex-row items-center">
-            <Ionicons onPress={() => router.back()} name="arrow-back" size={25} color="#E6007E" />
-            <Text className="text-lg font-bold ml-3">My Profile</Text>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <View
+        style={{
+          backgroundColor: colors.cardBg,
+          paddingHorizontal: 16,
+          paddingVertical: 16,
+          shadowColor: colors.primary,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          elevation: 2,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.divider,
+        }}
+      >
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Ionicons onPress={() => router.back()} name="arrow-back" size={25} color={colors.primary} />
+            <Text style={{ fontSize: 18, fontWeight: "bold", marginLeft: 12, color: colors.text }}>My Profile</Text>
           </View>
           <TouchableOpacity onPress={() => router.push("/notification")}>
-            <Ionicons name="notifications-outline" size={25} color="black" className="mr-4" />
+            <Ionicons name="notifications-outline" size={25} color={colors.text} />
           </TouchableOpacity>
         </View>
       </View>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#E6007E"]} />}
-        className="p-4"
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />}
+        style={{ padding: 16 }}
       >
-        <View className="items-center mt-6">
-          <View className="relative border rounded-full border-gray-400 border-2 shadow-md">
-            <Image source={{ uri: userInfo.profilePhoto ? `${imageBaseUrl}/${userInfo.profilePhoto}` : "https://static.vecteezy.com/system/resources/thumbnails/035/857/779/small/people-face-avatar-icon-cartoon-character-png.png"  }} className="w-24 h-24 rounded-full" />
-            <TouchableOpacity onPress={() => router.push("/(app)/profile/edit")} className="absolute bottom-0 right-0 bg-pink-600 p-2 rounded-full border border-white">
+        <View style={{ alignItems: "center", marginTop: 4 }}>
+          <View
+            style={{
+              position: "relative",
+              borderWidth: 2,
+              borderRadius: 9999,
+              borderColor: colors.tertiary,
+              shadowColor: colors.primary,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 4,
+              elevation: 2,
+            }}
+          >
+            <Image
+              source={{
+                uri: userInfo.profilePhoto
+                  ? `${imageBaseUrl}/${userInfo.profilePhoto}`
+                  : "https://static.vecteezy.com/system/resources/thumbnails/035/857/779/small/people-face-avatar-icon-cartoon-character-png.png",
+              }}
+              style={{ width: 96, height: 96, borderRadius: 9999 }}
+            />
+            <TouchableOpacity
+              onPress={() => router.push("/(app)/profile/edit")}
+              style={{
+                position: "absolute",
+                bottom: 0,
+                right: 0,
+                backgroundColor: colors.primary,
+                padding: 8,
+                borderRadius: 9999,
+                borderWidth: 1,
+                borderColor: colors.cardBg,
+              }}
+            >
               <Feather name="edit-2" size={14} color="white" />
             </TouchableOpacity>
           </View>
-          <Text className="mt-2 text-pink-600 text-lg font-semibold">{userInfo?.name || "Your Name"}</Text>
-          <View className='flex-1 flex-row items-center gap-1'>
-            <Ionicons name="checkmark-circle" size={20} color="skyblue" />
-            <Text className="text-gray-600">{userInfo?.mobileNumber || "Mobile Number"}</Text>
+          <Text
+            style={{
+              marginTop: 8,
+              color: colors.primary,
+              fontSize: 18,
+              fontWeight: "600",
+            }}
+          >
+            {userInfo?.name || "Your Name"}
+          </Text>
+          <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 4 }}>
+            <Ionicons name="checkmark-circle" size={20} color={colors.verified} />
+            <Text style={{ color: colors.textLight }}>{userInfo?.mobileNumber || "Mobile Number"}</Text>
           </View>
-          <View className='flex flex-row gap-2'>
-            <Text className="text-gray-600 font-bold text-md">Sustylo Wallet :</Text>
-            <Text className="text-gray-600 font-bold text-md">₹ {userInfo?.wallet?.balance || 0}</Text>
+          <View style={{ flexDirection: "row", gap: 8, marginTop: 4 }}>
+            <Text style={{ color: colors.text, fontWeight: "bold" }}>Sustylo Wallet :</Text>
+            <Text style={{ color: colors.text, fontWeight: "bold" }}>₹ {userInfo?.wallet?.balance || 0}</Text>
           </View>
         </View>
 
         {/* Action Buttons */}
-        <View className="flex-row justify-around gap-1 mt-6">
-          {[{ name: 'Notifications', icon: 'bell', routes: "/notification" }, { name: 'Orders', icon: 'shopping-cart', routes: "/(app)/(tabs)/bookings" }, { name: 'Settings', icon: 'settings', routes: "/profile/setting" }].map((item: any, index) => (
+        <View style={{ flexDirection: "row", justifyContent: "space-around", gap: 4, marginTop: 24 }}>
+          {[
+            { name: "Notifications", icon: "bell", routes: "/notification" },
+            { name: "Orders", icon: "shopping-cart", routes: "/(app)/(tabs)/bookings" },
+            { name: "Settings", icon: "settings", routes: "/profile/setting" },
+          ].map((item: any, index) => (
             <TouchableOpacity
               key={index}
               onPress={() => router.push(item.routes)}
-              className="items-center p-3 py-4 bg-white rounded-lg shadow-md w-[30%]"
+              style={{
+                alignItems: "center",
+                padding: 12,
+                paddingVertical: 16,
+                backgroundColor: colors.cardBg,
+                borderRadius: 12,
+                shadowColor: colors.primary,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+                elevation: 2,
+                width: "30%",
+              }}
             >
-              <Feather name={item.icon} size={24} color="black" />
-              <Text className="mt-1 text-xs font-semibold text-gray-700">{item.name}</Text>
+              <Feather name={item.icon} size={24} color={colors.primary} />
+              <Text style={{ marginTop: 4, fontSize: 12, fontWeight: "600", color: colors.text }}>{item.name}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
         {/* Profile Sections */}
-        <View className="mt-6">
-          <Text className="text-gray-700 font-semibold">My Account</Text>
-          {[{ name: 'My Profile', icon: 'user', route: "/profile/edit" }, { name: 'My Wallet', icon: 'rupes', route: "/profile/wallet" }, { name: 'Manage Address', icon: 'map-pin', route: "/profile/address" }, { name: 'My Reviews', icon: 'thumbs-up', route: "/profile/myReview" }].map((item, index) => (
-            <TouchableOpacity key={index} onPress={() => router.push(item.route)} className="flex-row items-center justify-between p-5 bg-white rounded-lg shadow-sm mt-2">
-              <View className="flex-row items-center">
-                {item.icon != "rupes" ? <Feather name={item.icon} size={20} color="black" /> : <FontAwesome className='px-1.5' name="rupee" size={20} color="black" />}
-                <Text className="ml-3 text-gray-700 font-medium">{item.name}</Text>
+        <View style={{ marginTop: 24 }}>
+          <Text style={{ color: colors.text, fontWeight: "600" }}>My Account</Text>
+          {[
+            { name: "My Profile", icon: "user", route: "/profile/edit" },
+            { name: "My Wallet", icon: "rupes", route: "/profile/wallet" },
+            { name: "Manage Address", icon: "map-pin", route: "/profile/address" },
+            { name: "My Reviews", icon: "thumbs-up", route: "/profile/myReview" },
+          ].map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => router.push(item.route)}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: 20,
+                backgroundColor: colors.cardBg,
+                borderRadius: 12,
+                shadowColor: colors.primary,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.05,
+                shadowRadius: 4,
+                elevation: 1,
+                marginTop: 8,
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                {item.icon != "rupes" ? (
+                  <Feather name={item.icon} size={20} color={colors.primary} />
+                ) : (
+                  <FontAwesome style={{ paddingHorizontal: 6 }} name="rupee" size={20} color={colors.primary} />
+                )}
+                <Text style={{ marginLeft: 12, color: colors.text, fontWeight: "500" }}>{item.name}</Text>
               </View>
-              <Feather name="chevron-right" size={20} color="gray" />
+              <Feather name="chevron-right" size={20} color={colors.textLight} />
             </TouchableOpacity>
           ))}
         </View>
 
-        <View className="mt-6">
-          <Text className="text-gray-700 font-semibold">My Offer</Text>
-          {[{ name: 'Refer & Earn', icon: 'user-plus', route: "/profile/referal" }].map((item, index) => (
-            <TouchableOpacity key={index} onPress={() => router.push(item.route)} className="flex-row items-center justify-between p-5 bg-white rounded-lg shadow-sm mt-2">
-              <View className="flex-row items-center">
-                <Feather name={item.icon} size={20} color="black" />
-                <Text className="ml-3 text-gray-700 font-medium">{item.name}</Text>
+        <View style={{ marginTop: 24 }}>
+          <Text style={{ color: colors.text, fontWeight: "600" }}>My Offer</Text>
+          {[{ name: "Refer & Earn", icon: "user-plus", route: "/profile/referal" }].map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => router.push(item.route)}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: 20,
+                backgroundColor: colors.cardBg,
+                borderRadius: 12,
+                shadowColor: colors.primary,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.05,
+                shadowRadius: 4,
+                elevation: 1,
+                marginTop: 8,
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Feather name={item.icon} size={20} color={colors.primary} />
+                <Text style={{ marginLeft: 12, color: colors.text, fontWeight: "500" }}>{item.name}</Text>
               </View>
-              <Feather name="chevron-right" size={20} color="gray" />
+              <Feather name="chevron-right" size={20} color={colors.textLight} />
             </TouchableOpacity>
           ))}
         </View>
 
         {/* Other Section */}
-        <View className="mt-6 mb-8">
-          <Text className="text-gray-700 font-semibold">Help & Support</Text>
-          {[{ name: 'About App', icon: 'tablet', route: "/profile/policies/about_app" }, { name: 'About Us', icon: 'info', route: "/profile/policies/about_us" }, { name: 'Privacy Policy', icon: 'lock', route: "/profile/policies" }, { name: 'Terms & Conditions', icon: 'clipboard', route: "/profile/policies/term&condition" }, { name: 'Contact Us', icon: 'help-circle', route: "/profile/raiseTicket" }].map((item: any, index) => (
-            <TouchableOpacity onPress={() => router.push(item.route)} key={index} className="flex-row items-center justify-between p-5 bg-white rounded-lg shadow-sm mt-2">
-              <View className="flex-row items-center">
-                <Feather name={item.icon} size={20} color="black" />
-                <Text className="ml-3 text-gray-700 font-medium">{item.name}</Text>
+        <View style={{ marginTop: 24, marginBottom: 32 }}>
+          <Text style={{ color: colors.text, fontWeight: "600" }}>Help & Support</Text>
+          {[
+            { name: "About App", icon: "tablet", route: "/profile/policies/about_app" },
+            { name: "About Us", icon: "info", route: "/profile/policies/about_us" },
+            { name: "Privacy Policy", icon: "lock", route: "/profile/policies" },
+            { name: "Terms & Conditions", icon: "clipboard", route: "/profile/policies/term&condition" },
+            { name: "Contact Us", icon: "help-circle", route: "/profile/raiseTicket" },
+          ].map((item: any, index) => (
+            <TouchableOpacity
+              onPress={() => router.push(item.route)}
+              key={index}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: 20,
+                backgroundColor: colors.cardBg,
+                borderRadius: 12,
+                shadowColor: colors.primary,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.05,
+                shadowRadius: 4,
+                elevation: 1,
+                marginTop: 8,
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Feather name={item.icon} size={20} color={colors.primary} />
+                <Text style={{ marginLeft: 12, color: colors.text, fontWeight: "500" }}>{item.name}</Text>
               </View>
-              <Feather name="chevron-right" size={20} color="gray" />
+              <Feather name="chevron-right" size={20} color={colors.textLight} />
             </TouchableOpacity>
           ))}
         </View>
-        <View className="items-center pb-6">
-          <Text className="text-gray-500">App Version 1.0.0</Text>
+        <View style={{ alignItems: "center", paddingBottom: 24 }}>
+          <Text style={{ color: colors.textLighter }}>App Version 1.0.0</Text>
         </View>
-        {/* <View className='my-8 mt-6'>
-        <TouchableOpacity onPress={() => console.log('Logout')} className="bg-pink-600 p-3 rounded-lg flex-row justify-center items-center">
-          <Feather name="log-out" size={20} color="white" />
-          <Text className="ml-2 text-white font-semibold text-lg">Logout</Text>
-        </TouchableOpacity>
+        {/* <View style={{ marginVertical: 32, marginTop: 24 }}>
+          <TouchableOpacity
+            onPress={() => console.log('Logout')}
+            style={{
+              backgroundColor: colors.primary,
+              padding: 12,
+              borderRadius: 12,
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Feather name="log-out" size={20} color="white" />
+            <Text style={{ marginLeft: 8, color: "white", fontWeight: "600", fontSize: 18 }}>Logout</Text>
+          </TouchableOpacity>
         </View> */}
       </ScrollView>
     </View>
-  );
+  )
 }

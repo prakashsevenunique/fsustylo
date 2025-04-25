@@ -1,9 +1,10 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Image, Alert, Modal, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Image, Alert, Modal, ScrollView, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import OTPInputScreen from './../../components/otpscreen/otpScreen';
 import { Ionicons } from '@expo/vector-icons';
 import axiosInstance from '@/utils/axiosInstance';
+import { LinearGradient } from 'expo-linear-gradient';
 
 
 export default function LoginScreen() {
@@ -42,28 +43,28 @@ export default function LoginScreen() {
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1 bg-[#ab3207]">
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1 bg-[#fb8807]">
       {
         loading ? <View className="flex-1 justify-center items-center bg-white">
-          <Ionicons name="cut" size={40} color="#E6007E" />
-          <Text className="mt-4 text-gray-600">Loading...</Text>
+          <ActivityIndicator size={40} color="#fb8807" />
+          <Text className="mt-4 text-[#b84729]">Loading...</Text>
         </View> : <View className="w-full h-full">
           {/* Upper Section - 60% */}
-          <View className="h-[50%] items-center justify-center px-6 bg-[#ab3207]">
+          <View className="h-[50%] items-center justify-center px-6 bg-[#fb8807]">
             <Image source={require('@/assets/img/logo.png')} className="w-40 h-40 mb-4" resizeMode="contain" />
             <Text className="text-white text-2xl font-bold text-center">Sutylo Salon – Your Beauty, Our Duty!</Text>
           </View>
 
           {/* Lower Section - 40% */}
           <View className="h-[50%] bg-white rounded-t-3xl px-6 pt-8 pb-12 shadow-lg">
-            <Text className="text-gray-900 text-2xl font-bold text-center mb-2">
+            <Text className="text-[#b84729] text-2xl font-bold text-center mb-2">
               Welcome Back!
             </Text>
-            <Text className="text-gray-600 text-center mb-8">
+            <Text className="text-[#b84729] text-center mb-8">
               Enter your mobile number to continue
             </Text>
             <View className="mb-6">
-              <Text className="text-gray-700 text-sm font-medium mb-2">
+              <Text className="text-[#b84729] text-sm font-medium mb-2">
                 Mobile Number
               </Text>
               <View className="flex-row items-center bg-gray-50 rounded-xl px-4 border border-gray-200">
@@ -79,10 +80,18 @@ export default function LoginScreen() {
                 />
               </View>
             </View>
+            <LinearGradient
+              colors={['#fa9421', '#c23d02']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              className="rounded py-4 px-6 items-center"
+            >
+              <TouchableOpacity onPress={openBottomSheet} className="w-full">
+                <Text className="text-white text-lg font-semibold text-center">Get OTP</Text>
+              </TouchableOpacity>
+            </LinearGradient>
 
-            <TouchableOpacity className="bg-[#b74729] rounded-xl py-3 mt-6" onPress={openBottomSheet}>
-              <Text className="text-white text-lg font-semibold text-center">Get OTP</Text>
-            </TouchableOpacity>
+
 
             {/* Terms and Conditions */}
             <View className="flex-row flex-wrap justify-center mt-6 px-4">
@@ -120,14 +129,14 @@ export default function LoginScreen() {
         onRequestClose={() => setIsAddMoneyModalVisible(false)}
       >
         <View className="flex-1 bg-black bg-opacity-50 justify-end">
-          <View className="bg-white rounded-t-3xl p-6 min-h-[80%]">
+          <View className="bg-white rounded-t-3xl p-6">
             <View className="flex-row justify-between items-center mb-6">
-              <Text className="text-2xl font-bold text-gray-800">Verify OTP</Text>
+              <Text className="text-2xl font-bold text-[#ab3207]">Verify OTP</Text>
               <TouchableOpacity onPress={() => setIsAddMoneyModalVisible(false)}>
-                <Ionicons name="close" size={26} color="#6B7280" />
+                <Ionicons name="close" size={26} color="#b84729" />
               </TouchableOpacity>
             </View>
-            <ScrollView className="p-2">
+            <ScrollView className="p-2" showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}> 
               <OTPInputScreen mobile={mobile} userExists={existing} />
             </ScrollView>
           </View>

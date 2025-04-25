@@ -1,104 +1,144 @@
-import { View, Text, ScrollView, TouchableOpacity, Image, Animated, ActivityIndicator, Modal, Alert, RefreshControl } from 'react-native';
-import { router } from 'expo-router';
-import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { useCallback, useContext, useEffect, useState } from 'react';
-import axiosInstance from '@/utils/axiosInstance';
-import { UserContext } from '@/hooks/userInfo';
-import { imageBaseUrl } from '@/utils/helpingData';
-import ReviewModal from '@/components/rating';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  Animated,
+  ActivityIndicator,
+  Modal,
+  Alert,
+  RefreshControl,
+} from "react-native"
+import { router } from "expo-router"
+import { AntDesign, Ionicons, MaterialIcons } from "@expo/vector-icons"
+import { useCallback, useContext, useEffect, useState } from "react"
+import axiosInstance from "@/utils/axiosInstance"
+import { UserContext } from "@/hooks/userInfo"
+import { imageBaseUrl } from "@/utils/helpingData"
+import ReviewModal from "@/components/rating"
+
+// Su stylo Salon color palette - lighter shades
+const colors = {
+  primary: "#E65305", // Bright red-orange as primary
+  primaryLight: "#FF7A3D", // Lighter version of primary
+  primaryLighter: "#FFA273", // Even lighter version
+  secondary: "#FBA059", // Light orange as secondary
+  secondaryLight: "#FFC59F", // Lighter version of secondary
+  accent: "#FB8807", // Bright orange as accent
+  accentLight: "#FFAA4D", // Lighter version of accent
+  tertiary: "#F4A36C", // Peach/salmon as tertiary
+  tertiaryLight: "#FFD0B0", // Lighter version of tertiary
+  background: "#FFF9F5", // Very light orange/peach background
+  cardBg: "#FFFFFF", // White for cards
+  text: "#3D2C24", // Dark brown for text
+  textLight: "#7D6E66", // Lighter text color
+  textLighter: "#A99E98", // Even lighter text
+  divider: "#FFE8D6", // Very light divider color
+  success: "#4CAF50", // Keep the success color
+  pending: "#FB8807", // Use accent color for pending status
+  confirmed: "#4CAF50", // Keep the confirmed color
+  cancelled: "#E53935", // Keep the cancelled color
+  error: "#E53935", // Red for errors and cancellations
+}
 
 export default function BookingsScreen() {
-  const [activeTab, setActiveTab] = useState('Upcoming');
-  const { userInfo, fetchUserInfo } = useContext(UserContext) as any;
-  const [booking, setBooking] = useState() as any;
+  const [activeTab, setActiveTab] = useState("Upcoming")
+  const { userInfo, fetchUserInfo } = useContext(UserContext) as any
+  const [booking, setBooking] = useState() as any
   const [filterBooking, setFilterbooking] = useState([])
-  const [indicatorPosition] = useState(new Animated.Value(0));
-  const [loading, setLoading] = useState(true);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectId, setSelectedId] = useState('');
-  const [ratingSelected, setRatingSelected] = useState('');
-  const [refreshing, setRefreshing] = useState(false);
+  const [indicatorPosition] = useState(new Animated.Value(0))
+  const [loading, setLoading] = useState(true)
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const [selectId, setSelectedId] = useState("")
+  const [ratingSelected, setRatingSelected] = useState("")
+  const [refreshing, setRefreshing] = useState(false)
 
   const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    getUserBooking().then(() => setRefreshing(false));
-  }, []);
+    setRefreshing(true)
+    getUserBooking().then(() => setRefreshing(false))
+  }, [])
 
   const handleCancelAction = () => {
-    setIsModalVisible(false);
-  };
-  const [isVisible, setIsVisible] = useState(false);
+    setIsModalVisible(false)
+  }
+  const [isVisible, setIsVisible] = useState(false)
 
   const handleReviewSubmit = async (reviewData, setReview, setRating) => {
     try {
-      const response = await axiosInstance.post(`/api/salon/review/${ratingSelected}`, { ...reviewData, phone: userInfo.mobileNumber });
+      const response = await axiosInstance.post(`/api/salon/review/${ratingSelected}`, {
+        ...reviewData,
+        phone: userInfo.mobileNumber,
+      })
       if (response) {
         setRatingSelected("")
-        setReview('')
+        setReview("")
         setRating(0)
         setIsVisible(false)
       }
     } catch (error) {
-      Alert.alert("Error submitting review:", error.message);
+      Alert.alert("Error submitting review:", error.message)
     }
-  };
+  }
 
-  const tabs = ['Upcoming', 'Completed', 'Cancelled'];
+  const tabs = ["Upcoming", "Completed", "Cancelled"]
 
   const handleTabPress = (tab: any, index: number) => {
-    setActiveTab(tab);
+    setActiveTab(tab)
     Animated.spring(indicatorPosition, {
       toValue: index * 100,
       useNativeDriver: true,
-    }).start();
-  };
+    }).start()
+  }
 
   const cancelBooking = async () => {
     try {
-      await axiosInstance.post(`/api/booking/cancel/${selectId}`, { cancelReason });
+      await axiosInstance.post(`/api/booking/cancel/${selectId}`, { cancelReason })
       setSelectedId("")
-      setIsModalVisible(false);
+      setIsModalVisible(false)
       getUserBooking()
       fetchUserInfo()
     } catch (error) {
-      Alert.alert("Error", error.message);
+      Alert.alert("Error", error.message)
     }
-  };
+  }
 
   const handleCancelConfirmation = () => {
     if (!cancelReason) {
-      Alert.alert("Required", "Please select a reason for cancellation");
-      return;
+      Alert.alert("Required", "Please select a reason for cancellation")
+      return
     }
     cancelBooking()
-  };
+  }
 
   const getUserBooking = async () => {
     setLoading(true)
     try {
-      const response = await axiosInstance.get(`/api/booking/user/${userInfo?._id}`);
+      const response = await axiosInstance.get(`/api/booking/user/${userInfo?._id}`)
       if (response.status === 200) {
         setBooking(response.data?.bookings)
       }
     } catch (error) {
-      Alert.alert('Error', error.message);
+      Alert.alert("Error", error.message)
     } finally {
       setLoading(false)
     }
-  };
+  }
   useEffect(() => {
-    getUserBooking();
+    getUserBooking()
   }, [userInfo])
 
   useEffect(() => {
     if (booking) {
-      const filteredBookings = booking.filter((item: any) => item.status === (activeTab == "Upcoming" ? "Confirmed" : activeTab));
+      const filteredBookings = booking.filter(
+        (item: any) => item.status === (activeTab == "Upcoming" ? "Confirmed" : activeTab),
+      )
       setFilterbooking(filteredBookings)
     }
   }, [activeTab, booking])
 
-  const [cancelReason, setCancelReason] = useState('');
-  const [showReasonDropdown, setShowReasonDropdown] = useState(false);
+  const [cancelReason, setCancelReason] = useState("")
+  const [showReasonDropdown, setShowReasonDropdown] = useState(false)
 
   const cancellationReasons = [
     "Schedule conflict",
@@ -108,157 +148,289 @@ export default function BookingsScreen() {
     "Health issues",
     "Transportation issues",
     "Weather conditions",
-    "Other"
-  ];
+    "Other",
+  ]
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       {/* Header */}
-      <View className="bg-white px-4 py-4 shadow-sm">
-        <View className="flex-row items-center justify-between">
-          <View className="flex-row items-center">
+      <View
+        style={{
+          backgroundColor: colors.cardBg,
+          paddingHorizontal: 16,
+          paddingVertical: 16,
+          shadowColor: colors.primary,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          elevation: 2,
+        }}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
             <TouchableOpacity onPress={() => router.back()}>
-              <Ionicons name="arrow-back" size={24} className="text-primary" />
+              <Ionicons name="arrow-back" size={24} color={colors.primary} />
             </TouchableOpacity>
-            <Text className="ml-4 text-xl font-bold">My Bookings</Text>
+            <Text style={{ marginLeft: 16, fontSize: 20, fontWeight: "bold", color: colors.text }}>My Bookings</Text>
           </View>
         </View>
       </View>
 
-      <View className="relative">
-        <ScrollView refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            colors={['#E6007E']} // Android
-            tintColor="#E6007E" // iOS
-            progressBackgroundColor="#ffffff"
-          />
-        } horizontal={true} showsHorizontalScrollIndicator={false}>
-          <View className="flex-row">
+      <View style={{ position: "relative" }}>
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[colors.primary]} // Android
+              tintColor={colors.primary} // iOS
+              progressBackgroundColor="#ffffff"
+            />
+          }
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+        >
+          <View style={{ flexDirection: "row" }}>
             {tabs.map((tab, index) => (
               <TouchableOpacity
                 key={tab}
-                className={`flex-1 items-center py-3 px-6 ${activeTab === tab ? 'border-b-2 border-primary' : ''}`}
+                style={{
+                  flex: 1,
+                  alignItems: "center",
+                  paddingVertical: 12,
+                  paddingHorizontal: 24,
+                  borderBottomWidth: activeTab === tab ? 2 : 0,
+                  borderBottomColor: activeTab === tab ? colors.primary : "transparent",
+                }}
                 onPress={() => handleTabPress(tab, index)}
               >
-                <Text className={`font-bold ${activeTab === tab ? 'text-primary' : 'text-gray-500'}`}>
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                    color: activeTab === tab ? colors.primary : colors.textLight,
+                  }}
+                >
                   {tab}
                 </Text>
               </TouchableOpacity>
             ))}
           </View>
         </ScrollView>
-
-        {/* Animated Tab Indicator */}
-        <Animated.View
-          className="absolute bottom-0 left-0 h-1 bg-primary"
-          style={{
-            width: 100, // This should match the width of each tab
-            transform: [{ translateX: indicatorPosition }],
-          }}
-        />
       </View>
 
       {/* Content */}
-      {loading ? <View className="flex-1 justify-center items-center bg-gray-50 z-100">
-        <ActivityIndicator size="large" color="#E6007E" />
-        <Text className="mt-4 text-gray-600">Loading...</Text>
-      </View> :
-        <ScrollView className="flex-1 p-3">
-          <View className='pb-20'>
+      {loading ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: colors.background,
+            zIndex: 100,
+          }}
+        >
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={{ marginTop: 16, color: colors.textLight }}>Loading...</Text>
+        </View>
+      ) : (
+        <ScrollView style={{ flex: 1, padding: 12 }}>
+          <View style={{ paddingBottom: 80 }}>
             {filterBooking.length === 0 ? (
-              <View className="flex-1 items-center justify-center py-20">
-                <MaterialIcons name="event-busy" size={48} className="text-gray-300 mb-4" />
-                <Text className="text-lg text-gray-500 font-medium">No {activeTab} bookings</Text>
-                <Text className="text-gray-400 mt-2 text-center">
-                  {activeTab === 'upcoming'
+              <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingVertical: 80 }}>
+                <MaterialIcons name="event-busy" size={48} color={colors.textLighter} style={{ marginBottom: 16 }} />
+                <Text style={{ fontSize: 18, color: colors.textLight, fontWeight: "500" }}>
+                  No {activeTab} bookings
+                </Text>
+                <Text style={{ color: colors.textLighter, marginTop: 8, textAlign: "center" }}>
+                  {activeTab === "upcoming"
                     ? "You don't have any upcoming appointments"
                     : `You don't have any ${activeTab} appointments`}
                 </Text>
-                {activeTab === 'upcoming' && (
+                {activeTab === "upcoming" && (
                   <TouchableOpacity
-                    className="mt-6 bg-primary py-3 px-6 rounded-full"
-                    onPress={() => router.push('/')}
+                    style={{
+                      marginTop: 24,
+                      backgroundColor: colors.primary,
+                      paddingVertical: 12,
+                      paddingHorizontal: 24,
+                      borderRadius: 9999,
+                    }}
+                    onPress={() => router.push("/")}
                   >
-                    <Text className="text-white font-medium">Book Now</Text>
+                    <Text style={{ color: "white", fontWeight: "500" }}>Book Now</Text>
                   </TouchableOpacity>
                 )}
               </View>
             ) : (
-              filterBooking && filterBooking.map((item: any) => (
-                <View key={item._id} className="mb-2 bg-white rounded-lg shadow-sm overflow-hidden">
-
-                  <View className="flex-row items-center p-4 border-b border-gray-100">
+              filterBooking &&
+              filterBooking.map((item: any) => (
+                <View
+                  key={item._id}
+                  style={{
+                    marginBottom: 8,
+                    backgroundColor: colors.cardBg,
+                    borderRadius: 12,
+                    shadowColor: colors.primary,
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 4,
+                    elevation: 2,
+                    overflow: "hidden",
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      padding: 16,
+                      borderBottomWidth: 1,
+                      borderBottomColor: colors.divider,
+                    }}
+                  >
                     <Image
                       source={{ uri: `${imageBaseUrl}/${item?.salonId?.salonPhotos[0]}` }}
-                      className="w-12 h-12 rounded-full"
+                      style={{ width: 48, height: 48, borderRadius: 9999 }}
                     />
-                    <View className="ml-3 flex-1">
-                      <Text className="font-bold text-lg">{item?.salonId?.salonName}</Text>
-                      {/* <Text className="text-gray-500 text-sm">{item.salonId?.salonTitle}</Text> */}
-                      <Text className="text-gray-500 text-sm">{item.salonId?.salonAddress}</Text>
+                    <View style={{ marginLeft: 12, flex: 1 }}>
+                      <Text style={{ fontWeight: "bold", fontSize: 18, color: colors.text }}>
+                        {item?.salonId?.salonName}
+                      </Text>
+                      <Text style={{ color: colors.textLight, fontSize: 14 }}>{item.salonId?.salonAddress}</Text>
                     </View>
-                    <View className={`px-2 py-1 rounded ${item?.status === 'Confirmed' ? 'bg-green-100' : item?.status === 'Completed' ? 'bg-blue-100' : 'bg-red-100'}`}>
-                      <Text className={`text-xs font-medium ${item?.status === 'Confirmed' ? 'text-green-800' : item?.status === 'Completed' ? 'text-blue-800' : 'text-red-800'}`}>
+                    <View
+                      style={{
+                        paddingHorizontal: 8,
+                        paddingVertical: 4,
+                        borderRadius: 4,
+                        backgroundColor:
+                          item?.status === "Confirmed"
+                            ? "rgba(74, 222, 128, 0.2)"
+                            : item?.status === "Completed"
+                              ? "rgba(96, 165, 250, 0.2)"
+                              : "rgba(248, 113, 113, 0.2)",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          fontWeight: "500",
+                          color:
+                            item?.status === "Confirmed"
+                              ? colors.confirmed
+                              : item?.status === "Completed"
+                                ? colors.primary
+                                : colors.cancelled,
+                        }}
+                      >
                         {item?.status}
                       </Text>
                     </View>
                   </View>
 
                   {/* Booking Details */}
-                  <View className="p-4 py-2">
-                    <View className="flex-row justify-between mb-1">
-                      <Text className="text-gray-500">Service</Text>
-                      <Text className="font-medium">{item.services?.map((serv: any, index: number) => ` ${index === 0 ? "" : "&"} ${serv.name}`)}</Text>
+                  <View style={{ padding: 16, paddingVertical: 8 }}>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 4 }}>
+                      <Text style={{ color: colors.textLight }}>Service</Text>
+                      <Text style={{ fontWeight: "500", color: colors.text }}>
+                        {item.services?.map((serv: any, index: number) => ` ${index === 0 ? "" : "&"} ${serv.name}`)}
+                      </Text>
                     </View>
-                    <View className="flex-row justify-between mb-1">
-                      <Text className="text-gray-500">Date</Text>
-                      <Text className="font-medium">{new Date(item.date).toLocaleDateString('en-GB')}</Text>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 4 }}>
+                      <Text style={{ color: colors.textLight }}>Date</Text>
+                      <Text style={{ fontWeight: "500", color: colors.text }}>
+                        {new Date(item.date).toLocaleDateString("en-GB")}
+                      </Text>
                     </View>
-                    <View className="flex-row justify-between mb-1">
-                      <Text className="text-gray-500">Time</Text>
-                      <Text className="font-medium">{item.timeSlot}</Text>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 4 }}>
+                      <Text style={{ color: colors.textLight }}>Time</Text>
+                      <Text style={{ fontWeight: "500", color: colors.text }}>{item.timeSlot}</Text>
                     </View>
-                    <View className="flex-row justify-between mb-1">
-                      <Text className="text-gray-500">Duration</Text>
-                      <Text className="font-medium">{item.totalDuration}</Text>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 4 }}>
+                      <Text style={{ color: colors.textLight }}>Duration</Text>
+                      <Text style={{ fontWeight: "500", color: colors.text }}>{item.totalDuration}</Text>
                     </View>
-                    <View className="flex-row justify-between">
-                      <Text className="text-gray-500">Price</Text>
-                      <Text className="font-medium">₹ {item.totalAmount}</Text>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                      <Text style={{ color: colors.textLight }}>Price</Text>
+                      <Text style={{ fontWeight: "500", color: colors.text }}>₹ {item.totalAmount}</Text>
                     </View>
                   </View>
 
                   {/* Booking Actions */}
-                  {(activeTab !== 'Completed' && activeTab !== 'Cancelled') && (
-                    <View className="flex-row border-t border-gray-100">
-                      <TouchableOpacity onPress={() => router.push({
-                        pathname: '/(app)/(tabs)/bookings/details',
-                        params: {
-                          bookings: JSON.stringify(item)
+                  {activeTab !== "Completed" && activeTab !== "Cancelled" && (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        borderTopWidth: 1,
+                        borderTopColor: colors.divider,
+                      }}
+                    >
+                      <TouchableOpacity
+                        onPress={() =>
+                          router.push({
+                            pathname: "/(app)/(tabs)/bookings/details",
+                            params: {
+                              bookings: JSON.stringify(item),
+                            },
+                          })
                         }
-                      })} className="flex-1 items-center bg-pink-200 py-3 border-r border-gray-100">
-                        <Text className="text-primary font-medium">View Details</Text>
+                        style={{
+                          flex: 1,
+                          alignItems: "center",
+                          backgroundColor: colors.tertiaryLight,
+                          paddingVertical: 12,
+                          borderRightWidth: 1,
+                          borderRightColor: colors.divider,
+                        }}
+                      >
+                        <Text style={{ color: colors.primary, fontWeight: "500" }}>View Details</Text>
                       </TouchableOpacity>
-                      <TouchableOpacity onPress={() => { setIsModalVisible(true); setSelectedId(item._id) }} className="flex-1 items-center py-3">
-                        <Text className="text-red-500 font-medium">Cancel</Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setIsModalVisible(true)
+                          setSelectedId(item._id)
+                        }}
+                        style={{ flex: 1, alignItems: "center", paddingVertical: 12 }}
+                      >
+                        <Text style={{ color: colors.error, fontWeight: "500" }}>Cancel</Text>
                       </TouchableOpacity>
                     </View>
                   )}
 
-                  {activeTab === 'Completed' && (
-                    <View className="flex-row border-t border-gray-100">
-                      <TouchableOpacity onPress={() => router.push({
-                        pathname: `/(app)/salon/${item?.salonId?._id}`,
-                        params: {
-                          bookings: JSON.stringify(item)
+                  {activeTab === "Completed" && (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        borderTopWidth: 1,
+                        borderTopColor: colors.divider,
+                      }}
+                    >
+                      <TouchableOpacity
+                        onPress={() =>
+                          router.push({
+                            pathname: `/(app)/salon/${item?.salonId?._id}`,
+                            params: {
+                              bookings: JSON.stringify(item),
+                            },
+                          })
                         }
-                      })} className="flex-1 items-center py-3 border-r border-gray-100">
-                        <Text className="text-primary font-medium">Book Again</Text>
+                        style={{
+                          flex: 1,
+                          alignItems: "center",
+                          paddingVertical: 12,
+                          borderRightWidth: 1,
+                          borderRightColor: colors.divider,
+                        }}
+                      >
+                        <Text style={{ color: colors.primary, fontWeight: "500" }}>Book Again</Text>
                       </TouchableOpacity>
-                      <TouchableOpacity onPress={() => { setRatingSelected(item?.salonId?._id); setIsVisible(true); }} className="flex-1 items-center py-3">
-                        <Text className="text-primary font-medium">Rate Service</Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setRatingSelected(item?.salonId?._id)
+                          setIsVisible(true)
+                        }}
+                        style={{ flex: 1, alignItems: "center", paddingVertical: 12 }}
+                      >
+                        <Text style={{ color: colors.primary, fontWeight: "500" }}>Rate Service</Text>
                       </TouchableOpacity>
                     </View>
                   )}
@@ -266,64 +438,119 @@ export default function BookingsScreen() {
               ))
             )}
           </View>
-        </ScrollView>}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isModalVisible}
-        onRequestClose={handleCancelAction}
-      >
-        <View style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }} className="flex-1 justify-center items-center">
-          <View className="bg-white p-6 rounded-2xl shadow-xl w-[90%] mx-auto">
-            <View className="items-center mb-4">
-              <View className="w-16 h-16 rounded-full bg-red-100 items-center justify-center mb-4">
-                <MaterialIcons name="cancel" size={32} color="#EF4444" />
+        </ScrollView>
+      )}
+      <Modal animationType="slide" transparent={true} visible={isModalVisible} onRequestClose={handleCancelAction}>
+        <View
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)", flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <View
+            style={{
+              backgroundColor: colors.cardBg,
+              padding: 24,
+              borderRadius: 24,
+              shadowColor: colors.primary,
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.2,
+              shadowRadius: 8,
+              elevation: 4,
+              width: "90%",
+              marginHorizontal: "auto",
+            }}
+          >
+            <View style={{ alignItems: "center", marginBottom: 16 }}>
+              <View
+                style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: 9999,
+                  backgroundColor: "rgba(239, 68, 68, 0.1)",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: 16,
+                }}
+              >
+                <MaterialIcons name="cancel" size={32} color={colors.error} />
               </View>
-              <Text className="text-xl font-bold text-gray-800 text-center">
+              <Text style={{ fontSize: 20, fontWeight: "bold", color: colors.text, textAlign: "center" }}>
                 Cancel Booking?
               </Text>
-              <Text className="text-gray-500 mt-2 text-center">
+              <Text style={{ color: colors.textLight, marginTop: 8, textAlign: "center" }}>
                 Please select a reason for cancellation.
               </Text>
             </View>
 
             {/* Dropdown Select for Cancellation Reason */}
-            <View className="mt-4 mb-5">
-              <Text className="text-gray-700 font-medium mb-2">Reason for cancellation:</Text>
+            <View style={{ marginTop: 16, marginBottom: 20 }}>
+              <Text style={{ color: colors.text, fontWeight: "500", marginBottom: 8 }}>Reason for cancellation:</Text>
 
               {/* Dropdown Container with Relative Positioning */}
-              <View className="relative">
+              <View style={{ position: "relative" }}>
                 {/* Dropdown Trigger */}
                 <TouchableOpacity
                   onPress={() => setShowReasonDropdown(!showReasonDropdown)}
-                  className="border border-gray-300 rounded-xl bg-gray-50 px-4 py-3.5 flex-row justify-between items-center"
+                  style={{
+                    borderWidth: 1,
+                    borderColor: colors.divider,
+                    borderRadius: 12,
+                    backgroundColor: colors.background,
+                    paddingHorizontal: 16,
+                    paddingVertical: 14,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
                 >
-                  <Text className={cancelReason ? "text-gray-800" : "text-gray-400"}>
+                  <Text style={{ color: cancelReason ? colors.text : colors.textLighter }}>
                     {cancelReason || "Select a reason..."}
                   </Text>
-                  <AntDesign
-                    name={showReasonDropdown ? "up" : "down"}
-                    size={16}
-                    color="#6B7280"
-                  />
+                  <AntDesign name={showReasonDropdown ? "up" : "down"} size={16} color={colors.textLight} />
                 </TouchableOpacity>
 
                 {/* Dropdown Options - Absolutely Positioned Relative to Parent */}
                 {showReasonDropdown && (
-                  <View className="absolute top-full left-0 right-0 mt-1 border border-gray-300 rounded-xl bg-white shadow-md z-10 max-h-48">
-                    <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: "100%",
+                      left: 0,
+                      right: 0,
+                      marginTop: 4,
+                      borderWidth: 1,
+                      borderColor: colors.divider,
+                      borderRadius: 12,
+                      backgroundColor: colors.cardBg,
+                      shadowColor: colors.primary,
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.1,
+                      shadowRadius: 4,
+                      elevation: 2,
+                      zIndex: 10,
+                      maxHeight: 192,
+                    }}
+                  >
+                    <ScrollView keyboardShouldPersistTaps="handled" decelerationRate="normal" scrollEnabled={true} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
                       {cancellationReasons.map((reason, index) => (
                         <TouchableOpacity
                           key={index}
-                          className={`px-4 py-3 ${index < cancellationReasons.length - 1 ? "border-b border-gray-100" : ""
-                            } ${reason === cancelReason ? "bg-pink-50" : ""}`}
+                          style={{
+                            paddingHorizontal: 16,
+                            paddingVertical: 12,
+                            borderBottomWidth: index < cancellationReasons.length - 1 ? 1 : 0,
+                            borderBottomColor: colors.divider,
+                            backgroundColor: reason === cancelReason ? colors.tertiaryLight : "transparent",
+                          }}
                           onPress={() => {
-                            setCancelReason(reason);
-                            setShowReasonDropdown(false);
+                            setCancelReason(reason)
+                            setShowReasonDropdown(false)
                           }}
                         >
-                          <Text className={`${reason === cancelReason ? "text-pink-600 font-medium" : "text-gray-700"
-                            }`}>
+                          <Text
+                            style={{
+                              color: reason === cancelReason ? colors.primary : colors.text,
+                              fontWeight: reason === cancelReason ? "500" : "normal",
+                            }}
+                          >
                             {reason}
                           </Text>
                         </TouchableOpacity>
@@ -334,42 +561,49 @@ export default function BookingsScreen() {
               </View>
             </View>
 
-            <View className="flex-row justify-between mt-2">
+            <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 8 }}>
               <TouchableOpacity
                 onPress={() => {
-                  handleCancelAction();
-                  setCancelReason('');
-                  setShowReasonDropdown(false);
+                  handleCancelAction()
+                  setCancelReason("")
+                  setShowReasonDropdown(false)
                 }}
-                className="flex-1 mr-2 bg-gray-200 py-3.5 rounded-xl"
+                style={{
+                  flex: 1,
+                  marginRight: 8,
+                  backgroundColor: colors.background,
+                  paddingVertical: 14,
+                  borderRadius: 12,
+                }}
               >
-                <Text className="text-gray-700 font-semibold text-center">Keep Booking</Text>
+                <Text style={{ color: colors.text, fontWeight: "600", textAlign: "center" }}>Keep Booking</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
                   if (cancelReason) {
-                    handleCancelConfirmation();
-                    setCancelReason('');
-                    setShowReasonDropdown(false);
+                    handleCancelConfirmation()
+                    setCancelReason("")
+                    setShowReasonDropdown(false)
                   } else {
-                    Alert.alert("Required", "Please select a reason for cancellation");
+                    Alert.alert("Required", "Please select a reason for cancellation")
                   }
                 }}
-                className={`flex-1 ml-2 py-3.5 rounded-xl ${cancelReason ? "bg-red-500" : "bg-red-300"
-                  }`}
+                style={{
+                  flex: 1,
+                  marginLeft: 8,
+                  paddingVertical: 14,
+                  borderRadius: 12,
+                  backgroundColor: cancelReason ? colors.error : "rgba(239, 68, 68, 0.4)",
+                }}
                 disabled={!cancelReason}
               >
-                <Text className="text-white font-semibold text-center">Yes, Cancel</Text>
+                <Text style={{ color: "white", fontWeight: "600", textAlign: "center" }}>Yes, Cancel</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
-      <ReviewModal
-        isVisible={isVisible}
-        onClose={() => setIsVisible(false)}
-        onSubmit={handleReviewSubmit}
-      />
+      <ReviewModal isVisible={isVisible} onClose={() => setIsVisible(false)} onSubmit={handleReviewSubmit} />
     </View>
-  );
+  )
 }

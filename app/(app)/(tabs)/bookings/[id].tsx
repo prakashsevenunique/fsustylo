@@ -43,15 +43,14 @@ const fetchBookingDetails = async (id) => {
 export default function RescheduleScreen() {
   const { id } = useLocalSearchParams();
   const [booking, setBooking] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<any>(null);
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedTime, setSelectedTime] = useState('');
-  // Available time slots
+  const [selectedTime, setSelectedTime] = useState<any>('');
   const timeSlots = [
-    '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM', 
+    '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM',
     '11:00 AM', '11:30 AM', '2:00 PM', '2:30 PM',
     '3:00 PM', '3:30 PM', '4:00 PM', '4:30 PM'
   ];
@@ -80,28 +79,18 @@ export default function RescheduleScreen() {
     }
   }, [id]);
 
-  const handleDateChange = (event, date) => {
+  const handleDateChange = (event:any, date:any) => {
     setShowDatePicker(false);
     if (date) {
       setSelectedDate(date);
-      // In a real app, you might fetch available time slots for the new date here
     }
   };
 
   const handleReschedule = () => {
-    if (!booking || !selectedTime) return;
-    
-    // In a real app, you would call an API to reschedule
-    console.log('Rescheduling booking:', booking.id);
-    console.log('New date:', selectedDate);
-    console.log('New time:', selectedTime);
-    
-    // Show success message and navigate back
     router.back();
-    // You might want to show a toast/snackbar message here
   };
 
-  const formatDate = (date) => {
+  const formatDate = (date:any) => {
     return date.toLocaleDateString('en-US', {
       weekday: 'long',
       month: 'long',
@@ -124,7 +113,7 @@ export default function RescheduleScreen() {
       <View className="flex-1 justify-center items-center bg-gray-50 p-4">
         <MaterialCommunityIcons name="alert-circle" size={48} color="#E6007E" />
         <Text className="text-lg font-medium text-gray-800 mt-4">{error}</Text>
-        <TouchableOpacity 
+        <TouchableOpacity
           className="mt-6 bg-primary py-3 px-6 rounded-full"
           onPress={() => router.back()}
         >
@@ -139,7 +128,7 @@ export default function RescheduleScreen() {
       <View className="flex-1 justify-center items-center bg-gray-50 p-4">
         <MaterialCommunityIcons name="calendar-remove" size={48} color="#E6007E" />
         <Text className="text-lg font-medium text-gray-800 mt-4">Booking not found</Text>
-        <TouchableOpacity 
+        <TouchableOpacity
           className="mt-6 bg-primary py-3 px-6 rounded-full"
           onPress={() => router.back()}
         >
@@ -201,8 +190,8 @@ export default function RescheduleScreen() {
         {/* Date Selection */}
         <View className="bg-white rounded-lg shadow-sm overflow-hidden mb-6 p-4">
           <Text className="font-bold text-lg mb-4">Select New Date</Text>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             className="flex-row items-center justify-between border border-gray-200 rounded-lg p-3 mb-4"
             onPress={() => setShowDatePicker(true)}
           >
@@ -232,19 +221,19 @@ export default function RescheduleScreen() {
         <View className="bg-white rounded-lg shadow-sm overflow-hidden mb-6 p-4">
           <Text className="font-bold text-lg mb-4">Select New Time</Text>
           <ScrollView scrollEnabled={true} horizontal={true} showsHorizontalScrollIndicator={false}>
-          <View className="flex-row">
-            {timeSlots.map((time, index) => (
-              <TouchableOpacity
-                key={index}
-                className={`py-2 px-3 m-1 rounded-full ${selectedTime === time ? 'bg-gray-500' : 'bg-gray-100'}`}
-                onPress={() => setSelectedTime(time)}
-              >
-                <Text className={`${selectedTime === time ? 'text-white' : 'text-gray-700'}`}>
-                  {time}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+            <View className="flex-row">
+              {timeSlots.map((time, index) => (
+                <TouchableOpacity
+                  key={index}
+                  className={`py-2 px-3 m-1 rounded-full ${selectedTime === time ? 'bg-gray-500' : 'bg-gray-100'}`}
+                  onPress={() => setSelectedTime(time)}
+                >
+                  <Text className={`${selectedTime === time ? 'text-white' : 'text-gray-700'}`}>
+                    {time}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </ScrollView>
         </View>
 

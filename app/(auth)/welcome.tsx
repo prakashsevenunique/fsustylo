@@ -76,7 +76,7 @@ export default function WelcomeScreen() {
           key={slides[index].title}
           className="mb-2"
         >
-          <Text style={styles.textShadow} className="text-pink-400 text-2xl font-extrabold tracking-wider text-center">
+          <Text style={styles.textShadow} className="text-[#d96e06] text-2xl font-extrabold tracking-wider text-center">
             {slides[index].title}
           </Text>
         </Animated.View>
@@ -100,7 +100,7 @@ export default function WelcomeScreen() {
         >
           <View style={styles.buttonShadow}>
             <LinearGradient
-              colors={['#ec4899', '#db2777']}
+              colors={['#fa9421', '#c23d02']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               className="rounded-full py-4 px-6 items-center"
@@ -119,7 +119,7 @@ export default function WelcomeScreen() {
 
 const styles = StyleSheet.create({
   textShadow: {
-    textShadowColor: 'rgba(0, 0, 0, 1)',
+    textShadowColor: 'rgba(0, 0, 0, .5)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
   },

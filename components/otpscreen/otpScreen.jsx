@@ -1,6 +1,7 @@
 import { UserContext } from "@/hooks/userInfo";
 import axiosInstance from "@/utils/axiosInstance";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Animated, Image, Alert, KeyboardAvoidingView, Platform } from "react-native";
@@ -88,9 +89,9 @@ export default function OTPInputScreen({ mobile, userExists }) {
         >
             <View className="flex-1 items-center justify-center px-2">
                 <Image source={require("@/assets/img/otp.jpg")} className="w-44 h-44 mb-4" resizeMode="contain" />
-                <Text className="text-gray-900 text-2xl font-bold mb-2">OTP Verification</Text>
-                <Text className="text-gray-600 text-center mb-2">Enter the 4-digit OTP sent to</Text>
-                <Text className="text-gray-900 font-semibold mb-6">+91 {mobile}</Text>
+                <Text className="text-[#ab3207] text-2xl font-bold mb-2">OTP Verification</Text>
+                <Text className="text-[#ab3207] text-center mb-2">Enter the 4-digit OTP sent to</Text>
+                <Text className="text-[#ab3207] font-semibold mb-6">+91 {mobile}</Text>
                 <CodeField
                     ref={ref}
                     {...props}
@@ -162,15 +163,22 @@ export default function OTPInputScreen({ mobile, userExists }) {
                 )}
 
                 {/* Verify Button */}
-                <TouchableOpacity
-                    className={`bg-pink-500 rounded-md py-3 mt-6 w-full ${loading ? "opacity-50" : ""}`}
-                    onPress={verifyOtp}
-                    disabled={loading}
+                <LinearGradient
+                    colors={['#fa9421', '#c23d02']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    className="rounded w-full py-4 px-6 mt-4 items-center"
                 >
-                    <Text className="text-white text-lg font-semibold text-center">
-                        {loading ? "Verifying..." : "Verify OTP"}
-                    </Text>
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        className={`w-full ${loading ? "opacity-50" : ""}`}
+                        onPress={verifyOtp}
+                        disabled={loading}
+                    >
+                        <Text className="text-white text-lg font-semibold text-center">
+                            {loading ? "loading..." : "Verify OTP"}
+                        </Text>
+                    </TouchableOpacity>
+                </LinearGradient>
             </View>
         </KeyboardAvoidingView>
     );

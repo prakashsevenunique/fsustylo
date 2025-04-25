@@ -1,9 +1,12 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from "expo-location";
 import axiosInstance from '@/utils/axiosInstance';
 import { router } from 'expo-router';
 import { Alert } from 'react-native';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
 
 export const UserContext = createContext({});
 
@@ -12,6 +15,10 @@ export const UserProvider = ({ children }: any) => {
     const [location, setlocation] = useState<any>({})
     const [token, setToken] = useState<string>('');
     const [city, setCity] = useState<string>('')
+    const [expoPushToken, setExpoPushToken] = useState('');
+    const [notification, setNotification] = useState<Notifications.Notification | undefined>(undefined);
+    const notificationListener = useRef<Notifications.EventSubscription>();
+    const responseListener = useRef<Notifications.EventSubscription>();
 
     const getAuthToken = async () => {
         const userData = await AsyncStorage.getItem('userData');
@@ -41,7 +48,7 @@ export const UserProvider = ({ children }: any) => {
             let result = await Location.reverseGeocodeAsync(location) as any;
             if (result.length > 0) {
                 const address = `${result[0].name}, ${result[0].street}, ${result[0].city}, ${result[0].region}, ${result[0].country}`;
-                setCity(`${result[0].city},${result[0].region}`)
+                setCity(`${result[0].city},${result[0].region}, ${result[0].country}`)
             }
         } catch (error) {
             console.error("Error fetching address:", error);
@@ -54,11 +61,12 @@ export const UserProvider = ({ children }: any) => {
                 '/api/user/update-location', {
                 mobileNumber,
                 latitude,
-                longitude
-            },
+                longitude,
+                notificationToken: expoPushToken || ''
+            }
             );
         } catch (error: any) {
-            console.log("location", error.message)
+            console.log("location", error.response?.data?.message);
         }
     };
 
@@ -72,7 +80,6 @@ export const UserProvider = ({ children }: any) => {
             const response = await axiosInstance.get('/api/user/user-info', config);
             setUserInfo(response.data?.user);
         } catch (error: any) {
-            console.log(error)
             Alert.alert(error.response?.data?.message);
             if (error.response) {
                 if (error.response.status === 401) {
@@ -83,6 +90,63 @@ export const UserProvider = ({ children }: any) => {
             }
         }
     };
+
+    useEffect(() => {
+        Notifications.setNotificationHandler({
+            handleNotification: async () => ({
+                shouldShowAlert: true,
+                shouldPlaySound: true,
+                shouldSetBadge: true,
+            }),
+        });
+
+        async function registerForPushNotificationsAsync() {
+            if (Device.isDevice) {
+                const { status: existingStatus } = await Notifications.getPermissionsAsync();
+                let finalStatus = existingStatus;
+                if (existingStatus !== 'granted') {
+                    const { status } = await Notifications.requestPermissionsAsync();
+                    finalStatus = status;
+                }
+                if (finalStatus !== 'granted') {
+                    alert('Permission not granted to get push token for push notification!');
+                    return;
+                }
+
+                const projectId =
+                    Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+                if (!projectId) {
+                    alert('Project ID not found');
+                    return;
+                }
+                try {
+                    const pushToken = (
+                        await Notifications.getExpoPushTokenAsync({ projectId })
+                    ).data;
+                    setExpoPushToken(pushToken);
+                } catch (e) {
+                    alert(`Failed to get push token: ${e}`);
+                }
+            } else {
+                alert('Must use physical device for push notifications');
+            }
+        }
+
+        registerForPushNotificationsAsync();
+
+        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+            setNotification(notification);
+        });
+
+        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+            console.log(response);
+        });
+
+        return () => {
+            notificationListener.current && Notifications.removeNotificationSubscription(notificationListener.current);
+            responseListener.current && Notifications.removeNotificationSubscription(responseListener.current);
+        };
+    }, [token]);
 
 
     useEffect(() => {
@@ -109,10 +173,10 @@ export const UserProvider = ({ children }: any) => {
         if (userInfo && location) {
             updateLocation(userInfo?.mobileNumber, location.latitude, location.longitude)
         }
-    }, [userInfo, location])
+    }, [userInfo, location, expoPushToken])
 
     return (
-        <UserContext.Provider value={{ userInfo, fetchUserInfo, token, city, setToken, setlocation, location, setUserInfo }}>
+        <UserContext.Provider value={{ userInfo,notification, fetchUserInfo, token, city, setToken, setlocation, location, setUserInfo }}>
             {children}
         </UserContext.Provider>
     );
