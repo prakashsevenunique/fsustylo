@@ -6,8 +6,8 @@ import { router } from 'expo-router';
 import axiosInstance from '@/utils/axiosInstance';
 import { imageBaseUrl } from '@/utils/helpingData';
 import { LinearGradient } from 'expo-linear-gradient';
+// import Haircut from '@/assets/icons/haircut.svg';
 
-const popularCategories = ["Haircut", "Manicure", "Pedicure", "Facial", "Waxing", "Massage", "Bridal", "Makeup"];
 const colors = {
   primary: "#E65305", // Bright red-orange as primary
   primaryLight: "#FF7A3D", // Lighter version of primary
@@ -26,6 +26,18 @@ const colors = {
   divider: "#FFE8D6", // Very light divider color
   white: "#FFFFFF",
 }
+
+const popularCategories = [
+  { name: "Haircut", image: require("@/assets/category/haircut.png") },
+  { name: "Manicure", image: require("@/assets/category/manicure.png") },
+  { name: "Pedicure", image: require("@/assets/category/pedicure.png") },
+  { name: "Facial", image: require("@/assets/category/facial.png") },
+  { name: "Waxing", image: require("@/assets/category/waxing.png") },
+  { name: "Massage", image: require("@/assets/category/massage.png") },
+  { name: "Bridal", image: require("@/assets/category/bridal.png") },
+  { name: "Makeup", image: require("@/assets/category/makeup.png") },
+];
+
 export default function AtSalon() {
   const { userInfo, city, location } = useContext(UserContext) as any;
   const [selectedGender, setSelectedGender] = useState('all');
@@ -80,6 +92,24 @@ export default function AtSalon() {
     }
   };
 
+  const renderCategoryItem = ({ item, index }: any) => (
+    <TouchableOpacity
+      key={index}
+      className="items-center mr-6 " // Increased margin for better spacing
+      onPress={() => router.push(`/salon/searchSalon?gender=${selectedGender === 'all' ? 'unisex' : selectedGender}&serviceTitle=${item.name}`)}
+    >
+      <View className="bg-white w-16 h-16 rounded-full items-center justify-center border-2 border-[#F4A36C] ">
+      <Image
+        source={item.image}
+        style={{ width: 34, height: 44 }}
+      />
+      </View>
+      <Text className="mt-2 text-sm font-semibold text-center ">
+        {item.name}
+      </Text>
+    </TouchableOpacity>
+  );
+
   const renderServiceCard = ({ item }: any) => (
     <TouchableOpacity
       className="mr-3 w-32 mb-1"
@@ -121,21 +151,6 @@ export default function AtSalon() {
       </View>
     </TouchableOpacity>
   )
-
-  const renderCategoryItem = ({ item, index }: any) => (
-    <TouchableOpacity
-      key={index}
-      className="items-center mr-6" // Increased margin for better spacing
-      onPress={() => router.push(`/salon/searchSalon?gender=${selectedGender === 'all' ? 'unisex' : selectedGender}&serviceTitle=${item}`)}
-    >
-      <View className="bg-[#FFE8D6] w-14 h-14 rounded-full items-center justify-center border-2 border-[#F4A36C]">
-        <MaterialIcons name="spa" size={28} color="#C13D02" />
-      </View>
-      <Text className="mt-2 text-sm font-semibold text-center ">
-        {item}
-      </Text>
-    </TouchableOpacity>
-  );
 
   useEffect(() => {
     if (location.latitude) {
@@ -206,7 +221,7 @@ export default function AtSalon() {
             showsHorizontalScrollIndicator={false}
             data={popularCategories}
             renderItem={renderCategoryItem}
-            keyExtractor={(item, index) => index.toString()}
+            keyExtractor={(item) => item.name}  // Use category name as key
             className="mb-4"
           />
         </View>

@@ -193,8 +193,9 @@ export default function HomeScreen() {
         <SalonImageCarousel
           home={true}
           images={[
-            "https://content.jdmagicbox.com/v2/comp/rajkot/u1/0281px281.x281.180410200635.j6u1/catalogue/organika-skin-clinic-nana-mava-main-road-rajkot-dermatologists-gg8crcowad.jpg",
-            "https://d2ki7eiqd260sq.cloudfront.net/95f1c11b8-09a7-4b60-a64d-84d80b1e2346.jpg"
+            require("@/assets/img/Home.jpg"),
+            require("@/assets/img/Home2.jpg"),
+            require("@/assets/img/Home3.jpg"),
           ]}
         />
 

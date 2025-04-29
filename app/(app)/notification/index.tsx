@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react"
-import { View, Text, TouchableOpacity, ScrollView } from "react-native"
+import { View, Text, TouchableOpacity, ScrollView, Linking } from "react-native"
 import { router } from "expo-router"
 import { Ionicons, MaterialIcons } from "@expo/vector-icons"
 import { UserContext } from "@/hooks/userInfo"
@@ -78,6 +78,7 @@ const NotificationScreen = () => {
         type: notificationType,
         title: content?.title || "New Notification",
         message: content?.body || "",
+        url : content?.data?.url || "",
         time: timeString,
         read: false,
         icon: getIconForNotificationType(notificationType),
@@ -217,7 +218,7 @@ const NotificationScreen = () => {
                 borderLeftWidth: !notification.read ? 4 : 0,
                 borderLeftColor: !notification.read ? colors.primary : "transparent",
               }}
-              onPress={() => markAsRead(notification.id)}
+              onPress={() => {markAsRead(notification.id); notification.url ? Linking.openURL(notification.url) : null}}
             >
               <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
                 <View style={{ marginRight: 12 }}>

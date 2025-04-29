@@ -7,6 +7,7 @@ import { Alert } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
+import * as Linking from 'expo-linking';
 
 export const UserContext = createContext({});
 
@@ -139,7 +140,10 @@ export const UserProvider = ({ children }: any) => {
         });
 
         responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-            console.log(response);
+            const url = response?.notification?.request?.content?.data?.url; // Safely access the URL
+            if (url) {
+                Linking.openURL(url); // Redirect to the Play Store or any link
+            }
         });
 
         return () => {
@@ -176,7 +180,7 @@ export const UserProvider = ({ children }: any) => {
     }, [userInfo, location, expoPushToken])
 
     return (
-        <UserContext.Provider value={{ userInfo,notification, fetchUserInfo, token, city, setToken, setlocation, location, setUserInfo }}>
+        <UserContext.Provider value={{ userInfo, notification, fetchUserInfo, token, city, setToken, setlocation, location, setUserInfo }}>
             {children}
         </UserContext.Provider>
     );

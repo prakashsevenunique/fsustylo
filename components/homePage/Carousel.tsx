@@ -49,7 +49,7 @@ const SalonImageCarousel = ({ images, home }: any) => {
   const progressValue = useSharedValue(0);
   const currentIndex = useSharedValue(0);
   const [visibleIndex, setVisibleIndex] = React.useState(0);
-  const carouselHeight = home ? 150 :180;
+  const carouselHeight = home ? 150 : 180;
 
   // This synchronizes the UI state with the Reanimated value
   useAnimatedReaction(
@@ -60,7 +60,7 @@ const SalonImageCarousel = ({ images, home }: any) => {
   );
 
   return (
-    <View className="relative mb-4">
+    <View className="relative mb-2 ">
       <Carousel
         loop
         width={screenWidth * 1}
@@ -76,7 +76,7 @@ const SalonImageCarousel = ({ images, home }: any) => {
         renderItem={({ item }) => (
           <View className="mx-2">
             <Image
-              source={{ uri: home ? item : `${imageBaseUrl}/${item}` }}
+              source={home ? item : { uri: home ? item : `${imageBaseUrl}/${item}` }}
               className="w-full h-full rounded-xl"
               resizeMode="cover"
             />

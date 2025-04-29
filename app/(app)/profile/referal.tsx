@@ -28,7 +28,7 @@ const colors = {
 
 export default function ReferAndEarnScreen() {
   const { userInfo } = useContext(UserContext) as any
-  const referralLink = `https://play.google.com/store/apps/details?id=com.prakash.seven/invite?code=${userInfo?.referralCode}`
+  const referralLink = `https://play.google.com/store/apps/details?id=com.sustylo.app?code=${userInfo?.referralCode}`
 
   const handleShare = async () => {
     try {
