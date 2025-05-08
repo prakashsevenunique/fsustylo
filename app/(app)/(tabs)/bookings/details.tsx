@@ -88,7 +88,7 @@ const BookingDetailPage = () => {
 
               {/* Icon to view salon details */}
               <TouchableOpacity
-                onPress={() => router.push(`/salon/${booking.salonId?._id}`)}
+                onPress={() => router.push(`/salon/${booking?.salonId?._id}`)}
                 style={{
                   borderWidth: 1,
                   borderColor: colors.divider,
@@ -296,14 +296,6 @@ const BookingDetailPage = () => {
               {booking?.status?.toLowerCase()}
             </Text>
           </View>
-
-          {booking.bookingHistory.length > 0 && (
-            <View className="mt-4">
-              <Text className="text-sm" style={{ color: colors.textLight }}>
-                Last updated: {new Date(booking?.bookingHistory[0]?.changedAt)?.toLocaleString()}
-              </Text>
-            </View>
-          )}
         </View>
       </ScrollView>
     </View>

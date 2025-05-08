@@ -71,7 +71,7 @@ export default function WalletScreen() {
     setTransactionsLoading(true)
     try {
       // Fetch credit transactions (payIn)
-      const creditResponse = await axiosInstance.get(`/api/payment/payin/report?userId=${userInfo._id}`)
+      const creditResponse = await axiosInstance.get(`/api/payment/payin/report?userId=${userInfo?._id}`)
       const formattedCredit = creditResponse?.data?.data.map((txn: any) => ({
         id: txn._id,
         type: "credit",
@@ -85,7 +85,7 @@ export default function WalletScreen() {
       }))
       setCreditTransactions(formattedCredit)
 
-      const debitResponse = await axiosInstance.get(`/api/payment/payOut/report?userId=${userInfo._id}`)
+      const debitResponse = await axiosInstance.get(`/api/payment/payOut/report?userId=${userInfo?._id}`)
       const formattedDebit = debitResponse?.data?.data.map((txn: any) => ({
         id: txn._id,
         type: "debit",
@@ -120,12 +120,12 @@ export default function WalletScreen() {
     const referenceId = generateReferenceId()
 
     const data = {
-      userId: userInfo._id,
+      userId: userInfo?._id,
       amount: amount,
       reference: referenceId,
-      name: userInfo.name || "unknown",
-      mobile: userInfo.mobileNumber,
-      email: userInfo.email || "example@gmail.com",
+      name: userInfo?.name || "unknown",
+      mobile: userInfo?.mobileNumber,
+      email: userInfo?.email || "example@gmail.com",
     }
     try {
       const response = await axiosInstance.post("/api/payment/payIn", data)

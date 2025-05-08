@@ -86,8 +86,8 @@ const CheckoutScreen = () => {
     }
     const formattedDate = selectedDate.date.toISOString().slice(0, 10)
     const data = {
-      salonId: salonDetail._id,
-      userId: userInfo._id,
+      salonId: salonDetail?._id,
+      userId: userInfo?._id,
       seatNumber: selectedSeat,
       services: selectedServices,
       date: formattedDate,
@@ -106,8 +106,8 @@ const CheckoutScreen = () => {
         router.replace({
           pathname: "/salon/booking-confirmation",
           params: {
-            salonId: salonDetail._id,
-            salonName: salonDetail.salonName,
+            salonId: salonDetail?._id,
+            salonName: salonDetail?.salonName,
             services: JSON.stringify(selectedServices),
             date: selectedDate.date.toISOString(),
             time: selectedTime,
@@ -190,12 +190,12 @@ const CheckoutScreen = () => {
           <Text className="text-sm mb-1" style={{ color: colors.textLight }}>
             {salonDetail?.salonTitle}
           </Text>
-          <View className="flex-row text-sm items-center">
+          {/* <View className="flex-row text-sm items-center">
             <Ionicons name="star" size={16} color="#FFD700" />
             <Text className="ml-1" style={{ color: colors.text }}>
-              4.5 (312 reviews)
+            {salonDetail.reviews?.length || 0} reviews
             </Text>
-          </View>
+          </View> */}
         </View>
 
         {/* Selected Services */}
@@ -300,7 +300,7 @@ const CheckoutScreen = () => {
                   className="text-xs"
                   style={{
                     color:
-                      selectedDate?.date.getDate() === date.date.getDate()
+                      selectedDate?.date.getDate() === date?.date?.getDate()
                         ? colors.cardBg
                         : date.isWeekend
                           ? colors.accent
@@ -312,8 +312,6 @@ const CheckoutScreen = () => {
               </TouchableOpacity>
             ))}
           </ScrollView>
-
-          {/* Time Selection */}
 
           {loading ? (
             <ActivityIndicator size="small" color={colors.primary} className="py-4" />

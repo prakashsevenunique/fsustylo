@@ -83,8 +83,8 @@ export default function ProfileScreen() {
           >
             <Image
               source={{
-                uri: userInfo.profilePhoto
-                  ? `${imageBaseUrl}/${userInfo.profilePhoto}`
+                uri: userInfo?.profilePhoto
+                  ? `${imageBaseUrl}/${userInfo?.profilePhoto}`
                   : "https://static.vecteezy.com/system/resources/thumbnails/035/857/779/small/people-face-avatar-icon-cartoon-character-png.png",
               }}
               style={{ width: 96, height: 96, borderRadius: 9999 }}

@@ -202,7 +202,7 @@ export default function AboutUs() {
               Developed & Managed By
             </Text>
             <Text className="mb-1" style={{ color: colors.textLight }}>
-              Su Stylo Salon Pvt. Ltd.
+              Su Stylo Salon
             </Text>
             <Text className="text-sm" style={{ color: colors.textLighter }}>
               Registered in India

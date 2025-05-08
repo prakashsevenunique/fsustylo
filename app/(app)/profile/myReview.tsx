@@ -36,7 +36,7 @@ export default function MyReviewsScreen() {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await axiosInstance.get(`/api/user/user-reviews/${userInfo._id}`);
+        const response = await axiosInstance.get(`/api/user/user-reviews/${userInfo?._id}`);
         if (response) {
           setReviews(response.data.reviews);
         }

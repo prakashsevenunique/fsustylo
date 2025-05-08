@@ -13,7 +13,10 @@ export const UserContext = createContext({});
 
 export const UserProvider = ({ children }: any) => {
     const [userInfo, setUserInfo] = useState<any>(null);
-    const [location, setlocation] = useState<any>({})
+    const [location, setlocation] = useState<any>({
+        latitude: 26.804199,
+        longitude: 75.858655
+    })
     const [token, setToken] = useState<string>('');
     const [city, setCity] = useState<string>('')
     const [expoPushToken, setExpoPushToken] = useState('');
@@ -23,10 +26,9 @@ export const UserProvider = ({ children }: any) => {
 
     const getAuthToken = async () => {
         const userData = await AsyncStorage.getItem('userData');
-        const parsedData = userData ? JSON.parse(userData) : null; // Parse if data exists, otherwise null
+        const parsedData = userData ? JSON.parse(userData) : null;
         setToken(parsedData);
     };
-
 
     const getCurrentLocation = async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
@@ -44,7 +46,7 @@ export const UserProvider = ({ children }: any) => {
     };
 
     const fetchAddress = async () => {
-        if (!location.latitude && !location.longitude) return;
+        if (!location.latitude || !location.longitude) return;
         try {
             let result = await Location.reverseGeocodeAsync(location) as any;
             if (result.length > 0) {
@@ -52,7 +54,7 @@ export const UserProvider = ({ children }: any) => {
                 setCity(`${result[0].city},${result[0].region}, ${result[0].country}`)
             }
         } catch (error) {
-            console.error("Error fetching address:", error);
+            setCity("Unknown Location");
         }
     };
 
@@ -81,9 +83,9 @@ export const UserProvider = ({ children }: any) => {
             const response = await axiosInstance.get('/api/user/user-info', config);
             setUserInfo(response.data?.user);
         } catch (error: any) {
-            Alert.alert(error.response?.data?.message);
+            Alert.alert(error.response?.data?.message || 'Something went wrong!');
             if (error.response) {
-                if (error.response.status === 401) {
+                if (error.response.status === 401 || error.response.status === 404) {
                     await AsyncStorage.removeItem('userData');
                     router.push('/welcome');
                     setToken('')
@@ -113,7 +115,6 @@ export const UserProvider = ({ children }: any) => {
                     alert('Permission not granted to get push token for push notification!');
                     return;
                 }
-
                 const projectId =
                     Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
                 if (!projectId) {
@@ -126,7 +127,7 @@ export const UserProvider = ({ children }: any) => {
                     ).data;
                     setExpoPushToken(pushToken);
                 } catch (e) {
-                    alert(`Failed to get push token: ${e}`);
+                    // alert(`Failed to get push token: ${e}`);
                 }
             } else {
                 alert('Must use physical device for push notifications');
@@ -140,9 +141,9 @@ export const UserProvider = ({ children }: any) => {
         });
 
         responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-            const url = response?.notification?.request?.content?.data?.url; // Safely access the URL
+            const url = response?.notification?.request?.content?.data?.url;
             if (url) {
-                Linking.openURL(url); // Redirect to the Play Store or any link
+                Linking.openURL(url);
             }
         });
 

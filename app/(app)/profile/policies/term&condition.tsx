@@ -58,7 +58,7 @@ export default function TermsAndConditions() {
     {
       title: "7. Intellectual Property",
       content:
-        "All trademarks, logos, and content are property of Su Stylo Salon Pvt. Ltd. You may not use, reproduce, or distribute any content without written permission.",
+        "All trademarks, logos, and content are property of Su Stylo Salon You may not use, reproduce, or distribute any content without written permission.",
     },
     {
       title: "8. Limitation of Liability",
@@ -156,7 +156,7 @@ export default function TermsAndConditions() {
         >
           <Text style={{ color: colors.textLight }}>
             These Terms & Conditions ("Terms") govern your access to and use of the Su Stylo mobile application and
-            website operated by Su Stylo Salon Pvt. Ltd.
+            website operated by Su Stylo Salon
           </Text>
           <Text className="mt-2 font-semibold" style={{ color: colors.textLight }}>
             By using Su Stylo, you agree to be bound by these Terms. If you do not agree, please do not use our
@@ -326,7 +326,7 @@ export default function TermsAndConditions() {
               Address
             </Text>
             <Text style={{ color: colors.text }}>
-              Su Stylo Salon Pvt. Ltd., P.NO 97, Dakshinpuri, Shri Kishanpura
+              Su Stylo Salon, P.NO 97, Dakshinpuri, Shri Kishanpura
             </Text>
           </View>
         </View>

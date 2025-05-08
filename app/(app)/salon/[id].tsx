@@ -37,6 +37,7 @@ const SalonDetail = () => {
   const [headerSticky, setHeaderSticky] = useState(false);
   const headerHeight = 180;
 
+
   async function getSalonDetails() {
     try {
       const response = await axiosInstance.get(`/api/salon/view/${id}`);
@@ -91,8 +92,8 @@ const SalonDetail = () => {
         _id: service._id,
         name: service.title,
         title: service.title,
-        price: service.rate,
-        originalPrice: service.rate,
+        price: service.rate * (1 - (service.discount || 0) / 100),
+        originalPrice: service.rate ,
         discount: service.discount || 0,
         duration: service.duration,
         gender: service.gender || 'unisex',
@@ -226,6 +227,7 @@ const SalonDetail = () => {
             <Image
               source={{ uri: `${imageBaseUrl}/${salon.salonPhotos[0]}` }}
               className="w-full h-48 object-cover"
+              defaultSource={require('@/assets/img/logo.png')}
             />
           )}
           <TouchableOpacity
@@ -253,10 +255,10 @@ const SalonDetail = () => {
           </View>
         </View>
 
-        <View className="pt-2 px-4 pb-2 border-b" 
-          style={{ 
+        <View className="pt-2 px-4 pb-2 border-b"
+          style={{
             backgroundColor: colors.cardBg,
-            borderBottomColor: colors.divider 
+            borderBottomColor: colors.divider
           }}>
           <View className="flex-row items-center justify-between mb-2 my-2">
             <Text className="mr-3 font-bold text-lg" style={{ color: colors.text }}>Filter by :</Text>
@@ -270,8 +272,8 @@ const SalonDetail = () => {
                   }}
                   onPress={() => setSelectedGender(gender)}
                 >
-                  <Text 
-                    style={{ 
+                  <Text
+                    style={{
                       color: selectedGender === gender ? 'white' : colors.text,
                       fontWeight: selectedGender === gender ? 'bold' : 'normal'
                     }}>
@@ -281,7 +283,7 @@ const SalonDetail = () => {
               ))}
             </View>
           </View>
-          <View className="flex-1 flex-row items-center rounded-lg px-3 py-2 my-2" 
+          <View className="flex-1 flex-row items-center rounded-lg px-3 py-2 my-2"
             style={{ backgroundColor: colors.tertiaryLight }}>
             <FontAwesome name="search" size={20} color={colors.textLight} />
             <TextInput
@@ -351,7 +353,7 @@ const SalonDetail = () => {
                           </View>
                         )}
                       </View>
-                      <View className="ml-4 w-6 h-6 rounded-full border justify-center items-center" 
+                      <View className="ml-4 w-6 h-6 rounded-full border justify-center items-center"
                         style={{ borderColor: colors.textLighter }}>
                         {isSelected && <View className="w-4 h-4 rounded-full" style={{ backgroundColor: colors.primary }} />}
                       </View>
@@ -365,8 +367,8 @@ const SalonDetail = () => {
       </ScrollView>
 
       {selectedServices.length > 0 && (
-        <View className="absolute bottom-0 left-0 right-0 z-10 px-4 py-3 border-t shadow-lg" 
-          style={{ 
+        <View className="absolute bottom-0 left-0 right-0 z-10 px-4 py-3 border-t shadow-lg"
+          style={{
             backgroundColor: colors.cardBg,
             borderTopColor: colors.divider
           }}>
@@ -375,7 +377,7 @@ const SalonDetail = () => {
               {selectedServices.reduce((sum, s: any) => sum + (s.quantity || 1), 0)} Item{selectedServices.length > 1 ? 's' : ''}
             </Text>
             <Text className="font-bold" style={{ color: colors.text }}>
-              ₹{selectedServices.reduce((sum, s: any) => sum + (s.price * (s.quantity || 1)), 0)}
+              ₹{selectedServices.reduce((sum, s: any) => sum + ((s.price ) * (s.quantity || 1)), 0)}
             </Text>
           </View>
           <Text className="text-xs mb-3" style={{ color: colors.textLight }}>Discount will be applied at checkout.</Text>

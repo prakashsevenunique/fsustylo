@@ -4,42 +4,47 @@
     "slug": "Sustylo",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/img/logo.png",
+    "icon": "./assets/img/splash.png",
     "scheme": "myapp",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
+    "googleServicesFile": "./google-services.json",
+    "splash": {
+      "image": "./assets/img/splash.png",
+      "resizeMode": "contain",
+      "dark": {
+        "image": "./assets/img/splash.png",
+        "resizeMode": "contain"
+      }
+    },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.sustylo.app",
+      "bundleIdentifier": "finunique.sustylo.app",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
       "splash": {
-        "image": "./assets/img/logo.png",
+        "image": "./assets/img/splash.png",
         "resizeMode": "contain",
-        "backgroundColor": "#ffffff",
         "dark": {
-          "image": "./assets/img/logo.png",
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "image": "./assets/img/splash.png",
+          "resizeMode": "contain"
         }
       }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/img/oo.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/img/oo.jpg",
+        "backgroundColor": "#FFFFFF"
       },
-      "userInterfaceStyle": "light",
-      "package": "com.sustylo.app",
+      "package": "finunique.sustylo.app",
+      "googleServicesFile": "./google-services.json",
       "splash": {
-        "image": "./assets/img/logo.png",
+        "image": "./assets/img/splash.png",
         "resizeMode": "contain",
-        "backgroundColor": "#ffffff",
         "dark": {
-          "image": "./assets/img/logo.png",
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "image": "./assets/img/splash.png",
+          "resizeMode": "contain"
         }
       }
     },
@@ -51,25 +56,10 @@
     "plugins": [
       "expo-router",
       [
-        "expo-splash-screen",
-        {
-          "image": "./assets/img/logo.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
-          "dark": {
-            "image": "./assets/img/logo.png",
-            "imageWidth": 200,
-            "resizeMode": "contain",
-            "backgroundColor": "#ffffff"
-          }
-        }
-      ],
-      [
         "expo-notifications",
         {
-          "icon": "./assets/img/oo.png",
-          "color": "#ffffff"
+          "icon": "./assets/img/logo.png",
+          "color": "#FFFFFF"
         }
       ]
     ],
@@ -81,8 +71,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "beaccf75-3957-496d-a2e4-220466d407e8"
+        "projectId": "31804b91-41b1-433f-990a-777331e90e8b"
       }
-    }
+    },
+    "owner": "prakashnative"
   }
 }

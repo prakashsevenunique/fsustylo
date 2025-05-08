@@ -23,9 +23,7 @@ export default function LoginScreen() {
         setIsAddMoneyModalVisible(true)
         if (response.data?.existing) {
           setExisting(true)
-          console.log('hhh')
         }
-        console.log(response?.data || "success");
       }
     } catch (error: any) {
       Alert.alert(`Error: ${error.message}`)
@@ -51,7 +49,7 @@ export default function LoginScreen() {
         </View> : <View className="w-full h-full">
           {/* Upper Section - 60% */}
           <View className="h-[50%] items-center justify-center px-6 bg-[#fb8807]">
-            <Image source={require('@/assets/img/logo.png')} className="w-40 h-40 mb-4" resizeMode="contain" />
+            <Image source={require('@/assets/img/logo.png')} className="w-40 h-40 mb-4 bg-white rounded-full" resizeMode="contain" />
             <Text className="text-white text-2xl font-bold text-center">Sutylo Salon – Your Beauty, Our Duty!</Text>
           </View>
 
@@ -129,16 +127,14 @@ export default function LoginScreen() {
         onRequestClose={() => setIsAddMoneyModalVisible(false)}
       >
         <View className="flex-1 bg-black bg-opacity-50 justify-end">
-          <View className="bg-white rounded-t-3xl p-6">
+          <View className="bg-white rounded-t-3xl p-6  h-[80%]">
             <View className="flex-row justify-between items-center mb-6">
               <Text className="text-2xl font-bold text-[#ab3207]">Verify OTP</Text>
               <TouchableOpacity onPress={() => setIsAddMoneyModalVisible(false)}>
                 <Ionicons name="close" size={26} color="#b84729" />
               </TouchableOpacity>
             </View>
-            <ScrollView className="p-2" showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}> 
               <OTPInputScreen mobile={mobile} userExists={existing} />
-            </ScrollView>
           </View>
         </View>
       </Modal>

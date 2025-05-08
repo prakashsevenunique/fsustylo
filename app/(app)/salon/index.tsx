@@ -125,27 +125,28 @@ export default function SalonListScreen() {
                 />
                 <View className="flex-1 pl-2">
                     <Text className="font-bold text-lg" style={{ color: colors.text }}>
-                        {item.salonName}
+                        {item?.salonName}
                     </Text>
                     <View className="flex-row items-center mt-1">
                         <Ionicons name="location-outline" size={14} color={colors.textLight} />
                         <Text className="text-xs ml-1" style={{ color: colors.textLight }}>
-                            {item.salonAddress}
+                            {item?.salonAddress}
                         </Text>
                     </View>
 
                     <View className="flex-row items-center mt-2">
                         <MaterialIcons name="star" size={16} color="#FFD700" />
                         <Text className="ml-1 text-sm" style={{ color: colors.text }}>
-                            {item.averageRating?.toFixed(1) || "New"} ({item.reviews.length || 0})
+                            {item?.averageRating?.toFixed(1) || "New"} ({item.reviews.length || 0})
                         </Text>
-                        <Text className="text-sm mx-2" style={{ color: colors.textLight }}>
-
-                        </Text>
-                        {type === "nearby" && <> <Ionicons name="navigate-outline" size={14} color={colors.textLight} />
-                            <Text className="text-xs ml-1" style={{ color: colors.textLight }}>
-                                {item.distance?.toFixed(1) || 0} km
-                            </Text> </>}
+                        {type === "nearby" && (
+                            <>
+                                <Ionicons name="navigate-outline" size={14} color={colors.textLight} />
+                                <Text className="text-xs ml-1" style={{ color: colors.textLight }}>
+                                    {item.distance?.toFixed(1) || 0} km
+                                </Text>
+                            </>
+                        )}
                     </View>
 
                     {item.minServicePrice && (

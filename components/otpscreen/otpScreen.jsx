@@ -87,8 +87,7 @@ export default function OTPInputScreen({ mobile, userExists }) {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             className="flex-1 bg-white"
         >
-            <View className="flex-1 items-center justify-center px-2">
-                <Image source={require("@/assets/img/otp.jpg")} className="w-44 h-44 mb-4" resizeMode="contain" />
+            <View className="flex-1 items-center justify-start mt-6 px-2">
                 <Text className="text-[#ab3207] text-2xl font-bold mb-2">OTP Verification</Text>
                 <Text className="text-[#ab3207] text-center mb-2">Enter the 4-digit OTP sent to</Text>
                 <Text className="text-[#ab3207] font-semibold mb-6">+91 {mobile}</Text>
@@ -98,26 +97,24 @@ export default function OTPInputScreen({ mobile, userExists }) {
                     value={otp}
                     onChangeText={setOtp}
                     cellCount={CELL_COUNT}
-                    rootStyle={{ marginTop: 10, width: "90%" }}
+                    rootStyle={{ display:"flex",alignItems:"center",justifyContent:"center", marginTop: 10, width: "100%" , alignSelf: "center" }}
                     keyboardType="number-pad"
                     textContentType="oneTimeCode"
                     renderCell={({ index, symbol, isFocused }) => {
                         if (isFocused) animateCell(index, 1.1);
                         else animateCell(index, 1);
-
                         return (
                             <Animated.View
                                 key={index}
                                 style={{
                                     borderWidth: 1,
                                     borderColor: isFocused ? "#FF1493" : "#ddd",
-                                    width: 50,
+                                    width: 48,
                                     height: 50,
                                     borderRadius: 10,
                                     justifyContent: "center",
                                     alignItems: "center",
                                     margin: 5,
-                                    transform: [{ scale: animatedValues[index] }],
                                 }}
                                 onLayout={getCellOnLayoutHandler(index)}
                             >

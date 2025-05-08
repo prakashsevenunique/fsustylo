@@ -68,7 +68,7 @@ export default function BookingsScreen() {
     try {
       const response = await axiosInstance.post(`/api/salon/review/${ratingSelected}`, {
         ...reviewData,
-        phone: userInfo.mobileNumber,
+        phone: userInfo?.mobileNumber,
       })
       if (response) {
         setRatingSelected("")
@@ -99,7 +99,7 @@ export default function BookingsScreen() {
       getUserBooking()
       fetchUserInfo()
     } catch (error) {
-      Alert.alert("Error", error.message)
+      Alert.alert("Error", error.response?.data?.message || error.message)
     }
   }
 

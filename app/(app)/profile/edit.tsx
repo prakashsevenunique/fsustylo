@@ -187,7 +187,7 @@ export default function EditProfileScreen() {
         name: fileName || `profile_${Date.now()}.${fileType}`,
         type: mimeType,
       } as any)
-      const response = await axiosInstance.post(`/api/user/user/${userInfo._id}/profile-photo`, formData, {
+      const response = await axiosInstance.post(`/api/user/user/${userInfo?._id}/profile-photo`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Accept: "application/json",
@@ -223,7 +223,7 @@ export default function EditProfileScreen() {
 
     setIsLoading(true)
     try {
-      const response = await axiosInstance.put(`/api/user/update-profile/${userInfo._id}`, data)
+      const response = await axiosInstance.put(`/api/user/update-profile/${userInfo?._id}`, data)
       setUserInfo(response?.data?.user)
       Alert.alert("Success", "Profile updated successfully")
       router.back()
@@ -285,8 +285,8 @@ export default function EditProfileScreen() {
             >
               <Image
                 source={{
-                  uri: userInfo.profilePhoto
-                    ? `${imageBaseUrl}/${userInfo.profilePhoto}`
+                  uri: userInfo?.profilePhoto
+                    ? `${imageBaseUrl}/${userInfo?.profilePhoto}`
                     : "https://static.vecteezy.com/system/resources/thumbnails/035/857/779/small/people-face-avatar-icon-cartoon-character-png.png",
                 }}
                 style={{ width: "100%", height: "100%" }}
