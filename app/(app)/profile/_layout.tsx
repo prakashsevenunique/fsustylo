@@ -66,22 +66,29 @@ export default function ProfileLayout() {
           presentation: 'modal'
         }}
       />
-       <Stack.Screen
+      <Stack.Screen
         name="policies"
         options={{
           headerShown: false,
           presentation: 'modal'
         }}
       />
-        <Stack.Screen
+      <Stack.Screen
         name="wallet"
         options={{
           headerShown: false,
           presentation: 'modal'
         }}
       />
-        <Stack.Screen
+      <Stack.Screen
         name="payment_success"
+        options={{
+          headerShown: false,
+          presentation: 'modal'
+        }}
+      />
+      <Stack.Screen
+        name="dashboard"
         options={{
           headerShown: false,
           presentation: 'modal'

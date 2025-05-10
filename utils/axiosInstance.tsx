@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-    baseURL: 'https://sustylo-web.onrender.com',
+    baseURL: 'https://api.sustylo.com',
     timeout: 20000,
     headers: {
         'Content-Type': 'application/json',

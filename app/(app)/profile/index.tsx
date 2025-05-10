@@ -56,7 +56,7 @@ export default function ProfileScreen() {
             <Ionicons onPress={() => router.back()} name="arrow-back" size={25} color={colors.primary} />
             <Text style={{ fontSize: 18, fontWeight: "bold", marginLeft: 12, color: colors.text }}>My Profile</Text>
           </View>
-          <TouchableOpacity onPress={() => router.push("/notification")}>
+          <TouchableOpacity className="mr-2" onPress={() => router.push("/notification")}>
             <Ionicons name="notifications-outline" size={25} color={colors.text} />
           </TouchableOpacity>
         </View>
@@ -163,6 +163,8 @@ export default function ProfileScreen() {
             { name: "My Wallet", icon: "rupes", route: "/profile/wallet" },
             { name: "Manage Address", icon: "map-pin", route: "/profile/address" },
             { name: "My Reviews", icon: "thumbs-up", route: "/profile/myReview" },
+            { name: userInfo?.role == 'user'? "Be our Partner":"Dashboard", icon: "airplay", route: "/profile/dashboard" },
+
           ].map((item, index) => (
             <TouchableOpacity
               key={index}

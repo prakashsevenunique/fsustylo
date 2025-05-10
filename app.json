@@ -4,16 +4,16 @@
     "slug": "Sustylo",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/img/splash.png",
+    "icon": "./assets/img/logo.png",
     "scheme": "myapp",
     "userInterfaceStyle": "light",
     "newArchEnabled": false,
     "googleServicesFile": "./google-services.json",
     "splash": {
-      "image": "./assets/img/splash.png",
+      "image": "./assets/img/logo.png",
       "resizeMode": "contain",
       "dark": {
-        "image": "./assets/img/splash.png",
+        "image": "./assets/img/logo.png",
         "resizeMode": "contain"
       }
     },
@@ -24,10 +24,10 @@
         "ITSAppUsesNonExemptEncryption": false
       },
       "splash": {
-        "image": "./assets/img/splash.png",
+        "image": "./assets/img/logo.png",
         "resizeMode": "contain",
         "dark": {
-          "image": "./assets/img/splash.png",
+          "image": "./assets/img/logo.png",
           "resizeMode": "contain"
         }
       }
@@ -40,10 +40,10 @@
       "package": "finunique.sustylo.app",
       "googleServicesFile": "./google-services.json",
       "splash": {
-        "image": "./assets/img/splash.png",
+        "image": "./assets/img/logo.png",
         "resizeMode": "contain",
         "dark": {
-          "image": "./assets/img/splash.png",
+          "image": "./assets/img/logo.png",
           "resizeMode": "contain"
         }
       }

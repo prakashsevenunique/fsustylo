@@ -260,7 +260,7 @@ export default function WalletScreen() {
             </TouchableOpacity>
             <Text style={{ fontSize: 18, fontWeight: "bold", marginLeft: 12, color: colors.text }}>My Wallet</Text>
           </View>
-          <TouchableOpacity onPress={() => router.push("/notification")}>
+          <TouchableOpacity className="mr-2" onPress={() => router.push("/notification")}>
             <Ionicons name="notifications-outline" size={25} color={colors.text} />
           </TouchableOpacity>
         </View>

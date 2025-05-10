@@ -162,7 +162,7 @@ export const UserProvider = ({ children }: any) => {
         if (location) {
             fetchAddress()
         }
-    }, [location.latitude])
+    }, [location])
 
 
     useEffect(() => {

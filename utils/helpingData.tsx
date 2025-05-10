@@ -1,3 +1,3 @@
-let imageBaseUrl = "https://sustylo-web.onrender.com";
+let imageBaseUrl = "https://api.sustylo.com";
 
 export { imageBaseUrl }
