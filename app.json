@@ -17,9 +17,9 @@
         "resizeMode": "contain"
       }
     },
-    "ios": {
+    "ios": { 
       "supportsTablet": true,
-      "bundleIdentifier": "finunique.sustylo.app",
+      "bundleIdentifier": "com.sustylo.app",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
@@ -37,7 +37,7 @@
         "foregroundImage": "./assets/img/oo.jpg",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "finunique.sustylo.app",
+      "package": "com.sustylo.app",
       "googleServicesFile": "./google-services.json",
       "splash": {
         "image": "./assets/img/logo.png",

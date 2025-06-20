@@ -427,7 +427,7 @@ export default function SearchSalonScreen() {
               </TouchableOpacity>
             </View>
 
-            <ScrollView className="mb-4">
+            <ScrollView className="mb-4" showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
               {/* Price Range Filter */}
               <View className="mb-6">
                 <Text className="font-medium mb-2" style={{ color: colors.text }}>
