@@ -17,9 +17,9 @@
         "resizeMode": "contain"
       }
     },
-    "ios": { 
+    "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.sustylo.app",
+      "bundleIdentifier": "com.uniquesustylo.app",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
@@ -37,7 +37,7 @@
         "foregroundImage": "./assets/img/oo.jpg",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.sustylo.app",
+      "package": "com.uniquesustylo.app",
       "googleServicesFile": "./google-services.json",
       "splash": {
         "image": "./assets/img/logo.png",
@@ -71,9 +71,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "31804b91-41b1-433f-990a-777331e90e8b"
+        "projectId": "e95f5dec-80b5-4944-8ad0-3b12df21ea66"
       }
     },
-    "owner": "prakashnative"
+    "owner": "prakash0596"
   }
 }

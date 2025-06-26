@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "325677179240",
-    "project_id": "comsustyloapp",
-    "storage_bucket": "comsustyloapp.firebasestorage.app"
+    "project_number": "625289303985",
+    "project_id": "comuniquesustyloapp",
+    "storage_bucket": "comuniquesustyloapp.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:325677179240:android:eb9fb49d372ff6889d76dd",
+        "mobilesdk_app_id": "1:625289303985:android:433477c7ad0b8a812acf90",
         "android_client_info": {
-          "package_name": "com.sustylo.app"
+          "package_name": "com.uniquesustylo.app"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDxZqfC3YsqPwXDhIaWfNigmfjasPlRK1o"
+          "current_key": "AIzaSyA-NSDv1wsXle-NvC4FfoPZS3UMtmGqSAg"
         }
       ],
       "services": {
